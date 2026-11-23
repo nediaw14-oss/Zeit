@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<title>Zeiterfassung</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1a1d23; --muted: #6b7280;
+    --border: #e3e5e9; --accent: #2563eb; --accent-text: #ffffff;
+    --danger: #dc2626; --ok: #16a34a; --input: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111318; --card: #1b1e25; --text: #e8eaee; --muted: #9aa1ad;
+      --border: #2c313b; --accent: #4f8cff; --accent-text: #0b1020;
+      --danger: #f87171; --ok: #4ade80; --input: #151820;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .timer { font-size: 44px; font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: 1px; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .row > * { flex: 1 1 160px; }
+  input, select, textarea {
+    font: inherit; color: var(--text); background: var(--input);
+    border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; width: 100%;
+  }
+  button {
+    font: inherit; cursor: pointer; border-radius: 8px; padding: 9px 14px;
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+  }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+  button.stop { background: var(--danger); color: #fff; border-color: var(--danger); font-weight: 600; }
+  button.small { padding: 4px 9px; font-size: 13px; }
+  button.link { border: none; background: none; color: var(--danger); padding: 4px; }
+  .big { font-size: 17px; padding: 12px 20px; flex: 0 0 auto; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tabs button.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .day-head td { background: var(--bg); font-weight: 600; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .stat { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+  .empty { text-align: center; color: var(--muted); padding: 20px; }
+  .scroll { overflow-x: auto; }
+  dialog { border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); max-width: 420px; width: calc(100% - 32px); }
+  dialog::backdrop { background: rgba(0,0,0,.4); }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 8px 0 4px; }
+  @media (max-width: 560px) {
+    .timer { font-size: 36px; }
+    .hide-sm { display: none; }
+  }
+  @media (min-width: 561px) { .show-sm { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⏱ Zeiterfassung</h1>
+
+  <!-- Timer -->
+  <div class="card">
+    <div class="row" style="align-items:flex-end">
+      <div style="flex:1 1 200px">
+        <div class="timer" id="timer">00:00:00</div>
+        <div class="muted" id="timerInfo">Kein Timer aktiv</div>
+      </div>
+      <button class="primary big" id="startStop">▶ Start</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <input id="project" list="projectList" placeholder="Projekt / Kunde">
+      <input id="note" placeholder="Tätigkeit / Notiz">
+      <datalist id="projectList"></datalist>
+    </div>
+  </div>
+
+  <!-- Manuell -->
+  <details class="card">
+    <summary style="cursor:pointer;font-weight:600">＋ Eintrag manuell hinzufügen</summary>
+    <div class="row" style="margin-top:12px">
+      <div><label>Datum</label><input type="date" id="mDate"></div>
+      <div><label>Von</label><input type="time" id="mFrom"></div>
+      <div><label>Bis</label><input type="time" id="mTo"></div>
+    </div>
+    <div class="row">
+      <div><label>Pause (Min.)</label><input type="number" id="mPause" min="0" value="0"></div>
+      <div><label>Projekt</label><input id="mProject" list="projectList"></div>
+      <div><label>Notiz</label><input id="mNote"></div>
+    </div>
+    <div style="margin-top:12px"><button class="primary" id="mAdd">Hinzufügen</button></div>
+  </details>
+
+  <!-- Übersicht -->
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button data-range="today">Heute</button>
+      <button data-range="week" class="active">Woche</button>
+      <button data-range="month">Monat</button>
+      <button data-range="all">Alle</button>
+    </div>
+    <div class="row" style="margin-bottom:12px">
+      <button class="small" id="prev" style="flex:0 0 auto">◀</button>
+      <div id="rangeLabel" style="text-align:center;font-weight:600"></div>
+      <button class="small" id="next" style="flex:0 0 auto">▶</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div id="byProject" style="margin-top:14px"></div>
+  </div>
+
+  <!-- Liste -->
+  <div class="card">
+    <h2>Einträge</h2>
+    <div class="scroll"><table>
+      <thead><tr>
+        <th>Zeit</th><th>Projekt</th><th class="hide-sm">Notiz</th><th class="num">Dauer</th><th></th>
+      </tr></thead>
+      <tbody id="list"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Einstellungen & Daten -->
+  <details class="card">
+    <summary style="cursor:pointer;font-weight:600">⚙ Einstellungen &amp; Daten</summary>
+    <div class="row" style="margin-top:12px">
+      <div><label>Soll-Stunden pro Woche</label><input type="number" id="targetWeek" min="0" step="0.5"></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button id="exportCsv">CSV exportieren</button>
+      <button id="exportJson">Backup (JSON)</button>
+      <button id="importJson">Backup importieren</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+    <p class="muted">Alle Daten werden nur lokal in diesem Browser gespeichert (localStorage). Mach regelmäßig ein Backup, wenn du den Browser-Speicher löschst oder das Gerät wechselst.</p>
+    <button class="link" id="wipe">Alle Daten löschen</button>
+  </details>
+</div>
+
+<!-- Bearbeiten -->
+<dialog id="editDlg">
+  <form method="dialog" id="editForm">
+    <h2>Eintrag bearbeiten</h2>
+    <label>Datum</label><input type="date" id="eDate" required>
+    <div class="row">
+      <div><label>Von</label><input type="time" id="eFrom" required></div>
+      <div><label>Bis</label><input type="time" id="eTo" required></div>
+    </div>
+    <label>Pause (Min.)</label><input type="number" id="ePause" min="0">
+    <label>Projekt</label><input id="eProject" list="projectList">
+    <label>Notiz</label><input id="eNote">
+    <div class="row" style="margin-top:16px">
+      <button value="cancel" formnovalidate>Abbrechen</button>
+      <button class="primary" value="save">Speichern</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  const KEY = 'zeiterfassung.v1';
+  const $ = id => document.getElementById(id);
+
+  // ---------- Speicher ----------
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY));
+      if (d && Array.isArray(d.entries)) return { settings: { targetWeek: 40 }, running: null, ...d };
+    } catch (e) {}
+    return { entries: [], running: null, settings: { targetWeek: 40 } };
+  }
+  let state = load();
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { alert('Speichern fehlgeschlagen: ' + e.message); }
+  }
+  // Sync zwischen mehreren Tabs
+  window.addEventListener('storage', e => { if (e.key === KEY) { state = load(); renderAll(); } });
+
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  // ---------- Hilfsfunktionen ----------
+  const pad = n => String(n).padStart(2, '0');
+  const fmtHMS = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${pad(Math.floor(s/3600))}:${pad(Math.floor(s/60)%60)}:${pad(s%60)}`; };
+  const fmtHM = ms => { const m = Math.round(Math.max(0, ms) / 60000); return `${Math.floor(m/60)}:${pad(m%60)} h`; };
+  const fmtDec = ms => (ms / 3600000).toFixed(2).replace('.', ',');
+  const fmtTime = t => new Date(t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  const fmtDay = t => new Date(t).toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+  const dateStr = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+  const timeStr = t => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const combine = (date, time) => { const [y,mo,d] = date.split('-').map(Number); const [h,mi] = time.split(':').map(Number); return new Date(y, mo-1, d, h, mi).getTime(); };
+  const dur = e => Math.max(0, e.end - e.start - (e.pause || 0) * 60000);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+  // ---------- Timer ----------
+  let tick = null;
+  function renderTimer() {
+    const r = state.running;
+    const btn = $('startStop');
+    if (r) {
+      $('timer').textContent = fmtHMS(Date.now() - r.start);
+      $('timerInfo').textContent = 'Läuft seit ' + fmtTime(r.start) + ' Uhr';
+      btn.textContent = '■ Stopp'; btn.className = 'stop big';
+      document.title = fmtHMS(Date.now() - r.start) + ' · Zeiterfassung';
+      if (!tick) tick = setInterval(renderTimer, 1000);
+    } else {
+      $('timer').textContent = '00:00:00';
+      $('timerInfo').textContent = 'Kein Timer aktiv';
+      btn.textContent = '▶ Start'; btn.className = 'primary big';
+      document.title = 'Zeiterfassung';
+      clearInterval(tick); tick = null;
+    }
+  }
+  $('startStop').onclick = () => {
+    if (state.running) {
+      const r = state.running;
+      const end = Date.now();
+      if (end - r.start >= 1000) {
+        state.entries.push({ id: uid(), start: r.start, end, pause: 0,
+          project: $('project').value.trim(), note: $('note').value.trim() });
+      }
+      state.running = null;
+      $('note').value = '';
+    } else {
+      state.running = { start: Date.now(), project: $('project').value.trim(), note: $('note').value.trim() };
+    }
+    save(); renderAll();
+  };
+  // Projekt/Notiz eines laufenden Timers mitspeichern
+  ['project', 'note'].forEach(id => $(id).addEventListener('input', () => {
+    if (state.running) { state.running[id] = $(id).value; save(); }
+  }));
+
+  // ---------- Manueller Eintrag ----------
+  function resetManual() {
+    $('mDate').value = dateStr(Date.now());
+    $('mFrom').value = ''; $('mTo').value = ''; $('mPause').value = 0; $('mNote').value = '';
+  }
+  $('mAdd').onclick = () => {
+    const d = $('mDate').value, f = $('mFrom').value, t = $('mTo').value;
+    if (!d || !f || !t) return alert('Bitte Datum, Von und Bis ausfüllen.');
+    let start = combine(d, f), end = combine(d, t);
+    if (end <= start) end += 86400000; // über Mitternacht
+    state.entries.push({ id: uid(), start, end, pause: Math.max(0, +$('mPause').value || 0),
+      project: $('mProject').value.trim(), note: $('mNote').value.trim() });
+    save(); resetManual(); renderAll();
+  };
+
+  // ---------- Zeitraum ----------
+  let range = 'week', offset = 0;
+  function getRange() {
+    const now = new Date();
+    if (range === 'today') {
+      const s = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+      const e = new Date(s); e.setDate(e.getDate() + 1);
+      return { s: +s, e: +e, label: offset === 0 ? 'Heute' : fmtDay(s) };
+    }
+    if (range === 'week') {
+      const day = (now.getDay() + 6) % 7; // Montag = 0
+      const s = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + offset * 7);
+      const e = new Date(s); e.setDate(e.getDate() + 7);
+      const last = new Date(e - 1);
+      return { s: +s, e: +e, label: `KW ${isoWeek(s)} · ${s.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})} – ${last.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})}` };
+    }
+    if (range === 'month') {
+      const s = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+      const e = new Date(s.getFullYear(), s.getMonth() + 1, 1);
+      return { s: +s, e: +e, label: s.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) };
+    }
+    return { s: -Infinity, e: Infinity, label: 'Alle Einträge' };
+  }
+  function isoWeek(d) {
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n);
+    const y = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return Math.ceil(((t - y) / 86400000 + 1) / 7);
+  }
+  $('tabs').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    range = b.dataset.range; offset = 0;
+    [...$('tabs').children].forEach(x => x.classList.toggle('active', x === b));
+    renderAll();
+  };
+  $('prev').onclick = () => { offset--; renderAll(); };
+  $('next').onclick = () => { offset++; renderAll(); };
+
+  // ---------- Rendering ----------
+  function renderAll() {
+    renderTimer();
+    const r = getRange();
+    $('rangeLabel').textContent = r.label;
+    $('prev').disabled = $('next').disabled = range === 'all';
+
+    const items = state.entries.filter(e => e.start >= r.s && e.start < r.e).sort((a, b) => b.start - a.start);
+    const total = items.reduce((s, e) => s + dur(e), 0);
+    const days = new Set(items.map(e => dateStr(e.start))).size;
+
+    // Statistik
+    let html = `<div class="stat"><span class="muted">Gesamt</span><b>${fmtHM(total)}</b><span class="muted">${fmtDec(total)} h dezimal</span></div>
+      <div class="stat"><span class="muted">Einträge</span><b>${items.length}</b><span class="muted">an ${days} Tag(en)</span></div>
+      <div class="stat"><span class="muted">Ø pro Tag</span><b>${fmtHM(days ? total / days : 0)}</b><span class="muted">nur Arbeitstage</span></div>`;
+    const tw = +state.settings.targetWeek || 0;
+    if (range === 'week' && tw > 0) {
+      const target = tw * 3600000, diff = total - target;
+      html += `<div class="stat"><span class="muted">Soll ${tw} h</span><b style="color:${diff >= 0 ? 'var(--ok)' : 'var(--text)'}">${diff >= 0 ? '+' : '−'}${fmtHM(Math.abs(diff))}</b>
+        <div class="bar"><i style="width:${Math.min(100, total / target * 100)}%"></i></div></div>`;
+    }
+    $('stats').innerHTML = html;
+
+    // Nach Projekt
+    const byP = {};
+    items.forEach(e => { const k = e.project || '(ohne Projekt)'; byP[k] = (byP[k] || 0) + dur(e); });
+    const ps = Object.entries(byP).sort((a, b) => b[1] - a[1]);
+    $('byProject').innerHTML = ps.length > 1 || (ps.length === 1 && ps[0][0] !== '(ohne Projekt)')
+      ? ps.map(([p, ms]) => `<div style="margin-bottom:8px"><div class="row" style="flex-wrap:nowrap"><span>${esc(p)}</span><span class="muted" style="text-align:right">${fmtHM(ms)}</span></div><div class="bar"><i style="width:${total ? ms / total * 100 : 0}%"></i></div></div>`).join('')
+      : '';
+
+    // Liste nach Tagen gruppiert
+    if (!items.length) {
+      $('list').innerHTML = `<tr><td colspan="5" class="empty">Keine Einträge in diesem Zeitraum.</td></tr>`;
+    } else {
+      const groups = {};
+      items.forEach(e => (groups[dateStr(e.start)] ||= []).push(e));
+      $('list').innerHTML = Object.keys(groups).sort().reverse().map(d => {
+        const g = groups[d], sum = g.reduce((s, e) => s + dur(e), 0);
+        return `<tr class="day-head"><td colspan="3">${fmtDay(g[0].start)}</td><td class="num">${fmtHM(sum)}</td><td></td></tr>` +
+          g.map(e => `<tr>
+            <td style="white-space:nowrap">${fmtTime(e.start)}–${fmtTime(e.end)}${e.pause ? `<div class="muted">Pause ${e.pause} Min.</div>` : ''}</td>
+            <td>${esc(e.project) || '<span class="muted">–</span>'}<div class="muted show-sm">${esc(e.note)}</div></td>
+            <td class="hide-sm">${esc(e.note)}</td>
+            <td class="num">${fmtHM(dur(e))}</td>
+            <td class="num"><button class="small" data-edit="${e.id}" title="Bearbeiten">✎</button> <button class="small link" data-del="${e.id}" title="Löschen">✕</button></td>
+          </tr>`).join('');
+      }).join('');
+    }
+
+    // Projektvorschläge
+    const names = [...new Set(state.entries.map(e => e.project).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+    $('projectList').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+    $('targetWeek').value = state.settings.targetWeek ?? '';
+  }
+
+  // ---------- Bearbeiten / Löschen ----------
+  let editId = null;
+  $('list').onclick = e => {
+    const del = e.target.closest('[data-del]'), ed = e.target.closest('[data-edit]');
+    if (del) {
+      if (confirm('Eintrag löschen?')) { state.entries = state.entries.filter(x => x.id !== del.dataset.del); save(); renderAll(); }
+    } else if (ed) {
+      const x = state.entries.find(x => x.id === ed.dataset.edit); if (!x) return;
+      editId = x.id;
+      $('eDate').value = dateStr(x.start); $('eFrom').value = timeStr(x.start); $('eTo').value = timeStr(x.end);
+      $('ePause').value = x.pause || 0; $('eProject').value = x.project || ''; $('eNote').value = x.note || '';
+      $('editDlg').showModal();
+    }
+  };
+  $('editDlg').addEventListener('close', () => {
+    if ($('editDlg').returnValue !== 'save' || !editId) return;
+    const x = state.entries.find(x => x.id === editId); if (!x) return;
+    let start = combine($('eDate').value, $('eFrom').value), end = combine($('eDate').value, $('eTo').value);
+    if (end <= start) end += 86400000;
+    Object.assign(x, { start, end, pause: Math.max(0, +$('ePause').value || 0),
+      project: $('eProject').value.trim(), note: $('eNote').value.trim() });
+    editId = null; save(); renderAll();
+  });
+
+  // ---------- Einstellungen / Export ----------
+  $('targetWeek').onchange = () => { state.settings.targetWeek = +$('targetWeek').value || 0; save(); renderAll(); };
+
+  function download(name, text, type) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  $('exportCsv').onclick = () => {
+    const r = getRange();
+    const items = state.entries.filter(e => e.start >= r.s && e.start < r.e).sort((a, b) => a.start - b.start);
+    const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
+    const lines = ['Datum;Von;Bis;Pause (Min.);Dauer (h);Dauer (hh:mm);Projekt;Notiz'];
+    items.forEach(e => lines.push([
+      new Date(e.start).toLocaleDateString('de-DE'), fmtTime(e.start), fmtTime(e.end), e.pause || 0,
+      fmtDec(dur(e)), fmtHM(dur(e)).replace(' h', ''), q(e.project), q(e.note)
+    ].join(';')));
+    download(`zeiterfassung_${dateStr(Date.now())}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+  };
+  $('exportJson').onclick = () => download(`zeiterfassung_backup_${dateStr(Date.now())}.json`, JSON.stringify(state, null, 2), 'application/json');
+  $('importJson').onclick = () => $('importFile').click();
+  $('importFile').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!Array.isArray(d.entries)) throw new Error('Keine gültige Backup-Datei.');
+      const replace = confirm(`${d.entries.length} Einträge gefunden.\n\nOK = vorhandene Daten ERSETZEN\nAbbrechen = mit vorhandenen Daten ZUSAMMENFÜHREN`);
+      if (replace) state = { entries: d.entries, running: d.running || null, settings: d.settings || state.settings };
+      else {
+        const ids = new Set(state.entries.map(x => x.id));
+        d.entries.forEach(x => { if (!ids.has(x.id)) state.entries.push(x); });
+      }
+      save(); renderAll(); alert('Import erfolgreich.');
+    } catch (err) { alert('Import fehlgeschlagen: ' + err.message); }
+    e.target.value = '';
+  };
+  $('wipe').onclick = () => {
+    if (confirm('Wirklich ALLE Einträge löschen? Das kann nicht rückgängig gemacht werden.')) {
+      state = { entries: [], running: null, settings: state.settings }; save(); renderAll();
+    }
+  };
+
+  // ---------- Start ----------
+  if (state.running) { $('project').value = state.running.project || ''; $('note').value = state.running.note || ''; }
+  resetManual();
+  renderAll();
+})();
+</script>
+</body>
+</html>

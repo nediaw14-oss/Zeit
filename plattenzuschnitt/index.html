@@ -65,7 +65,7 @@ section{padding:72px 0}
 .list li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff1a}
 .list li:before{content:"";flex:none;width:18px;height:3px;margin-top:12px;background:repeating-linear-gradient(90deg,var(--wood) 0 5px,transparent 5px 8px)}
 .end{text-align:center}.end h2{font-size:clamp(36px,5vw,58px)}.end p{color:var(--mut);margin:12px auto 26px;max-width:46ch}
-footer{background:var(--slate2);color:#9fabb1;font-size:14px;padding:24px 0}
+footer{background:var(--slate2);color:#9fabb1;font-size:14px;padding:24px 0 96px}
 footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}footer b{color:var(--wood);font-weight:600}
 .logo{white-space:nowrap}.logo em{font-style:normal;color:var(--wood)}
 /* 3D-Bühne */
@@ -86,6 +86,12 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 .stage.gl .hint{display:block;position:absolute;right:6vw;bottom:48px;font-size:13px;color:#8c989e}
 @media(max-width:900px){.stage.gl .hud{left:4vw;bottom:14px}.stage.gl .hint{right:4vw;bottom:30px}}
 @media(max-width:520px){.stage.gl .hint{display:none}}
+/* WhatsApp-Kontakt */
+.wa{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:10px;height:56px;padding:0 20px 0 16px;border-radius:28px;background:#25d366;color:#fff;font:600 16px Barlow,system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px #0005;transition:transform .15s,box-shadow .15s}
+.wa:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0006}
+.wa:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.wa svg{width:28px;height:28px;flex:none}
+@media(max-width:600px){.wa{width:58px;height:58px;padding:0;justify-content:center}.wa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 </style>
 </head>
 <body>
@@ -488,5 +494,6 @@ if (!RM) {
   raf = requestAnimationFrame(loop);
 }
 </script>
+<a class="wa" href="https://wa.me/4917671337129?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20Schnitt-Wunder." target="_blank" rel="noopener" aria-label="Kontakt per WhatsApp: +49 176 71337129"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.4.7 4.7 1.9 6.7L3 29l6.9-2.2c1.9 1 4 1.6 6.1 1.6 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.1c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.3 1.3-4-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.7C5.4 9.8 10.1 5.2 16 5.2s10.6 4.7 10.6 10.5S21.8 26.1 16 26.1z"/><path fill="#fff" d="M21.9 18.6c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8 0 1.6 1.2 3.2 1.3 3.4.2.2 2.3 3.5 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.7-.4z"/></svg><span>WhatsApp</span></a>
 </body>
 </html>

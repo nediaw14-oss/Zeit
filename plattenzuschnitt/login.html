@@ -52,6 +52,11 @@ fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;mar
 .wa svg{width:28px;height:28px;flex:none}
 @media(max-width:600px){.wa{width:58px;height:58px;padding:0;justify-content:center}.wa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 </style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<script>if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </head>
 <body>
 <main class="box">

@@ -31,6 +31,7 @@ header p{margin:6px 0 0;color:#b9c2c6;max-width:56ch}
 .gear:hover{background:#ffffff24;border-color:#ffffff60}
 .gear svg{width:20px;height:20px}
 .who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:#c9d1d5}.who button{min-height:34px;padding:0 12px;font-size:14px;background:#ffffff14;border-color:#ffffff30;color:#fff}.who a{color:var(--accL)}
+.who .acc{display:inline-flex;align-items:center;gap:8px;color:#fff;text-decoration:none;min-height:34px;padding:2px 12px 2px 2px;border-radius:17px;background:#ffffff14;border:1px solid #ffffff30;max-width:100%}.who .acc:hover{background:#ffffff24}.who .acc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.who .acc img,.who .acc b{width:28px;height:28px;border-radius:50%;flex:none;object-fit:cover}.who .acc b{display:grid;place-items:center;background:var(--accL);color:#0b1f3a;font-size:14px}
 .credit{display:inline-block;margin-top:8px;font-size:13px;color:#9fabb1;letter-spacing:.01em}.credit b{color:var(--accL);font-weight:600}
 .nav .legal{align-self:center;font-size:12px;color:#8d989d}.nav .legal a{color:#b9c2c6}
 .nav{position:sticky;top:0;z-index:15;background:#151c20;border-bottom:1px solid #ffffff1f;box-shadow:0 2px 10px #0003}
@@ -344,7 +345,7 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Tipp: Randbeschnitt und Sägeblatt verkleinern die nutzbare Platte. Mehr Platten ins Lager oder „Alles auf eine Platte“ ausschalten.','Tip: edge trim and kerf reduce the usable sheet. Add stock or turn off “Everything on one sheet”.','Savjet: obrezivanje i list pile smanjuju korisnu ploču. Dodaj ploče ili isključi „Sve na jednu ploču“.'],
  ['Listen als PDF','Lists PDF','Liste PDF'],['Teileliste','Parts list','Lista dijelova'],['Zuschnittliste','Cutting list','Lista rezanja'],['Maserung','Grain','Godovi'],['platziert','placed','postavljeno'],['Teil aktiv','Part active','Dio aktivan'],
  ['Länge und Breite tauschen','Swap length and width','Zamijeni dužinu i širinu'],['Für alle Teile','For all parts','Za sve dijelove'],['Alle Seiten','All sides','Sve strane'],['Längsseiten','Long sides','Duže strane'],['Breitseiten','Short sides','Kraće strane'],['Keine Seiten','No sides','Bez strana'],
- ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Konto anlegen','Create account','Napravi račun'],['Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.','Demo: projects stay in this browser only. Create an account to save them in the cloud.','Demo: projekti ostaju samo u ovom pregledniku. Sa računom ih spremaš u cloud.'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
+ ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Konto','Account','Račun'],['Konto anlegen','Create account','Napravi račun'],['Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.','Demo: projects stay in this browser only. Create an account to save them in the cloud.','Demo: projekti ostaju samo u ovom pregledniku. Sa računom ih spremaš u cloud.'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
 ].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
 [['Assistent','Wizard','Čarobnjak'],['Schritt {n} von {m}','Step {n} of {m}','Korak {n} od {m}'],['Abbrechen','Cancel','Odustani'],['Schnittliste erzeugen','Create cut list','Napravi listu rezanja'],
  ['Bekantung','Edge banding','Kantovanje'],['Optimierung','Optimization','Optimizacija'],['Zusammenfassung','Summary','Sažetak'],
@@ -1194,8 +1195,11 @@ function parseCSV(txt){
 const PK=KEY+'-projekte';
 const localP=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return{}}};
 const projs=()=>cloud||localP();
+let prof=null;
 function drawUser(){const w=$('who');if(!w)return;
- w.innerHTML=user?`<span>☁ ${esc(user.email)}</span><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html?neu=1">${esc(T('Konto anlegen'))}</a>`:''}
+ const nm=(prof&&prof.display_name)||(user&&user.email)||'',av=prof&&prof.avatar_url;
+ w.innerHTML=user?`<a class="acc" href="konto.html" title="${esc(T('Konto'))}">${av?`<img src="${esc(av)}" alt="">`:`<b>${esc((nm[0]||'?').toUpperCase())}</b>`}<span>${esc(nm)}</span></a><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html?neu=1">${esc(T('Konto anlegen'))}</a>`:''}
+async function loadProf(){if(!user||!window.sb)return;try{const{data}=await sb.from('profiles').select('display_name,avatar_url').eq('id',user.id).maybeSingle();if(data){prof=data;drawUser()}}catch(e){}}
 async function loadCloud(){
  const{data,error}=await sb.from('projects').select('name,data').order('name');
  if(error){toast(T('Cloud nicht erreichbar'));return}
@@ -1682,7 +1686,7 @@ compute(true);renderAll();importHash();
  if(!s){let demo=new URLSearchParams(location.search).has('demo');try{if(demo)sessionStorage.setItem('sw-demo','1');else demo=!!sessionStorage.getItem('sw-demo')}catch(e){}
   if(!demo){location.replace('login.html');return}
   show();drawUser();toast(T('Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.'));urlActs();return}
- user=s.user;show();drawUser();loadCloud();if(urlActs())return;
+ user=s.user;show();drawUser();loadProf();loadCloud();if(urlActs())return;
  if(tourWanted()){try{sessionStorage.setItem('sw-wiz','1')}catch(e){}tourOpen()}
  else try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}
  sb.auth.onAuthStateChange((ev,ss)=>{if(ev==='SIGNED_OUT')location.replace('login.html')});

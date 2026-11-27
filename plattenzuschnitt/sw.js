@@ -2,9 +2,9 @@
    Seiten: erst Netz, sonst Cache (immer aktuell, offline trotzdem da).
    Bibliotheken, Schriften, Bilder: erst Cache, im Hintergrund auffrischen.
    Supabase (Login, Cloud) läuft nie über den Cache. */
-const VER = 'sw-v1';
+const VER = 'sw-v2';
 const CORE = [
-  './', 'index.html', 'app.html', 'login.html', 'impressum.html', 'datenschutz.html',
+  './', 'index.html', 'app.html', 'login.html', 'konto.html', 'impressum.html', 'datenschutz.html',
   'fonts.css', 'favicon.svg', 'supa.js', 'cnc-export.js', 'cnc-export-ui.js',
   'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png',
   'fonts/barlow-latin-400-normal.woff2', 'fonts/barlow-latin-500-normal.woff2', 'fonts/barlow-latin-600-normal.woff2', 'fonts/barlow-latin-700-normal.woff2',

@@ -2,6 +2,12 @@
 
 Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) als einzelne HTML-Datei – ohne Server, ohne Anmeldung, ohne Limit.
 
+## Seiten
+- `index.html` – Startseite (Landing Page)
+- `login.html` – Anmelden, Registrieren, Passwort vergessen (Supabase Auth)
+- `app.html` – das Zuschnitt-Tool; nur angemeldet, Projekte werden in Supabase gespeichert
+- `supa.js` – Supabase-Adresse und öffentlicher Schlüssel (Daten sind per Row Level Security geschützt)
+
 ## Funktionen
 - **▶ Play-Button**: berechnet den Schnittplan; nach Änderungen erscheint „Schnittplan veraltet“
 - **Optionen** wie bei Cut List Optimizer: Schnittfuge, Alles auf eine Platte, Etiketten, Materialien, Kantenanleimung, Maserungsrichtung
@@ -34,6 +40,6 @@ Eingaben werden lokal im Browser gespeichert (localStorage).
 
 ## Öffnen
 Über GitHub Pages (wenn für dieses Repo aktiv):
-`https://nediaw14-oss.github.io/Zeit/plattenzuschnitt/`
+`https://nediaw14-oss.github.io/Zeit/plattenzuschnitt/` (Tool: `…/plattenzuschnitt/app.html`)
 
 Oder `index.html` herunterladen und im Browser öffnen (Internet nötig für die PDF-/QR-Bibliotheken).

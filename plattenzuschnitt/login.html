@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anmelden – Plattenzuschnitt Optimierer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--slate:#1f282d;--wood:#e9c98f;--woodD:#c9a362;--red:#d6402b;--edge:#e6007e;--ink:#1b2125;--mut:#5f686e;--line:#e1e5e6;--field:#f4f6f6}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px 16px;background:var(--slate);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;
+ background-image:repeating-linear-gradient(90deg,#ffffff06 0 1px,transparent 1px 80px),repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 80px)}
+h1,h2{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
+.box{width:min(420px,100%)}
+.logo{display:flex;align-items:center;gap:10px;font:700 24px "Barlow Condensed",sans-serif;text-decoration:none;color:#fff;margin:0 0 18px}
+.logo i{width:28px;height:22px;background:var(--wood);border-radius:2px;box-shadow:inset 0 -3px 0 var(--woodD);position:relative}
+.logo i:after{content:"";position:absolute;left:3px;right:3px;top:5px;border-top:2px dashed var(--edge)}
+.card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 20px 60px #0006;border-bottom:6px solid var(--wood)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--field);border-radius:10px;padding:4px;gap:4px;margin-bottom:18px}
+.tabs button{border:0;background:transparent;min-height:42px;border-radius:8px;font:600 16px Barlow,sans-serif;color:var(--mut);cursor:pointer}
+.tabs button[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px #0002}
+h2{font-size:30px;margin-bottom:4px}.sub{color:var(--mut);margin:0 0 16px}
+label{display:block;margin-bottom:12px}label span{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
+input{width:100%;font:16px Barlow,sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);min-height:48px}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.pri{width:100%;min-height:50px;border:0;border-radius:10px;background:var(--red);color:#fff;font:600 17px Barlow,sans-serif;cursor:pointer;margin-top:4px}
+.pri:hover{filter:brightness(1.08)}.pri:disabled{opacity:.6;cursor:wait}
+.lnk{background:none;border:0;padding:6px 0;color:var(--mut);font:500 15px Barlow,sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.msg{border-radius:10px;padding:10px 12px;margin:0 0 14px;font-size:15px}
+.msg.err{background:#fde8e4;border:1px solid var(--red);color:#7a1d10}.msg.ok{background:#eaf5ea;border:1px solid #2e7d32;color:#1b4d1e}
+.back{display:inline-block;margin-top:16px;color:#b9c2c6;font-size:14px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="box">
+ <a class="logo" href="./"><i></i>Plattenzuschnitt</a>
+ <div class="card">
+  <div class="tabs" role="tablist" id="tabs"><button role="tab" data-m="in" aria-selected="true">Anmelden</button><button role="tab" data-m="up" aria-selected="false">Registrieren</button></div>
+  <div id="msg" class="msg" hidden role="status"></div>
+  <form id="f" novalidate>
+   <h2 id="ttl">Willkommen zurück</h2><p class="sub" id="sub">Melde dich an, um deine Projekte zu öffnen.</p>
+   <label id="le"><span>E-Mail</span><input type="email" id="em" autocomplete="email" required></label>
+   <label id="lp"><span id="lpt">Passwort</span><input type="password" id="pw" autocomplete="current-password" minlength="6" required></label>
+   <button class="pri" id="go" type="submit">Anmelden</button>
+   <div class="row"><button type="button" class="lnk" id="fg">Passwort vergessen?</button><a class="lnk" href="app.html" id="off" hidden>Ohne Konto weiter</a></div>
+  </form>
+ </div>
+ <a class="back" href="./">← zurück zur Startseite</a>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supa.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+let mode='in';
+const TX={in:['Willkommen zurück','Melde dich an, um deine Projekte zu öffnen.','Anmelden','current-password'],
+ up:['Konto anlegen','Kostenlos. Deine Projekte werden in der Cloud gespeichert.','Registrieren','new-password'],
+ fg:['Passwort vergessen','Wir schicken dir einen Link, mit dem du ein neues Passwort setzt.','Link senden',''],
+ np:['Neues Passwort','Gib dein neues Passwort ein.','Passwort speichern','new-password']};
+const msg=(t,ok)=>{const m=$('msg');m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err')};
+function setMode(m){mode=m;const[a,b,c,ac]=TX[m];$('ttl').textContent=a;$('sub').textContent=b;$('go').textContent=c;
+ $('le').hidden=m==='np';$('lp').hidden=m==='fg';$('pw').autocomplete=ac;$('lpt').textContent=m==='np'?'Neues Passwort (mind. 6 Zeichen)':m==='up'?'Passwort (mind. 6 Zeichen)':'Passwort';
+ $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';
+ document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.m===m||(m==='fg'&&b.dataset.m==='in'))));msg('')}
+const de=e=>{const s=(e&&e.message)||'';
+ if(/Invalid login/i.test(s))return'E-Mail oder Passwort stimmt nicht.';if(/not confirmed/i.test(s))return'Bitte zuerst den Link in der Bestätigungs-E-Mail anklicken.';
+ if(/already registered/i.test(s))return'Diese E-Mail hat schon ein Konto – melde dich an.';if(/at least 6/i.test(s))return'Das Passwort braucht mindestens 6 Zeichen.';
+ if(/rate limit/i.test(s))return'Zu viele Versuche – bitte in ein paar Minuten nochmal.';if(/valid email|invalid format/i.test(s))return'Bitte eine gültige E-Mail eingeben.';
+ return s||'Das hat nicht geklappt, bitte nochmal versuchen.'};
+if(!window.sb){msg('Die Anmeldung lädt gerade nicht (keine Verbindung). Du kannst das Tool trotzdem ohne Konto nutzen.');$('off').hidden=false}
+else{
+ sb.auth.onAuthStateChange((ev,s)=>{if(ev==='PASSWORD_RECOVERY')setMode('np');else if(ev==='SIGNED_IN'&&mode!=='np'&&s)location.replace('app.html')});
+ sb.auth.getSession().then(({data})=>{if(data.session&&!/type=recovery/.test(location.hash))location.replace('app.html')});
+}
+if(new URLSearchParams(location.search).has('neu'))setMode('up');
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.m)});
+$('fg').addEventListener('click',()=>setMode('fg'));
+$('f').addEventListener('submit',async e=>{e.preventDefault();if(!window.sb)return;
+ const em=$('em').value.trim(),pw=$('pw').value,go=$('go');
+ if(mode!=='np'&&!/^\S+@\S+\.\S+$/.test(em)){msg('Bitte eine gültige E-Mail eingeben.');return}
+ if(mode!=='fg'&&pw.length<6){msg('Das Passwort braucht mindestens 6 Zeichen.');return}
+ go.disabled=true;
+ try{
+  if(mode==='in'){const{error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;location.replace('app.html')}
+  else if(mode==='up'){const{data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:pageUrl('app.html')}});if(error)throw error;
+   if(data.session)location.replace('app.html');else{msg('Fast geschafft! Wir haben dir eine E-Mail geschickt – klick auf den Link darin, dann bist du angemeldet.',1)}}
+  else if(mode==='fg'){const{error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:pageUrl('login.html')});if(error)throw error;msg('Wenn es ein Konto mit dieser E-Mail gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.',1)}
+  else{const{error}=await sb.auth.updateUser({password:pw});if(error)throw error;msg('Passwort gespeichert – du wirst weitergeleitet …',1);setTimeout(()=>location.replace('app.html'),900)}
+ }catch(er){msg(de(er))}finally{go.disabled=false}
+});
+}
+</script>
+</body>
+</html>

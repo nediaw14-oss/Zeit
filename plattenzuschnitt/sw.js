@@ -2,7 +2,7 @@
    Seiten: erst Netz, sonst Cache (immer aktuell, offline trotzdem da).
    Bibliotheken, Schriften, Bilder: erst Cache, im Hintergrund auffrischen.
    Supabase (Login, Cloud) läuft nie über den Cache. */
-const VER = 'sw-v2';
+const VER = 'sw-v3';
 const CORE = [
   './', 'index.html', 'app.html', 'login.html', 'konto.html', 'impressum.html', 'datenschutz.html',
   'fonts.css', 'favicon.svg', 'supa.js', 'cnc-export.js', 'cnc-export-ui.js',
@@ -14,7 +14,7 @@ const CORE = [
 const LIBS = [
   'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
   'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js',
   'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'
 ];
 

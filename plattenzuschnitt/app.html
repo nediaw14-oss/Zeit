@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob:; connect-src 'self' https://otumisjdoxjzfyyuuklj.supabase.co wss://otumisjdoxjzfyyuuklj.supabase.co https://cdn.jsdelivr.net; img-src 'self' data: blob: https://otumisjdoxjzfyyuuklj.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>SchnittWundeR</title>
 <link rel="stylesheet" href="fonts.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -266,9 +268,9 @@ h3.sq{font-size:17px;margin:18px 0 0}
 <style id="authhide">#app,.fab{visibility:hidden}</style>
 <div id="app"></div>
 <div class="toast" id="toast"><span id="tmsg"></span><button id="undo"></button></div>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
 <script src="supa.js"></script>
 <script src="cnc-export.js"></script>
 <script src="cnc-export-ui.js"></script>
@@ -415,7 +417,28 @@ const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...JSON.parse(JSON.stringi
 let user=null,cloud=null;
 let st=demo(),last=null,tm,res=null,setOpen=false,sideOpen=false;
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
-const fix=()=>{if(!Array.isArray(st.etypes)){st.sub=num(st.et)>0?1:0;st.etypes=[{n:'ABS 0,8 mm',d:num(st.et)>0?num(st.et):0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]}
+/* Sicherheit: Zustand aus Link, Datei, Cloud oder Speicher kommt von außen – nur erlaubte Typen/Werte behalten (Schutz vor XSS) */
+const sStr=(v,m=200)=>v==null?'':String(v).slice(0,m);
+const sNum=v=>{if(v===''||v==null)return'';if(typeof v==='number')return isFinite(v)?v:'';const t=String(v).trim().slice(0,30);return/^[-+]?[\d\s.,]*(e[-+]?\d+)?$/i.test(t)?t:''};
+const sBit=v=>v?1:0,sEnum=(v,a,d)=>a.includes(v)?v:d;
+function sanitize(o){
+ o.parts=o.parts.filter(p=>p&&typeof p==='object').slice(0,5000).map(p=>{const q={n:sStr(p.n),l:sNum(p.l),b:sNum(p.b),q:sNum(p.q),r:sBit(p.r),k:(Array.isArray(p.k)?p.k:[0,0,0,0]).slice(0,4).map(v=>Math.max(0,Math.min(99,Math.floor(+v)||0)))};
+  while(q.k.length<4)q.k.push(0);if(p.m!=null)q.m=sStr(p.m);if(p.off)q.off=1;return q});
+ o.stock=o.stock.filter(p=>p&&typeof p==='object').slice(0,500).map(p=>({n:sStr(p.n),l:sNum(p.l),b:sNum(p.b),q:sNum(p.q),p:sNum(p.p)}));
+ if(Array.isArray(o.etypes))o.etypes=o.etypes.filter(e=>e&&typeof e==='object').slice(0,20).map(e=>({n:sStr(e.n,80),d:sNum(e.d),c:/^#[0-9a-f]{3,8}$/i.test(e.c)?e.c:'#e6007e'}));
+ else delete o.etypes;
+ for(const k of['kerf','trim','minT','rest','et'])if(k in o)o[k]=sNum(o[k]);
+ o.job=sStr(o.job);
+ for(const k of['sub','oOne','oLab','oMat','oEdge','oGrain'])if(k in o)o[k]=sBit(o[k]);
+ if('ts'in o)o.ts=Array.isArray(o.ts)?[0,1,2,3].map(j=>sBit(o.ts[j])):[1,1,1,1];
+ if('first'in o)o.first=sEnum(o.first,['auto','laengs','quer'],'auto');
+ if('goal'in o)o.goal=sEnum(o.goal,['waste','cuts'],'waste');
+ if('depth'in o)o.depth=sEnum(o.depth,['quick','normal','deep'],'normal');
+ o.done=o.done&&typeof o.done==='object'&&Array.isArray(o.done.ids)?{sig:sStr(o.done.sig,100000),ids:o.done.ids.slice(0,20000).map(v=>sStr(v,20))}:null;
+ const keep=new Set(['parts','stock','etypes','kerf','trim','minT','rest','et','job','sub','oOne','oLab','oMat','oEdge','oGrain','ts','first','goal','depth','done']);
+ for(const k of Object.keys(o))if(!keep.has(k))delete o[k];
+ return o}
+const fix=()=>{sanitize(st);if(!Array.isArray(st.etypes)){st.sub=num(st.et)>0?1:0;st.etypes=[{n:'ABS 0,8 mm',d:num(st.et)>0?num(st.et):0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]}
  for(const k in DEF)if(st[k]===undefined)st[k]=JSON.parse(JSON.stringify(DEF[k]));st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
 const mats=()=>[...new Set(st.stock.map(s=>(s.n||'Platte').trim()||'Platte'))];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
@@ -923,7 +946,7 @@ function renderOut(){
   ${sh.bad?`<div class="warn" style="margin:10px 0 0">${esc(T('Nicht mit durchgehenden Schnitten machbar – Teile anders anordnen.'))}</div>`:''}
   ${view.edit?`<div class="edb"><p class="note">${esc(T('Bearbeiten: Teil ziehen zum Verschieben, antippen zum Auswählen. ▶ rechnet neu und verwirft Änderungen.'))}</p>${sel!==undefined?`<div class="btns"><button data-ea="rot" data-g="${i}">${esc(T('Drehen'))}</button><button data-ea="del" data-g="${i}">${esc(T('Entfernen'))}</button><button data-ea="none">${esc(T('Abwählen'))}</button></div>`:''}</div>`:''}
   <table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th>${esc(T('Kante'))}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Nr.'))}</th></tr></thead><tbody>
-  ${groupParts(sh.pl,g).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small>(${e.rot}× ${esc(T('gedreht'))})</small>`:''}${e.fl!==e.l||e.fb!==e.b?` <small>${esc(T('fertig'))} ${dimStr(e.fl,e.fb)}</small>`:''}</td><td class="n">${fmt(e[c1])}</td><td class="n">${fmt(e[c2])}</td><td>${e.k||'–'}</td><td class="n">${e.q}</td><td><small>${e.ids.join(', ')}</small></td></tr>`).join('')}
+  ${groupParts(sh.pl,g).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small>(${e.rot}× ${esc(T('gedreht'))})</small>`:''}${e.fl!==e.l||e.fb!==e.b?` <small>${esc(T('fertig'))} ${dimStr(e.fl,e.fb)}</small>`:''}</td><td class="n">${fmt(e[c1])}</td><td class="n">${fmt(e[c2])}</td><td>${esc(e.k)||'–'}</td><td class="n">${esc(e.q)}</td><td><small>${esc(e.ids.join(', '))}</small></td></tr>`).join('')}
   ${sh.rests.map(r=>{const v={l:r.w,b:r.h};return`<tr class="rest"><td>${esc(T('Reststück'))}</td><td class="n">${fmt(v[c1])}</td><td class="n">${fmt(v[c2])}</td><td></td><td class="n">${g.cnt}</td><td></td></tr>`}).join('')}
   </tbody></table></div>`;
  });
@@ -1249,7 +1272,7 @@ function cutText(){
  if(un.length)t+=`\n${T('PASST NICHT')}: ${un.map(p=>p.n+' '+dimStr(p.l,p.b)).join(', ')}\n`;
  return t;
 }
-const csvCell=v=>{v=String(v??'');return/[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+const csvCell=v=>{v=String(v??'');if(/^[=+\-@\t\r]/.test(v)&&!/^-?\d+([.,]\d+)?$/.test(v))v="'"+v;return/[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
 function cutCSV(){
  const rows=[[T('Nr'),T('Teil'),T('Zuschnitt Länge'),T('Zuschnitt Breite'),T('Fertig Länge'),T('Fertig Breite'),T('Kante'),T('Material'),T('Platte'),T('gedreht')]];
  res.sheets.forEach(sh=>sh.pl.forEach(x=>rows.push([x.id,x.p.n,fmt(x.p.l),fmt(x.p.b),fmt(x.p.fl),fmt(x.p.fb),kTxt(x.p.k),sh.S.n,sh.n,x.rot?T('ja'):T('nein')])));
@@ -1275,7 +1298,7 @@ const localP=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){r
 const projs=()=>cloud||localP();
 let prof=null;
 function drawUser(){const w=$('who');if(!w)return;
- const nm=(prof&&prof.display_name)||(user&&user.email)||'',av=prof&&prof.avatar_url;
+ const nm=(prof&&prof.display_name)||(user&&user.email)||'',av=prof&&typeof prof.avatar_url==='string'&&prof.avatar_url.startsWith(window.SUPA_URL+'/storage/v1/object/public/avatars/')?prof.avatar_url:'';
  w.innerHTML=user?`<a class="acc" href="konto.html" title="${esc(T('Konto'))}">${av?`<img src="${esc(av)}" alt="">`:`<b>${esc((nm[0]||'?').toUpperCase())}</b>`}<span>${esc(nm)}</span></a><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html?neu=1">${esc(T('Konto anlegen'))}</a>`:''}
 async function loadProf(){if(!user||!window.sb)return;try{const{data}=await sb.from('profiles').select('display_name,avatar_url').eq('id',user.id).maybeSingle();if(data){prof=data;drawUser()}}catch(e){}}
 async function loadCloud(){
@@ -1614,7 +1637,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
 
 /* ================= Etikett scannen (QR) ================= */
 let SC=null;
-const loadJsQR=()=>window.jsQR?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+const loadJsQR=()=>window.jsQR?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';s.integrity='sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx';s.crossOrigin='anonymous';s.onload=ok;s.onerror=no;document.head.appendChild(s)});
 function parseLabel(txt){txt=String(txt||'');const m=txt.match(/(?:^|\n)\s*(?:Nr|No|Br)\.?:\s*(\d+-\d+)/i)||txt.match(/^\s*(\d+-\d{2,})\s*$/);
  const j=txt.match(/(?:^|\n)\s*(?:Auftrag|Job|Nalog):\s*(.+)/i);return m?{id:m[1],job:j?j[1].trim():null}:null}
 function scMark(raw){const L=parseLabel(raw),fb=$('scfb');if(!fb)return;
@@ -1714,7 +1737,7 @@ function kDraw(){const ov=$('kov');if(!ov)return;const M=mats(),U=ul();
  kPrev()}
 function kPrev(){const P=kParts(),el=$('kprev');if(!el)return;const[c1,c2]=colsLB(),hd={l:T('Länge'),b:T('Breite')};
  el.innerHTML=P.length?`<h3>${esc(T('Teileliste'))} · ${P.reduce((a,p)=>a+p.q,0)} ${esc(T('Teile'))}</h3><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th></tr></thead><tbody>
- ${P.map(p=>`<tr><td>${esc(p.n.replace(/^[^:]*:\s*/,''))}${mats().length>1?` <small>${esc(p.m)}</small>`:''}</td><td class="n">${fmt(p[c1])}</td><td class="n">${fmt(p[c2])}</td><td class="n">${p.q}</td><td>${esc(kShort(p.k))||'–'}</td></tr>`).join('')}</tbody></table>
+ ${P.map(p=>`<tr><td>${esc(p.n.replace(/^[^:]*:\s*/,''))}${mats().length>1?` <small>${esc(p.m)}</small>`:''}</td><td class="n">${fmt(p[c1])}</td><td class="n">${fmt(p[c2])}</td><td class="n">${esc(p.q)}</td><td>${esc(kShort(p.k))||'–'}</td></tr>`).join('')}</tbody></table>
  ${K.rw!=='none'&&K.rwM===K.m?`<p class="note">${esc(T('Tipp: Lege für die Rückwand ein eigenes Material im Lager an (z. B. „HDF 8 weiß“), sonst wird sie aus der Korpusplatte geschnitten.'))}</p>`:''}
  <p class="note">${esc(T('Plattenstärke'))}: ${fmt(kS())} ${ul()} · ${esc(T('Fachböden mit 1 mm Luft je Seite. Kantendicke wird beim Berechnen abgezogen, wenn eingeschaltet.'))}</p>`
  :`<p class="wze">${esc(T('Breite, Höhe und Tiefe eingeben.'))}</p>`}

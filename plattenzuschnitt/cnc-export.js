@@ -82,46 +82,51 @@
     }
   }
 
+  // Sicherheit: Texte (Teilenamen, Material) aus Projekten/geteilten Links dürfen keine eigenen
+  // G-Code-Zeilen erzeugen. Zeilenumbrüche & Steuerzeichen würden aus dem Kommentar ausbrechen
+  // (z. B. „Seite\nG0 Z-50“), Klammern/;/% beenden Kommentare bzw. Programme.
+  const gcSafe = c => String(c ?? '').replace(/[\x00-\x1f\x7f-\x9f\u2028\u2029()%;]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+
   // ---------------------------------------------------------- Postprozessoren
   const POSTS = {
     grbl: {
       label: 'GRBL (Shapeoko, X-Carve, Sienci, China-CNC 3018 …)', ext: 'nc', lineNumbers: false,
-      comment: c => `(${c.replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c)})`,
       header: o => ['G21', 'G90', 'G17', 'G94', `M3 S${o.spindleRpm}`, 'G4 P3'],
       toolChange: () => [],
       footer: o => [`G0 Z${fmtNum(o.safeZTop, 3)}`, 'M5', 'G0 X0 Y0', 'M30'],
     },
     mach3: {
       label: 'Mach3 / Mach4', ext: 'tap', lineNumbers: true,
-      comment: c => `(${c.replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c)})`,
       header: o => ['G21', 'G90', 'G17', 'G40', 'G49', 'G64', 'G94'],
       toolChange: o => [`T${o.toolNumber} M6`, `S${o.spindleRpm} M3`, 'G4 P3'],
       footer: o => [`G0 Z${fmtNum(o.safeZTop, 3)}`, 'M5', 'G0 X0 Y0', 'M30'],
     },
     linuxcnc: {
       label: 'LinuxCNC', ext: 'ngc', lineNumbers: false,
-      comment: c => `(${c.replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c)})`,
       header: o => ['%', 'G21', 'G90', 'G17', 'G40', 'G49', 'G64 P0.02', 'G94'],
       toolChange: o => [`T${o.toolNumber} M6`, `S${o.spindleRpm} M3`, 'G4 P3'],
       footer: o => [`G0 Z${fmtNum(o.safeZTop, 3)}`, 'M5', 'G0 X0 Y0', 'M2', '%'],
     },
     uccnc: {
       label: 'UCCNC', ext: 'nc', lineNumbers: false,
-      comment: c => `(${c.replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c)})`,
       header: o => ['G21', 'G90', 'G17', 'G40', 'G94'],
       toolChange: o => [`T${o.toolNumber} M6`, `S${o.spindleRpm} M3`, 'G4 P3'],
       footer: o => [`G0 Z${fmtNum(o.safeZTop, 3)}`, 'M5', 'G0 X0 Y0', 'M30'],
     },
     fanuc: {
       label: 'Fanuc / ISO (viele Industrie-Steuerungen, Syntec, Siemens im ISO-Modus)', ext: 'nc', lineNumbers: true,
-      comment: c => `(${c.toUpperCase().replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c).toUpperCase()})`,
       header: o => ['%', 'O1000', 'G21 G90 G17 G40 G49 G80 G94', 'G54'],
       toolChange: o => [`T${o.toolNumber} M6`, `S${o.spindleRpm} M3`, 'G4 X3.'],
       footer: o => [`G0 Z${fmtNum(o.safeZTop, 3)}`, 'M5', 'G28 G91 Z0', 'G90', 'M30', '%'],
     },
     haas: {
       label: 'Haas', ext: 'nc', lineNumbers: true,
-      comment: c => `(${c.toUpperCase().replace(/[()]/g, '')})`,
+      comment: c => `(${gcSafe(c).toUpperCase()})`,
       header: o => ['%', 'O01000', 'G21 G90 G17 G40 G49 G80 G94', 'G54'],
       toolChange: o => [`T${o.toolNumber} M06`, `S${o.spindleRpm} M03`, `G43 H${String(o.toolNumber).padStart(2, '0')} Z${fmtNum(o.safeZTop, 3)}`],
       footer: o => [`G00 Z${fmtNum(o.safeZTop, 3)}`, 'M05', 'G28 G91 Z0', 'G90', 'M30', '%'],
@@ -364,7 +369,7 @@
     validatePlan(plan);
     const o = Object.assign({ separator: ';', decimalComma: true }, options);
     const num = v => { const s = fmtNum(v, 1); return o.decimalComma ? s.replace('.', ',') : s; };
-    const q = v => { const s = String(v ?? ''); return /[;",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+    const q = v => { let s = String(v ?? ''); if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+([.,]\d+)?$/.test(s)) s = "'" + s; return /[;",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }; // keine Excel-Formeln
     const head = ['Platte', 'Material', 'Plattenstaerke', 'Teil-ID', 'Bezeichnung', 'Laenge', 'Breite', 'X', 'Y', 'Gedreht', 'Kante oben', 'Kante unten', 'Kante links', 'Kante rechts'];
     const rows = [head.join(o.separator)];
     plan.sheets.forEach((s, i) => (s.parts || []).forEach(p => {

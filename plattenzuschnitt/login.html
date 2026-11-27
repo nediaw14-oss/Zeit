@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob:; connect-src 'self' https://otumisjdoxjzfyyuuklj.supabase.co wss://otumisjdoxjzfyyuuklj.supabase.co https://cdn.jsdelivr.net; img-src 'self' data: blob: https://otumisjdoxjzfyyuuklj.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style>html{display:none}</style><script>if(self===top)document.documentElement.style.display='block';else top.location=self.location</script>
 <title>Anmelden – SchnittWundeR</title>
 <link rel="stylesheet" href="fonts.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -81,7 +84,7 @@ fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;mar
  <a class="back" href="./">← zurück zur Startseite</a>
  <p class="legal"><a href="app.html?demo=1">Ohne Konto ausprobieren</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
 <script src="supa.js"></script>
 <script>
 {
@@ -93,7 +96,7 @@ const TX={in:['Willkommen zurück','Melde dich an, um deine Projekte zu öffnen.
  np:['Neues Passwort','Gib dein neues Passwort ein.','Passwort speichern','new-password']};
 const msg=(t,ok)=>{const m=$('msg');m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err')};
 function setMode(m){mode=m;const[a,b,c,ac]=TX[m];$('ttl').textContent=a;$('sub').textContent=b;$('go').textContent=c;
- $('le').hidden=m==='np';$('lp').hidden=m==='fg';$('pw').autocomplete=ac;$('lpt').textContent=m==='np'?'Neues Passwort (mind. 6 Zeichen)':m==='up'?'Passwort (mind. 6 Zeichen)':'Passwort';
+ $('le').hidden=m==='np';$('lp').hidden=m==='fg';$('pw').autocomplete=ac;$('lpt').textContent=m==='np'?'Neues Passwort (mind. 8 Zeichen)':m==='up'?'Passwort (mind. 8 Zeichen)':'Passwort';
  $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';$('xp').hidden=m!=='up';$('dsl').hidden=m!=='up';
  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.m===m||(m==='fg'&&b.dataset.m==='in'))));msg('')}
 const de=e=>{const s=(e&&e.message)||'';
@@ -112,7 +115,7 @@ $('fg').addEventListener('click',()=>setMode('fg'));
 $('f').addEventListener('submit',async e=>{e.preventDefault();if(!window.sb)return;
  const em=$('em').value.trim(),pw=$('pw').value,go=$('go');
  if(mode!=='np'&&!/^\S+@\S+\.\S+$/.test(em)){msg('Bitte eine gültige E-Mail eingeben.');return}
- if(mode!=='fg'&&pw.length<6){msg('Das Passwort braucht mindestens 6 Zeichen.');return}
+ if(mode!=='fg'&&pw.length<(mode==='in'?6:8)){msg(`Das Passwort braucht mindestens ${mode==='in'?6:8} Zeichen.`);return}
  const xp=document.querySelector('input[name=xp]:checked')?.value;
  if(mode==='up'&&!$('ds').checked){msg('Bitte noch der Datenschutzerklärung zustimmen.');$('ds').focus();return}
  if(mode==='up'&&!xp){msg('Bitte noch auswählen, ob du so ein Tool schon kennst.');$('xp').querySelector('input').focus();return}

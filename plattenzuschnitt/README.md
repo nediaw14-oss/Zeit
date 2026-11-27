@@ -11,6 +11,13 @@ Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multip
 - `favicon.svg` – Symbol im Browser-Tab
 - `sw.js`, `manifest.webmanifest`, `icon-*.png` – Offline-App (installierbar)
 - `supa.js` – Supabase-Adresse und öffentlicher Schlüssel (Daten sind per Row Level Security geschützt)
+- `supabase/konto.sql`, `supabase/sicherheit.sql` – Datenbank-Setup und Sicherheits-Härtung (Größenlimits, Profilbild-Prüfung, minimale Rechte)
+
+## Sicherheit
+- Alles, was von außen geladen wird (Teilen-Link, Projektdatei, Cloud), wird beim Laden auf erlaubte Felder und Typen bereinigt; Ausgaben werden HTML-escaped.
+- G-Code-Kommentare werden von Zeilenumbrüchen/Steuerzeichen befreit, damit Teilenamen keine Maschinenbefehle einschleusen können. CSV-Exporte entschärfen Excel-Formeln.
+- CDN-Bibliotheken sind auf feste Versionen gepinnt und per Subresource Integrity geprüft; jede Seite hat eine Content-Security-Policy.
+- Bei einem Bibliotheks-Update: Version **und** `integrity`-Hash in den HTML-Dateien und in `sw.js` anpassen, `VER` in `sw.js` hochzählen.
 
 ## Funktionen
 - **Offline-App (PWA)**: lässt sich auf Handy/PC installieren („Installieren“ oben oder im Browser-Menü „Zum Startbildschirm“) und läuft auch ohne Internet in der Werkstatt (`sw.js`, `manifest.webmanifest`). Offline wird lokal gespeichert, wieder online geht es in die Cloud.

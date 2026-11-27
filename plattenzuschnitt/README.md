@@ -24,6 +24,7 @@ Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multip
 - Einstellungen-Fenster: Sprache (Deutsch/English/Bosanski), Einheiten (mm/cm/Zoll), Reihenfolge der Maße, Nachkommastellen, gleiche Platten stapeln, Optimierungspriorität, Schnittrichtung, minimales Besäummaß, Randbeschnitt pro Seite
 - Projekte speichern/laden, als Datei sichern und öffnen (.json)
 - Teile aus Excel einfügen oder als .csv öffnen, Schnittliste als CSV exportieren
+- **CNC-Export** (`cnc-export.js`, `cnc-export-ui.js`): Schnittplan als G-Code (GRBL, Mach3/4, LinuxCNC, UCCNC, Fanuc/ISO, Haas – mit Fräserkorrektur, Zustellung, Haltestegen, Rampe), DXF R12 (Homag/Weeke woodWOP, Biesse, SCM, Felder, Holz-Her, VCarve/Aspire, Fusion 360, Alphacam, EstlCAM), SVG (Carbide Create, Easel, Laser) und CSV-Teileliste mit Koordinaten (Cut Rite, Ardis, OptiCut). Plattenstärke wird aus dem Materialnamen gelesen. G-Code vor dem ersten Lauf immer im Simulator prüfen.
 - Mehrere Materialien (Teil → Material), unbegrenztes Lager (Stk leer)
 - Kanten pro Teil (L1/L2/B1/B2) als gestrichelte Linie, Kantendicke abziehen, lfm-Summe
 - Erster Schnitt längs/quer/automatisch, Ziel wenig Verschnitt oder wenig Schnitte

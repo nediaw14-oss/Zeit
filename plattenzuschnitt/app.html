@@ -204,6 +204,8 @@ h3.sq{font-size:17px;margin:18px 0 0}
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="supa.js"></script>
+<script src="cnc-export.js"></script>
+<script src="cnc-export-ui.js"></script>
 <script>
 {
 const KEY='zuschnitt-v1';
@@ -782,7 +784,7 @@ function renderOut(){
  /* Drucken */
  const F=FMTS();
  h+=`<div class="card acts-card"><h2>${esc(T('Drucken & Etiketten'))}</h2>
- <div class="acts"><button class="pri" id="plan">${esc(T('Schnittplan als PDF'))}</button><button id="lists">${esc(T('Listen als PDF'))}</button>${standalone?`<button id="prt">${esc(T('Drucken'))}</button>`:''}<button id="copy">${esc(T('Schnittliste kopieren'))}</button><button id="csvout">${esc(T('Schnittliste als CSV'))}</button></div>
+ <div class="acts"><button class="pri" id="plan">${esc(T('Schnittplan als PDF'))}</button><button id="lists">${esc(T('Listen als PDF'))}</button>${standalone?`<button id="prt">${esc(T('Drucken'))}</button>`:''}<button id="copy">${esc(T('Schnittliste kopieren'))}</button><button id="csvout">${esc(T('Schnittliste als CSV'))}</button><button id="cncout">${esc(T('CNC-Export'))}</button></div>
  <div class="acts" style="margin-top:10px"><select id="fmt" aria-label="${esc(T('Etikettenformat'))}">${F.map((f,k)=>opt(k,fmtSel,f.t)).join('')}</select>
  <button class="pri" id="pdf">${esc(T('Etiketten als PDF'))}</button></div>
  <p class="note" id="pnote">${esc(T('Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.',{n:npl}))}</p>
@@ -867,6 +869,23 @@ async function saveData(name,data){
 }
 const saveDoc=(doc,name)=>saveData(name,doc.output('blob'));
 const libsOk=()=>{if(window.jspdf&&window.qrcode)return true;toast(T('PDF-Bausteine laden noch – kurz warten und nochmal tippen.'));return false};
+/* ---------- CNC-Export (cnc-export.js / cnc-export-ui.js) ---------- */
+// Plattenstärke aus dem Materialnamen lesen ("Spanplatte 19 weiß" → 19), sonst Wert aus dem Dialog
+const matThick=(n,def)=>{const m=String(n||'').match(/(?:^|[^\d,.])(\d{1,2}(?:[.,]\d)?)\s*(?:mm)?(?=$|[^\d])/);const v=m?num(m[1]):0;return v>=2&&v<=80?v:def};
+function cncPlan(o){
+ if(!res||!res.sheets.length)throw new Error(T('Erst den Schnittplan berechnen (▶).'));
+ const G=res.G||groups(),def=num(o&&o.thickness)||19;
+ return{unit:'mm',kerf:res.kerf,sheets:G.map(g=>{const sh=g.sh,S=sh.S,H=S.b;
+  return{name:T('Platte')+' '+gName(g)+(g.cnt>1?' '+g.cnt+'x':''),material:S.n,width:S.l,height:H,thickness:matThick(S.n,def),
+   parts:sh.pl.map(x=>{const k=x.p.k||[0,0,0,0],L=x.rot?{left:k[0],right:k[1],top:k[2],bottom:k[3]}:{top:k[0],bottom:k[1],left:k[2],right:k[3]};
+    // App: Nullpunkt links oben, y nach unten → CNC: links unten, y nach oben
+    return{id:x.id,name:x.p.n,x:x.x,y:H-x.y-x.h,w:x.w,h:x.h,rotated:!!x.rot,edges:{top:!!L.top,bottom:!!L.bottom,left:!!L.left,right:!!L.right}}})}})};
+}
+function openCNC(){
+ if(!window.SchnittCNCUI){toast(T('CNC-Export lädt noch – kurz warten und nochmal tippen.'));return}
+ if(!res||!res.sheets.length){toast(T('Erst den Schnittplan berechnen (▶).'));return}
+ SchnittCNCUI.open(o=>cncPlan(o),{save:(f)=>saveData(f.filename,new Blob([f.content],{type:f.mime}))});
+}
 const fname=(p,ext='pdf')=>p+'_'+(((st.job||'').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_'))||'Zuschnitt')+'.'+ext;
 const pdfSafe=s=>String(s).replace(/[čć]/g,'c').replace(/[ČĆ]/g,'C').replace(/š/g,'s').replace(/Š/g,'S').replace(/ž/g,'z').replace(/Ž/g,'Z').replace(/đ/g,'dj').replace(/Đ/g,'Dj').replace(/[“”„]/g,'"').replace(/–/g,'-');
 function makePlanPDF(){
@@ -1088,6 +1107,7 @@ document.addEventListener('click',e=>{
  else if(t.id==='pdf'){if(libsOk())makeLabelPDF()}
  else if(t.id==='prt'){try{window.print()}catch(er){}}
  else if(t.id==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV())}
+ else if(t.id==='cncout'){openCNC()}
  else if(t.id==='copy'){const txt=cutText();
   const fb=()=>{const a=document.createElement('textarea');a.value=txt;a.style.cssText='width:100%;height:220px;margin-top:10px';t.closest('.card').appendChild(a);a.select();toast(T('Text markiert – jetzt kopieren'))};
   try{navigator.clipboard.writeText(txt).then(()=>toast(T('Schnittliste kopiert')),fb)}catch(er){fb()}}
@@ -1181,7 +1201,7 @@ function wizBody(){
   ${un?`<div class="warn"><b>${esc(T('{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:',{n:un}))}</b> ${esc([...new Set(res.un.map(p=>p.n||T('Teil')))].join(', '))}</div>`:''}
   ${W.saved?`<p class="note" style="margin-top:0">${cloud?"☁ ":""}${esc(T("Gespeichert als"))}: <b>${esc(W.saved)}</b></p>`:''}
   <p class="lead">${esc(T('Auf der Seite stehen der Plan pro Platte, die Schnittfolge und alle Listen.'))}</p>
-  <div class="acts"><button type="button" class="pri" data-wz="lists">${esc(T('Listen als PDF'))}</button><button type="button" data-wz="plan">${esc(T('Schnittplan als PDF'))}</button><button type="button" data-wz="labels">${esc(T('Etiketten als PDF'))}</button><button type="button" data-wz="csvout">${esc(T('Schnittliste als CSV'))}</button></div>`;
+  <div class="acts"><button type="button" class="pri" data-wz="lists">${esc(T('Listen als PDF'))}</button><button type="button" data-wz="plan">${esc(T('Schnittplan als PDF'))}</button><button type="button" data-wz="labels">${esc(T('Etiketten als PDF'))}</button><button type="button" data-wz="csvout">${esc(T('Schnittliste als CSV'))}</button><button type="button" data-wz="cnc">${esc(T('CNC-Export'))}</button></div>`;
 }
 function wizDraw(top){
  let ov=$('wov');const first=!ov;
@@ -1249,6 +1269,7 @@ document.addEventListener('click',e=>{
  else if(a==='plan'){if(libsOk())makePlanPDF();return}
  else if(a==='labels'){if(libsOk())makeLabelPDF();return}
  else if(a==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV());return}
+ else if(a==='cnc'){openCNC();return}
  wizDraw();
 });
 /* ---------- Kurze Tour: 5 Schritte durch die Oberfläche ---------- */

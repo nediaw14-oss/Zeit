@@ -9,6 +9,7 @@ Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multip
 - `supa.js` – Supabase-Adresse und öffentlicher Schlüssel (Daten sind per Row Level Security geschützt)
 
 ## Funktionen
+- **Assistent** (öffnet sich nach dem Anmelden, oder oben über „Assistent“): fragt Schritt für Schritt Auftrag, Platten, Bekantung, Teile und Optimierung ab und erzeugt am Ende Schnittplan und Schnittliste (PDF/CSV); mit Auftragsnamen wird das Projekt automatisch gespeichert
 - **▶ Play-Button**: berechnet den Schnittplan; nach Änderungen erscheint „Schnittplan veraltet“
 - **Optionen** wie bei Cut List Optimizer: Schnittfuge, Alles auf eine Platte, Etiketten, Materialien, Kantenanleimung, Maserungsrichtung
 - **Plan bearbeiten** (Schloss): Teile ziehen (mit Einrasten), drehen, entfernen, wieder einsetzen

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mein Konto – SchnittWundeR</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b1f3a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="robots" content="noindex">
+<style>
+:root{--slate:#0b1f3a;--acc:#1d4ed8;--accD:#1e40af;--accL:#93b4f5;--red:#c2410c;--redD:#9a3412;--ink:#0f172a;--mut:#556274;--line:#e3e8ef;--field:#f4f6f6}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;min-height:100dvh;padding:20px 16px 90px;background:var(--slate);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;background-image:radial-gradient(60% 40% at 50% 0,#17335c 0,transparent 70%)}
+h1,h2{font-family:Inter,sans-serif;font-weight:700;line-height:1.2;letter-spacing:-.02em;margin:0}
+.box{width:min(560px,100%);margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font:700 20px Inter,sans-serif;letter-spacing:-.01em;text-decoration:none;color:#fff}
+.logo i{width:24px;height:18px;border:2px solid #fff;border-radius:3px;position:relative}.logo em{font-style:normal;font-weight:500;color:#c7d3e6}
+.logo i:after{content:"";position:absolute;left:8px;top:-2px;bottom:-2px;border-left:2px solid var(--accL)}
+.toapp{color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:8px 14px;border-radius:8px;background:#ffffff14;border:1px solid #ffffff30}
+.toapp:hover{background:#ffffff24}
+h1{color:#fff;font-size:28px;margin:0 0 14px}
+.card{background:#fff;border-radius:10px;padding:22px;box-shadow:0 14px 40px #0004;margin-bottom:14px}
+.card h2{font-size:19px;margin-bottom:4px}.sub{color:var(--mut);margin:0 0 14px;font-size:15px}
+.card.danger{border-top:3px solid var(--red)}
+label{display:block;margin-bottom:12px}label>span{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
+input[type=text],input[type=email],input[type=password]{width:100%;font:16px Inter,sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);min-height:48px}
+input:disabled{color:var(--mut)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn{min-height:46px;border:0;border-radius:6px;padding:0 18px;background:var(--acc);color:#fff;font:600 16px Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--accD)}.btn:disabled{opacity:.6;cursor:wait}
+.btn.sec{background:var(--field);color:var(--ink);border:1px solid var(--line)}.btn.sec:hover{background:#e8ecef}
+.btn.red{background:var(--red)}.btn.red:hover{background:var(--redD)}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.av{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.pic{width:88px;height:88px;border-radius:50%;flex:none;background:var(--accL);color:var(--slate);display:grid;place-items:center;font:700 34px Inter,sans-serif;overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.pic img{width:100%;height:100%;object-fit:cover}
+.hint{font-size:13px;color:var(--mut);margin:6px 0 0}
+.msg{border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:15px}
+.msg.err{background:#fde8e4;border:1px solid var(--red);color:#7a1d10}.msg.ok{background:#eaf5ea;border:1px solid #2e7d32;color:#1b4d1e}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0}.meta dt{color:var(--mut)}.meta dd{margin:0;overflow-wrap:anywhere}
+details{margin-top:4px}summary{cursor:pointer;font-weight:600;color:var(--red);min-height:40px;display:flex;align-items:center}
+.legal{text-align:center;font-size:13px;color:#8d989d}.legal a{color:#b9c2c6}
+[hidden]{display:none!important}
+#gate{color:#fff;text-align:center;padding:40px 0}
+</style>
+<script>if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</head>
+<body>
+<main class="box">
+ <div class="top"><a class="logo" href="./"><i></i><span>Schnitt<em>WundeR</em></span></a><a class="toapp" href="app.html">← zur App</a></div>
+ <p id="gate">Lädt …</p>
+ <div id="page" hidden>
+ <h1>Mein Konto</h1>
+
+ <section class="card" aria-labelledby="h-prof">
+  <h2 id="h-prof">Profil</h2><p class="sub">So erscheinst du in SchnittWundeR.</p>
+  <div class="msg" id="m-prof" hidden role="status"></div>
+  <div class="av">
+   <div class="pic" id="pic" aria-hidden="true"></div>
+   <div>
+    <div class="btns"><button type="button" class="btn sec" id="pickAv">Bild wählen</button><button type="button" class="btn sec" id="delAv" hidden>Entfernen</button></div>
+    <p class="hint">JPG, PNG oder WebP. Wird automatisch zugeschnitten.</p>
+    <input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden>
+   </div>
+  </div>
+  <form id="f-prof">
+   <label><span>Name</span><input type="text" id="dn" maxlength="60" autocomplete="name" placeholder="z. B. Nedi"></label>
+   <label><span>Betrieb / Firma (optional)</span><input type="text" id="co" maxlength="80" autocomplete="organization" placeholder="z. B. Schreinerei Muster"></label>
+   <button class="btn" type="submit">Profil speichern</button>
+  </form>
+ </section>
+
+ <section class="card" aria-labelledby="h-mail">
+  <h2 id="h-mail">E-Mail ändern</h2><p class="sub">Wir schicken einen Bestätigungslink. Erst nach dem Klick gilt die neue Adresse.</p>
+  <div class="msg" id="m-mail" hidden role="status"></div>
+  <form id="f-mail">
+   <label><span>Aktuelle E-Mail</span><input type="email" id="curMail" disabled></label>
+   <label><span>Neue E-Mail</span><input type="email" id="newMail" autocomplete="email" required></label>
+   <button class="btn" type="submit">E-Mail ändern</button>
+  </form>
+ </section>
+
+ <section class="card" aria-labelledby="h-pw">
+  <h2 id="h-pw">Passwort ändern</h2><p class="sub">Mindestens 6 Zeichen.</p>
+  <div class="msg" id="m-pw" hidden role="status"></div>
+  <form id="f-pw">
+   <input type="email" autocomplete="username" id="pwUser" hidden>
+   <label><span>Aktuelles Passwort</span><input type="password" id="pwOld" autocomplete="current-password" required></label>
+   <label><span>Neues Passwort</span><input type="password" id="pwNew" autocomplete="new-password" minlength="6" required></label>
+   <label><span>Neues Passwort wiederholen</span><input type="password" id="pwNew2" autocomplete="new-password" minlength="6" required></label>
+   <button class="btn" type="submit">Passwort speichern</button>
+  </form>
+ </section>
+
+ <section class="card" aria-labelledby="h-sec">
+  <h2 id="h-sec">Konto &amp; Sicherheit</h2>
+  <div class="msg" id="m-sec" hidden role="status"></div>
+  <dl class="meta" style="margin-bottom:16px">
+   <dt>Konto seit</dt><dd id="since">–</dd>
+   <dt>Letzte Anmeldung</dt><dd id="last">–</dd>
+   <dt>Projekte in der Cloud</dt><dd id="nproj">–</dd>
+  </dl>
+  <div class="btns">
+   <button type="button" class="btn sec" id="export">Meine Daten herunterladen</button>
+   <button type="button" class="btn sec" id="outAll">Auf allen Geräten abmelden</button>
+   <button type="button" class="btn sec" id="out">Abmelden</button>
+  </div>
+ </section>
+
+ <section class="card danger" aria-labelledby="h-del">
+  <h2 id="h-del">Konto löschen</h2><p class="sub">Löscht dein Konto, dein Profilbild und alle Projekte in der Cloud. Das kann man nicht rückgängig machen.</p>
+  <div class="msg" id="m-del" hidden role="status"></div>
+  <details><summary>Ich möchte mein Konto löschen</summary>
+   <form id="f-del" style="margin-top:10px">
+    <label><span>Passwort zur Bestätigung</span><input type="password" id="delPw" autocomplete="current-password" required></label>
+    <label><span>Tippe <b>LÖSCHEN</b> ein</span><input type="text" id="delWord" autocomplete="off" required></label>
+    <button class="btn red" type="submit">Konto endgültig löschen</button>
+   </form>
+  </details>
+ </section>
+ <p class="legal"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+ </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supa.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const msg=(id,t,ok)=>{const m=$(id);m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err');if(t)m.scrollIntoView({block:'nearest',behavior:'smooth'})};
+const de=e=>{const s=(e&&e.message)||String(e||'');
+ if(/Invalid login/i.test(s))return'Das Passwort stimmt nicht.';
+ if(/same.*password|different from the old/i.test(s))return'Das neue Passwort muss anders sein als das alte.';
+ if(/at least 6|weak/i.test(s))return'Das Passwort ist zu schwach – mindestens 6 Zeichen.';
+ if(/already (been )?registered|already exists/i.test(s))return'Diese E-Mail wird schon von einem anderen Konto benutzt.';
+ if(/rate limit|too many/i.test(s))return'Zu viele Versuche – bitte in ein paar Minuten nochmal.';
+ if(/valid email|invalid format/i.test(s))return'Bitte eine gültige E-Mail eingeben.';
+ if(/size|too large|maximum/i.test(s))return'Das Bild ist zu groß.';
+ if(/fetch|network/i.test(s))return'Keine Verbindung – bitte nochmal versuchen.';
+ return s||'Das hat nicht geklappt, bitte nochmal versuchen.'};
+const fmt=d=>d?new Date(d).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):'–';
+const busy=async(btn,fn)=>{btn.disabled=true;try{await fn()}finally{btn.disabled=false}};
+let user=null,prof={};
+
+function drawPic(){const p=$('pic'),u=prof.avatar_url,n=(prof.display_name||user.email||'?').trim();
+ p.innerHTML=u?`<img src="${u.replace(/"/g,'%22')}" alt="">`:'';if(!u)p.textContent=(n[0]||'?').toUpperCase();$('delAv').hidden=!u}
+function drawUser(){$('curMail').value=user.email||'';$('pwUser').value=user.email||'';
+ $('since').textContent=fmt(user.created_at);$('last').textContent=fmt(user.last_sign_in_at);
+ if(user.new_email)msg('m-mail',`Bestätigung ausstehend für ${user.new_email}. Klick auf den Link in der E-Mail.`,1)}
+
+async function init(){
+ if(!window.sb){$('gate').textContent='Keine Verbindung zur Cloud. Bitte später nochmal öffnen.';return}
+ const{data:{session}}=await sb.auth.getSession();
+ if(!session){location.replace('login.html');return}
+ user=session.user;
+ const{data}=await sb.from('profiles').select('display_name,company,avatar_url').eq('id',user.id).maybeSingle();
+ prof=data||{};if(!data)await sb.from('profiles').upsert({id:user.id});
+ $('dn').value=prof.display_name||'';$('co').value=prof.company||'';
+ drawUser();drawPic();
+ const{count}=await sb.from('projects').select('id',{count:'exact',head:true});$('nproj').textContent=count??'–';
+ $('gate').hidden=true;$('page').hidden=false;
+ if(/type=email_change|message=/.test(location.hash)){const h=new URLSearchParams(location.hash.slice(1));
+  msg('m-mail',h.get('message')||'E-Mail bestätigt.',1);history.replaceState(null,'',location.pathname)}
+ sb.auth.onAuthStateChange((ev,s)=>{if(ev==='SIGNED_OUT')location.replace('login.html');else if(s&&s.user){user=s.user;drawUser()}});
+}
+
+// Profil speichern
+$('f-prof').addEventListener('submit',e=>{e.preventDefault();busy(e.submitter||e.target.querySelector('button'),async()=>{
+ const row={id:user.id,display_name:$('dn').value.trim()||null,company:$('co').value.trim()||null,updated_at:new Date().toISOString()};
+ const{error}=await sb.from('profiles').upsert(row);if(error)return msg('m-prof',de(error));
+ Object.assign(prof,row);drawPic();msg('m-prof','Profil gespeichert.',1)})});
+
+// Profilbild: im Browser quadratisch auf 256 px verkleinern, dann hochladen
+function shrink(file){return new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);
+ img.onload=()=>{const S=256,c=document.createElement('canvas');c.width=c.height=S;const s=Math.min(img.width,img.height);
+  c.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,S,S);URL.revokeObjectURL(url);
+  c.toBlob(b=>b?res(b):rej(new Error('Bild konnte nicht gelesen werden.')),'image/webp',.85)};
+ img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('Bild konnte nicht gelesen werden.'))};img.src=url})}
+async function clearAv(){const{data}=await sb.storage.from('avatars').list(user.id);
+ if(data&&data.length)await sb.storage.from('avatars').remove(data.map(f=>user.id+'/'+f.name))}
+$('pickAv').onclick=()=>$('file').click();
+$('file').onchange=()=>{const f=$('file').files[0];$('file').value='';if(!f)return;
+ if(!/^image\/(jpeg|png|webp)$/.test(f.type))return msg('m-prof','Bitte ein JPG-, PNG- oder WebP-Bild wählen.');
+ if(f.size>15e6)return msg('m-prof','Das Bild ist zu groß (max. 15 MB).');
+ busy($('pickAv'),async()=>{try{
+  const blob=await shrink(f);await clearAv();
+  const path=`${user.id}/avatar-${Date.now()}.webp`;
+  const{error}=await sb.storage.from('avatars').upload(path,blob,{contentType:'image/webp',upsert:true});if(error)throw error;
+  const url=sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+  const{error:e2}=await sb.from('profiles').upsert({id:user.id,avatar_url:url,updated_at:new Date().toISOString()});if(e2)throw e2;
+  prof.avatar_url=url;drawPic();msg('m-prof','Profilbild gespeichert.',1)
+ }catch(er){msg('m-prof',de(er))}})};
+$('delAv').onclick=()=>busy($('delAv'),async()=>{try{await clearAv();
+ const{error}=await sb.from('profiles').update({avatar_url:null,updated_at:new Date().toISOString()}).eq('id',user.id);if(error)throw error;
+ prof.avatar_url=null;drawPic();msg('m-prof','Profilbild entfernt.',1)}catch(er){msg('m-prof',de(er))}});
+
+// E-Mail ändern
+$('f-mail').addEventListener('submit',e=>{e.preventDefault();const em=$('newMail').value.trim();
+ if(!/^\S+@\S+\.\S+$/.test(em))return msg('m-mail','Bitte eine gültige E-Mail eingeben.');
+ if(em.toLowerCase()===(user.email||'').toLowerCase())return msg('m-mail','Das ist schon deine E-Mail.');
+ busy(e.target.querySelector('button'),async()=>{
+  const{error}=await sb.auth.updateUser({email:em},{emailRedirectTo:pageUrl('konto.html')});
+  if(error)return msg('m-mail',de(error));$('newMail').value='';
+  msg('m-mail',`Link ist unterwegs an ${em}. Je nach Einstellung kommt auch an deine alte Adresse ein Link – bitte beide bestätigen. Schau auch im Spam-Ordner.`,1)})});
+
+// Passwort ändern: aktuelles Passwort erst prüfen
+$('f-pw').addEventListener('submit',e=>{e.preventDefault();const o=$('pwOld').value,n=$('pwNew').value;
+ if(n.length<6)return msg('m-pw','Das neue Passwort braucht mindestens 6 Zeichen.');
+ if(n!==$('pwNew2').value)return msg('m-pw','Die neuen Passwörter sind nicht gleich.');
+ if(n===o)return msg('m-pw','Das neue Passwort muss anders sein als das alte.');
+ busy(e.target.querySelector('button'),async()=>{
+  const{error:e1}=await sb.auth.signInWithPassword({email:user.email,password:o});if(e1)return msg('m-pw','Das aktuelle Passwort stimmt nicht.');
+  const{error}=await sb.auth.updateUser({password:n});if(error)return msg('m-pw',de(error));
+  e.target.reset();msg('m-pw','Passwort geändert.',1)})});
+
+// Daten herunterladen (DSGVO)
+$('export').onclick=()=>busy($('export'),async()=>{
+ const{data,error}=await sb.from('projects').select('name,data,updated_at').order('name');if(error)return msg('m-sec',de(error));
+ const out={exportiert:new Date().toISOString(),konto:{email:user.email,erstellt:user.created_at},profil:{name:prof.display_name||null,firma:prof.company||null,profilbild:prof.avatar_url||null},projekte:data};
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+ a.download='schnittwunder-daten.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);msg('m-sec','Download gestartet.',1)});
+$('out').onclick=()=>sb.auth.signOut().then(()=>location.replace('index.html'));
+$('outAll').onclick=()=>{if(confirm('Auf allen Geräten abmelden? Du musst dich überall neu anmelden.'))sb.auth.signOut({scope:'global'}).then(()=>location.replace('login.html'))};
+
+// Konto löschen
+$('f-del').addEventListener('submit',e=>{e.preventDefault();
+ if($('delWord').value.trim().toUpperCase()!=='LÖSCHEN')return msg('m-del','Bitte genau LÖSCHEN eintippen.');
+ busy(e.target.querySelector('button'),async()=>{
+  const{error:e1}=await sb.auth.signInWithPassword({email:user.email,password:$('delPw').value});if(e1)return msg('m-del','Das Passwort stimmt nicht.');
+  try{await clearAv()}catch(er){}
+  const{error}=await sb.rpc('delete_account');if(error)return msg('m-del',de(error));
+  try{for(const k of Object.keys(localStorage))if(/^sb-|^sw-/.test(k))localStorage.removeItem(k)}catch(er){}
+  await sb.auth.signOut({scope:'local'}).catch(()=>{});
+  location.replace('index.html?konto=geloescht')})});
+
+init().catch(er=>{$('gate').textContent=de(er)});
+}
+</script>
+</body>
+</html>

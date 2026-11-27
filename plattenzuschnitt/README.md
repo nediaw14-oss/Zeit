@@ -1,11 +1,14 @@
 # SchnittWundeR – Plattenzuschnitt Optimierer
 
-Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) als einzelne HTML-Datei – ohne Server, ohne Anmeldung, ohne Limit.
+Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) im Browser – ohne Limit. Mit Konto werden Projekte in der Cloud gespeichert, ohne Konto lässt sich das Tool im Demo-Modus ausprobieren (`app.html?demo=1`, Speichern nur im Browser).
 
 ## Seiten
 - `index.html` – Startseite (Landing Page)
 - `login.html` – Anmelden, Registrieren, Passwort vergessen (Supabase Auth)
-- `app.html` – das Zuschnitt-Tool; nur angemeldet, Projekte werden in Supabase gespeichert
+- `app.html` – das Zuschnitt-Tool; angemeldet werden Projekte in Supabase gespeichert, mit `?demo=1` geht es auch ohne Konto
+- `impressum.html`, `datenschutz.html` – Pflichtseiten (gelb markierte Platzhalter vor dem Veröffentlichen ausfüllen)
+- `fonts.css`, `fonts/` – Schriften Inter und Barlow lokal (kein Google Fonts, wegen DSGVO)
+- `favicon.svg` – Symbol im Browser-Tab
 - `supa.js` – Supabase-Adresse und öffentlicher Schlüssel (Daten sind per Row Level Security geschützt)
 
 ## Funktionen

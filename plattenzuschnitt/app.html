@@ -168,6 +168,19 @@ h3.sq{font-size:17px;margin:18px 0 0}
 .gst{font-weight:600;color:var(--mut)}.gcut{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:6px 0 12px;font-size:18px}.gcut b{font:700 30px "Barlow Condensed",Barlow,sans-serif;color:var(--acc)}
 .gprog{height:6px;border-radius:3px;background:var(--field);margin-top:12px;overflow:hidden}.gprog i{display:block;height:100%;background:#2e7d32}
 .df{gap:8px}
+/* Assistent (Wizard) */
+.ovl.wz{z-index:28}
+.wz .dlg{width:min(780px,100%);display:flex;flex-direction:column}
+.wzp{display:flex;gap:4px;padding:10px 20px 0}.wzp i{flex:1;height:5px;border-radius:3px;background:var(--field)}.wzp i.on{background:var(--acc)}.wzp i.ok{background:#2e7d32}
+.wzs{padding:6px 20px 0;font-size:13px;color:var(--mut)}
+.wzb{padding:14px 20px;flex:1}.wzb h3{font:700 20px "Barlow Condensed",Barlow,sans-serif;margin:16px 0 8px}
+.wzb .lead{font-size:17px;margin:0 0 14px}
+.wzf{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 20px;display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.wzf .btns{margin:0}
+.wze{color:var(--red);font-weight:600;margin:8px 0 0}
+.wzc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wzc.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.wzc button{min-height:60px;font-size:17px}.wzc button[aria-pressed=true]{border-color:var(--acc);background:var(--accBg);color:var(--acc)}
+.wzk{display:flex;flex-wrap:wrap;gap:10px 28px;margin:4px 0 14px}.wzk div{display:flex;flex-direction:column}.wzk b{font:700 34px "Barlow Condensed",Barlow,sans-serif;font-variant-numeric:tabular-nums}.wzk span{font-size:13px;color:var(--mut)}
+@media(max-width:480px){.wzc,.wzc.c3{grid-template-columns:minmax(0,1fr)}}
 @page{size:A4 landscape;margin:10mm}
 @media print{body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.inp,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
 </style>
@@ -256,6 +269,25 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Länge und Breite tauschen','Swap length and width','Zamijeni dužinu i širinu'],['Für alle Teile','For all parts','Za sve dijelove'],['Alle Seiten','All sides','Sve strane'],['Längsseiten','Long sides','Duže strane'],['Breitseiten','Short sides','Kraće strane'],['Keine Seiten','No sides','Bez strana'],
  ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
 ].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
+[['Assistent','Wizard','Čarobnjak'],['Schritt {n} von {m}','Step {n} of {m}','Korak {n} od {m}'],['Abbrechen','Cancel','Odustani'],['Schnittliste erzeugen','Create cut list','Napravi listu rezanja'],
+ ['Bekantung','Edge banding','Kantovanje'],['Optimierung','Optimization','Optimizacija'],['Zusammenfassung','Summary','Sažetak'],
+ ['Neuer Zuschnitt in wenigen Schritten: Platten, Kanten und Teile eintragen – am Ende bekommst du Schnittplan und Schnittliste.','New cutting job in a few steps: enter sheets, edges and parts – at the end you get the cutting plan and cut list.','Novo rezanje u nekoliko koraka: unesi ploče, kantove i dijelove – na kraju dobiješ plan i listu rezanja.'],
+ ['Mit Namen wird das Projekt am Ende automatisch gespeichert.','With a name the project is saved automatically at the end.','S nazivom se projekt na kraju automatski sprema.'],
+ ['Nach dem Anmelden automatisch öffnen','Open automatically after sign-in','Otvori automatski nakon prijave'],
+ ['Neu anfangen','Start fresh','Počni ispočetka'],['Aktuelle Teile übernehmen','Use current parts','Preuzmi trenutne dijelove'],
+ ['Welche Platten werden geschnitten?','Which sheets are cut?','Koje ploče se režu?'],['Plattenmaß wie geliefert. Stk leer = unbegrenzt. Preis optional.','Sheet size as delivered. Qty empty = unlimited. Price optional.','Mjera ploče kako je isporučena. Prazna količina = neograničeno. Cijena opcionalno.'],
+ ['Säge','Saw','Pila'],['Bekommen die Teile Kanten?','Do the parts get edge banding?','Dobijaju li dijelovi kantove?'],['Ohne Kanten','No edges','Bez kanta'],['Mit Kanten','With edges','Sa kantovima'],
+ ['Welche Kanten verwendest du?','Which edge bands do you use?','Koje kantove koristiš?'],
+ ['Welche Teile brauchst du?','Which parts do you need?','Koji dijelovi ti trebaju?'],['Maserung beachten','Respect grain','Pazi na godove'],
+ ['Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten, links/rechts = Breitenkanten. Mehrmals tippen = andere Kantenart.','Edge: tap the sides of the small part – top/bottom = length edges, left/right = width edges. Tap again = other edge type.','Kant: dodirni strane malog dijela – gore/dolje = dužni, lijevo/desno = širinski kantovi. Ponovo dodirni = druga vrsta kanta.'],
+ ['Maserung beachten = Teil wird nicht gedreht (Länge = Maserungsrichtung).','Respect grain = part is not rotated (length = grain direction).','Pazi na godove = dio se ne okreće (dužina = smjer godova).'],
+ ['Mindestens eine Platte mit Länge und Breite eintragen.','Enter at least one sheet with length and width.','Unesi bar jednu ploču s dužinom i širinom.'],
+ ['Mindestens ein Teil mit Länge, Breite und Stückzahl eintragen.','Enter at least one part with length, width and quantity.','Unesi bar jedan dio s dužinom, širinom i količinom.'],
+ ['Wie soll optimiert werden?','How should it be optimized?','Kako optimizirati?'],['Kante ca.','Edge approx.','Kant otprilike'],
+ ['Passt auf keine Platte','Fits on no sheet','Ne staje ni na jednu ploču'],['Schnittliste fertig','Cut list ready','Lista rezanja gotova'],
+ ['Zum Schnittplan','Go to cutting plan','Na plan rezanja'],['Auf der Seite stehen der Plan pro Platte, die Schnittfolge und alle Listen.','The page shows the plan per sheet, the cut sequence and all lists.','Na stranici su plan po ploči, redoslijed rezova i sve liste.'],
+ ['Nochmal mit dem Assistenten','Run wizard again','Ponovo s čarobnjakom'],['Teile platziert','parts placed','dijelova postavljeno'],['Gespeichert als','Saved as','Spremljeno kao']
+].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
 let cfg={lang:'de',unit:'mm',ord:'lb',dec:1,stack:'yes'};
 let view={z:1,f:1,col:1,dim:1,num:1,tr:0};
 try{Object.assign(view,JSON.parse(localStorage.getItem('zuschnitt-v1-view'))||{})}catch(e){}
@@ -318,7 +350,7 @@ function shell(){
  document.documentElement.lang=cfg.lang;document.title='SchnittWundeR';
  $('undo').textContent=T('Rückgängig');
  $('app').innerHTML=navHTML()+`<header><div class="hin">
- <div><div class="ht"><h1>SchnittWundeR</h1></div>
+ <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button></div>
  <p>${esc(T('Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.'))}</p>
  <span class="credit">coded by <b>Nedi</b> / <b>Claude</b></span><div class="who" id="who"></div></div>
  <div class="kpi" aria-live="polite">
@@ -1041,7 +1073,7 @@ document.addEventListener('click',e=>{
   try{navigator.clipboard.writeText(txt).then(()=>toast(T('Schnittliste kopiert')),fb)}catch(er){fb()}}
  else if(t.id==='csvadd'||t.id==='csvrep'){const ps=parseCSV($('csv').value);if(!ps.length){toast(T('Keine Teile erkannt'));return}
   snap();if(t.id==='csvrep')st.parts=[];st.parts.push(...ps);$('csv').value='';drawInputs();refresh();toast(T('{n} Teile übernommen',{n:ps.length}),1)}
- else if(t.id==='logout'){sb.auth.signOut().then(()=>location.replace('index.html'))}
+ else if(t.id==='logout'){try{sessionStorage.removeItem('sw-wiz')}catch(er){}sb.auth.signOut().then(()=>location.replace('index.html'))}
  else if(t.id==='psave'&&cloud){const n=(st.job||'').trim()||('Projekt '+new Date().toLocaleString(loc()));const data=JSON.parse(JSON.stringify(st));
   sb.from('projects').upsert({name:n,data,updated_at:new Date().toISOString()},{onConflict:'user_id,name'}).then(({error})=>{if(error){toast(T('Speichern hat nicht geklappt, bitte nochmal versuchen.'));return}cloud[n]=data;drawProj();$('proj').value=n;toast('☁ '+T('Gespeichert')+': '+n)})}
  else if(t.id==='pdel'&&cloud){const n=$('proj').value;if(!n){toast(T('Erst ein Projekt auswählen'));return}
@@ -1053,6 +1085,152 @@ document.addEventListener('click',e=>{
  else if(t.id==='pjson'){saveData(fname('Projekt','json'),JSON.stringify(st,null,1))}
  else if(t.id==='r2s'){snap();let n=0;res.sheets.forEach(sh=>sh.rests.forEach(r=>{st.stock.unshift({n:sh.S.n,l:Math.round(r.w),b:Math.round(r.h),q:1,p:''});n++}));drawInputs();refresh();toast(T('{n} Reste im Lager – für den neuen Auftrag „Liste leeren“',{n}),1)}
 });
+/* ---------- Assistent (Wizard): Schritt für Schritt zur Schnittliste ---------- */
+const WZOFF=KEY+'-wiz-off';
+const WST=['Auftrag','Platten','Bekantung','Teile','Optimierung','Zusammenfassung'];
+let W=null;
+const wcp=o=>JSON.parse(JSON.stringify(o));
+const wEt=()=>W.etypes||[];
+const wCol=t=>(wEt()[t-1]&&wEt()[t-1].c)||'#e6007e';
+const wEn=t=>(wEt()[t-1]&&wEt()[t-1].n)||(T('Kante')+' '+t);
+const wOkS=()=>W.stock.filter(s=>num(s.l)>0&&num(s.b)>0);
+const wOkP=()=>W.parts.filter(p=>num(p.l)>0&&num(p.b)>0&&num(p.q)>0);
+const wMats=()=>[...new Set(wOkS().map(s=>(s.n||'Platte').trim()||'Platte'))];
+const wNew=()=>{const p=W&&W.parts[W.parts.length-1];return{n:'',l:'',b:'',q:1,r:p?p.r:0,k:[0,0,0,0],m:p?p.m:undefined}};
+const wAuto=()=>{try{return!localStorage.getItem(WZOFF)}catch(e){return true}};
+function wizOpen(){
+ W={step:0,keep:0,err:'',csv:'',saved:'',job:'',kerf:st.kerf,trim:st.trim,oEdge:st.oEdge?1:0,sub:st.sub,goal:st.goal,first:st.first,
+  stock:wcp(st.stock.length?st.stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:'',p:''}]),etypes:wcp(ET().length?ET():DEF.etypes),parts:[]};
+ W.parts=[wNew()];wizDraw();
+}
+const wizClose=()=>{$('wov')?.remove();W=null};
+const wLB=(a,i,o)=>{const f=(fl,lab)=>`<label class="f"><span>${esc(T(lab))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-wa="${a}" data-wi="${i}" data-wf="${fl}" data-u="1" value="${esc(inU(o[fl]))}"></label>`;
+ return cfg.ord==='lb'?f('l','Länge')+f('b','Breite'):f('b','Breite')+f('l','Länge')};
+const wCh=(act,on,lab)=>`<button type="button" data-wz="${act}" aria-pressed="${on?'true':'false'}">${esc(T(lab))}</button>`;
+function wizBody(){
+ const n=W.step;
+ if(n===0)return`<p class="lead">${esc(T('Neuer Zuschnitt in wenigen Schritten: Platten, Kanten und Teile eintragen – am Ende bekommst du Schnittplan und Schnittliste.'))}</p>
+  <label class="f"><span>${esc(T('Auftrag / Kunde (steht auf Plan und Etiketten)'))}</span><input type="text" data-wk="job" value="${esc(W.job)}" placeholder="${esc(T('z. B. Küche Huber'))}"></label>
+  <p class="note">${esc(T('Mit Namen wird das Projekt am Ende automatisch gespeichert.'))}</p>
+  ${st.parts.length?`<h3 style="margin-top:16px">${esc(T('Teile'))}</h3><div class="wzc">${wCh('fresh',!W.keep,'Neu anfangen')}<button type="button" data-wz="keep" aria-pressed="${W.keep?'true':'false'}">${esc(T('Aktuelle Teile übernehmen'))} (${st.parts.length})</button></div>`:''}
+  <label class="chk" style="margin-top:14px"><input type="checkbox" data-wk="auto"${wAuto()?' checked':''}>${esc(T('Nach dem Anmelden automatisch öffnen'))}</label>`;
+ if(n===1)return`<p class="lead">${esc(T('Welche Platten werden geschnitten?'))}</p>`+W.stock.map((o,i)=>`<div class="prt">
+  <div class="r1"><input class="nm" type="text" data-wa="stock" data-wi="${i}" data-wf="n" value="${esc(o.n)}" placeholder="${esc(T('Material'))}" aria-label="${esc(T('Material'))}"><button type="button" class="del" data-wdel="stock" data-wi="${i}" aria-label="${esc(T('Platte löschen'))}">×</button></div>
+  <div class="r2 s">${wLB('stock',i,o)}<label class="f"><span>${esc(T('Stk'))}</span><input type="number" inputmode="numeric" min="0" data-wa="stock" data-wi="${i}" data-wf="q" value="${esc(o.q)}" placeholder="∞"></label>
+  <label class="f"><span>${esc(T('€/Platte'))}</span><input type="number" inputmode="decimal" step="0.01" min="0" data-wa="stock" data-wi="${i}" data-wf="p" value="${esc(o.p)}"></label></div></div>`).join('')+
+  `<div class="btns"><button type="button" data-wz="addS">${esc(T('+ Platte'))}</button></div><p class="note">${esc(T('Plattenmaß wie geliefert. Stk leer = unbegrenzt. Preis optional.'))}</p>
+  <h3>${esc(T('Säge'))}</h3><div class="set"><label class="f"><span>${esc(T('Sägeblatt'))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-wk="kerf" data-u="1" value="${esc(inU(W.kerf))}"></label>
+  <label class="f"><span>${esc(T('Randbeschnitt'))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-wk="trim" data-u="1" value="${esc(inU(W.trim))}"></label></div>`;
+ if(n===2)return`<p class="lead">${esc(T('Bekommen die Teile Kanten?'))}</p><div class="wzc">${wCh('e0',!W.oEdge,'Ohne Kanten')}${wCh('e1',W.oEdge,'Mit Kanten')}</div>`+(W.oEdge?
+  `<h3>${esc(T('Welche Kanten verwendest du?'))}</h3>`+wEt().map((o,i)=>`<div class="prt">
+  <div class="r1"><input class="nm" type="text" data-wa="etypes" data-wi="${i}" data-wf="n" value="${esc(o.n)}" placeholder="${esc(T('Bezeichnung'))}" aria-label="${esc(T('Bezeichnung'))}"><button type="button" class="del" data-wdel="etypes" data-wi="${i}" aria-label="${esc(T('Kantenart löschen'))}">×</button></div>
+  <div class="r2 e"><label class="f"><span>${esc(T('Dicke'))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-wa="etypes" data-wi="${i}" data-wf="d" data-u="1" value="${esc(inU(o.d))}"></label>
+  <label class="f"><span>${esc(T('Farbe'))} (${i+1})</span><input type="color" data-wa="etypes" data-wi="${i}" data-wf="c" value="${esc(o.c||'#e6007e')}"></label></div></div>`).join('')+
+  `<div class="btns"><button type="button" data-wz="addE">${esc(T('+ Kantenart'))}</button></div>
+  <label class="chk" style="margin-top:8px"><input type="checkbox" data-wk="sub"${W.sub?' checked':''}>${esc(T('Kantendicke vom Zuschnitt abziehen'))}</label>`:'');
+ if(n===3){const M=wMats();
+  return`<p class="lead">${esc(T('Welche Teile brauchst du?'))}</p><div class="wzr">`+W.parts.map((o,i)=>`<div class="prt">
+  <div class="r1"><input class="nm" type="text" data-wa="parts" data-wi="${i}" data-wf="n" value="${esc(o.n)}" placeholder="${esc(T('Bezeichnung'))}" aria-label="${esc(T('Bezeichnung'))}"><button type="button" class="del" data-wdel="parts" data-wi="${i}" aria-label="${esc(T('Teil löschen'))}">×</button></div>
+  <div class="r2">${wLB('parts',i,o)}<label class="f"><span>${esc(T('Stk'))}</span><input type="number" inputmode="numeric" min="1" data-wa="parts" data-wi="${i}" data-wf="q" value="${esc(o.q)}"></label>
+  <label class="rot" title="${esc(T('Maserung beachten'))}"><input type="checkbox" data-wa="parts" data-wi="${i}" data-wf="g"${o.r?'':' checked'}>${esc(T('Maserung'))}</label>
+  ${W.oEdge?`<div class="kw" role="group" aria-label="${esc(T('Kanten'))}">${['t','b','l','r'].map((c,j)=>`<button type="button" class="${c}" data-wedge="${i}" data-j="${j}" aria-pressed="${o.k[j]?'true':'false'}" style="--ec:${esc(wCol(o.k[j]))}" aria-label="${esc(T('Kante')+' '+T(ENL[j]))}" title="${EN[j]}${o.k[j]?': '+esc(wEn(o.k[j])):''}"></button>`).join('')}<small>${o.k.some(v=>v)?esc(T('Kante')):''}</small></div>`:'<span></span>'}
+  </div>${M.length>1?`<div class="r3"><select data-wa="parts" data-wi="${i}" data-wf="m" aria-label="${esc(T('Material'))}">${M.map(m=>`<option${m===(M.includes(o.m)?o.m:M[0])?' selected':''}>${esc(m)}</option>`).join('')}</select></div>`:''}</div>`).join('')+
+  `</div><div class="btns"><button type="button" class="pri" data-wz="addP">${esc(T('+ Teil'))}</button></div>
+  <p class="note">${esc(T('Maserung beachten = Teil wird nicht gedreht (Länge = Maserungsrichtung).'))}</p>${W.oEdge?`<p class="note">${esc(T('Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten, links/rechts = Breitenkanten. Mehrmals tippen = andere Kantenart.'))}</p>`:''}
+  <details><summary>${esc(T('Teile aus Excel einfügen'))}</summary><p class="note">${esc(T('Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.'))}</p>
+  <textarea data-wk="csv" placeholder="Seite;720;560;2;nein;Spanplatte 19 weiß;L1">${esc(W.csv)}</textarea><div class="btns"><button type="button" data-wz="csv">${esc(T('Teile hinzufügen'))}</button></div></details>`}
+ if(n===4)return`<p class="lead">${esc(T('Wie soll optimiert werden?'))}</p><h3>${esc(T('Optimierungspriorität'))}</h3>
+  <div class="wzc">${wCh('g:waste',W.goal!=='cuts','Geringster Verschnitt')}${wCh('g:cuts',W.goal==='cuts','Wenigste Schnitte')}</div><p class="note">${esc(T('Wenigste Schnitte spart Zeit an der Säge, kann aber etwas mehr Verschnitt geben.'))}</p>
+  <h3>${esc(T('Schnittrichtung'))}</h3><div class="wzc c3">${wCh('f:auto',W.first==='auto','Optimal')}${wCh('f:laengs',W.first==='laengs','Längs')}${wCh('f:quer',W.first==='quer','Quer')}</div>
+  <p class="note">${esc(T('Längs = zuerst durchgehende Streifen über die Plattenlänge, quer = über die Breite.'))}</p>`;
+ if(n===5){const S=wOkS(),P=wOkP(),M=wMats(),tr=2*num(W.trim);
+  const pcs=P.reduce((a,p)=>a+Math.floor(num(p.q)),0),area=P.reduce((a,p)=>a+num(p.l)*num(p.b)*Math.floor(num(p.q)),0);
+  const lfm=W.oEdge?P.reduce((a,p)=>a+Math.floor(num(p.q))*p.k.reduce((s,v,j)=>s+(v?(j<2?num(p.l):num(p.b)):0),0),0)/1000:0;
+  const big=P.filter(p=>{const m=M.includes(p.m)?p.m:M[0],l=num(p.l),b=num(p.b);
+   return!S.some(s=>(M.length<2||((s.n||'Platte').trim()||'Platte')===m)&&((l<=num(s.l)-tr&&b<=num(s.b)-tr)||(p.r&&b<=num(s.l)-tr&&l<=num(s.b)-tr)))});
+  const rows=[['Auftrag',esc(W.job.trim()||'–')],['Platten',S.map(s=>`${esc(s.n||T('Platte'))} <small>${dimStr(num(s.l),num(s.b))} ${ul()} · ${num(s.q)>0?Math.floor(num(s.q))+'×':'∞'}</small>`).join('<br>')],
+   ['Sägeblatt',fmt(num(W.kerf))+' '+ul()],['Randbeschnitt',fmt(num(W.trim))+' '+ul()],
+   ['Bekantung',W.oEdge?wEt().map((e,i)=>esc(wEn(i+1))).join('<br>')||'–':esc(T('Ohne Kanten'))],
+   ['Teile',`${P.length} <small>· ${pcs} ${esc(T('Stk'))}</small>`],['Teilefläche',m2(area)],...(lfm?[['Kante ca.',pct(lfm)+' m']]:[]),
+   ['Optimierungspriorität',esc(T(W.goal==='cuts'?'Wenigste Schnitte':'Geringster Verschnitt'))],['Schnittrichtung',esc(T({auto:'Optimal',laengs:'Längs',quer:'Quer'}[W.first]||'Optimal'))]];
+  return`<table class="kv">${rows.map(([k,v])=>`<tr><td>${esc(T(k))}</td><td>${v}</td></tr>`).join('')}</table>
+  ${big.length?`<div class="warn" style="margin:14px 0 0"><b>${esc(T('Passt auf keine Platte'))}:</b> ${big.map(p=>esc((p.n||T('Teil'))+' '+dimStr(num(p.l),num(p.b)))).join(', ')}</div>`:''}`}
+ /* Ergebnis */
+ const placed=res.sheets.reduce((a,s)=>a+s.pl.length,0),un=res.un.length;
+ return`<div class="wzk"><div><b>${res.sheets.length}</b><span>${esc(T('Platten'))}</span></div><div><b>${pct(res.waste||0)} %</b><span>${esc(T('Verschnitt'))}</span></div><div><b>${placed}</b><span>${esc(T('Teile platziert'))}</span></div>${res.kl?`<div><b>${pct(res.kl)} m</b><span>${esc(T('Kante lfm'))}</span></div>`:''}</div>
+  ${un?`<div class="warn"><b>${esc(T('{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:',{n:un}))}</b> ${esc([...new Set(res.un.map(p=>p.n||T('Teil')))].join(', '))}</div>`:''}
+  ${W.saved?`<p class="note" style="margin-top:0">${cloud?"☁ ":""}${esc(T("Gespeichert als"))}: <b>${esc(W.saved)}</b></p>`:''}
+  <p class="lead">${esc(T('Auf der Seite stehen der Plan pro Platte, die Schnittfolge und alle Listen.'))}</p>
+  <div class="acts"><button type="button" class="pri" data-wz="lists">${esc(T('Listen als PDF'))}</button><button type="button" data-wz="plan">${esc(T('Schnittplan als PDF'))}</button><button type="button" data-wz="labels">${esc(T('Etiketten als PDF'))}</button><button type="button" data-wz="csvout">${esc(T('Schnittliste als CSV'))}</button></div>`;
+}
+function wizDraw(top){
+ let ov=$('wov');const first=!ov;
+ if(!ov){ov=document.createElement('div');ov.id='wov';ov.className='ovl wz';document.body.appendChild(ov)}
+ const sc=top?0:(ov.querySelector('.dlg')?.scrollTop||0),n=W.step,last=WST.length-1,done=n>last;
+ ov.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="wzt"><div class="dh"><h2 id="wzt">${esc(T(done?'Schnittliste fertig':WST[n]))}</h2><button type="button" data-wz="x" aria-label="${esc(T('Schließen'))}">×</button></div>
+ <div class="wzp" aria-hidden="true">${WST.map((_,i)=>`<i class="${i<n?'ok':i===n?'on':''}"></i>`).join('')}</div>
+ ${done?'':`<div class="wzs">${esc(T('Assistent'))} · ${esc(T('Schritt {n} von {m}',{n:n+1,m:WST.length}))}</div>`}
+ <div class="wzb">${wizBody()}${W.err?`<p class="wze" role="alert">${esc(W.err)}</p>`:''}</div>
+ <div class="wzf">${done?`<button type="button" data-wz="again">${esc(T('Nochmal mit dem Assistenten'))}</button><button type="button" class="pri" data-wz="close">${esc(T('Zum Schnittplan'))}</button>`
+  :`<button type="button" data-wz="x">${esc(T('Abbrechen'))}</button><div class="btns">${n>0?`<button type="button" data-wz="back">${esc(T('Zurück'))}</button>`:''}${n<last?`<button type="button" class="pri" data-wz="next">${esc(T('Weiter'))}</button>`:`<button type="button" class="pri" data-wz="go">${esc(T('Schnittliste erzeugen'))}</button>`}</div>`}</div></div>`;
+ const d=ov.querySelector('.dlg');d.scrollTop=sc;if(first||top)(d.querySelector('.wzb input[type=text],.wzb input[type=number]')||d.querySelector('.wzf .pri'))?.focus({preventScroll:true});
+}
+function wizSave(n){const data=wcp(st);
+ if(cloud&&window.sb){sb.from('projects').upsert({name:n,data,updated_at:new Date().toISOString()},{onConflict:'user_id,name'}).then(({error})=>{if(error){toast(T('Speichern hat nicht geklappt, bitte nochmal versuchen.'));return}cloud[n]=data;drawProj();if(W&&W.step>=WST.length){W.saved=n;wizDraw()}})}
+ else{const P=projs();P[n]=data;try{localStorage.setItem(PK,JSON.stringify(P));drawProj();if(W){W.saved=n}}catch(er){}}
+}
+function wizGo(){
+ const S=wOkS(),P=wOkP(),M=wMats();snap();
+ Object.assign(st,{job:W.job.trim(),stock:wcp(S),kerf:W.kerf,trim:W.trim,oEdge:W.oEdge,sub:W.sub,goal:W.goal,first:W.first});
+ if(wEt().length)st.etypes=wcp(W.etypes);
+ st.parts=P.map(p=>({...wcp(p),q:Math.max(1,Math.floor(num(p.q))),k:W.oEdge?[...p.k]:[0,0,0,0],m:M.length>1?(M.includes(p.m)?p.m:M[0]):p.m}));
+ if(M.length>1)st.oMat=1;if(st.parts.some(p=>!p.r))st.oGrain=1;
+ fix();view.edit=0;renderAll();compute(true);save();
+ W.step=WST.length;W.err='';W.saved='';if(st.job)wizSave(st.job);wizDraw(1);
+}
+document.addEventListener('input',e=>{
+ const t=e.target;if(!W||!t.closest||!t.closest('#wov'))return;
+ const v=t.dataset.u&&t.value!==''?num(t.value)*uf():t.value;
+ if(t.dataset.wa){const o=W[t.dataset.wa][+t.dataset.wi];if(!o)return;const f=t.dataset.wf;if(f==='g')o.r=t.checked?0:1;else o[f]=v}
+ else if(t.dataset.wk==='auto'){try{t.checked?localStorage.removeItem(WZOFF):localStorage.setItem(WZOFF,'1')}catch(er){}}
+ else if(t.dataset.wk==='sub')W.sub=t.checked?1:0;
+ else if(t.dataset.wk)W[t.dataset.wk]=v;
+ if(W.err){W.err='';$('wov').querySelector('.wze')?.remove()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('wov'))wizClose()});
+document.addEventListener('click',e=>{
+ if(e.target.closest('#wiz')){wizOpen();return}
+ const t=e.target.closest('#wov button');if(!t||!W)return;
+ if(t.dataset.wedge!==undefined){const p=W.parts[+t.dataset.wedge],j=+t.dataset.j,n=wEt().length||1;p.k[j]=(p.k[j]+1)%(n+1);
+  t.setAttribute('aria-pressed',p.k[j]?'true':'false');t.style.setProperty('--ec',wCol(p.k[j]));t.title=EN[j]+(p.k[j]?': '+wEn(p.k[j]):'');t.parentNode.querySelector('small').textContent=p.k.some(v=>v)?T('Kante'):'';return}
+ if(t.dataset.wdel){const a=t.dataset.wdel,i=+t.dataset.wi;if(a==='etypes'){const tt=i+1;W.parts.forEach(p=>p.k=p.k.map(v=>v===tt?0:v>tt?v-1:v))}
+  W[a].splice(i,1);if(a==='parts'&&!W.parts.length)W.parts.push(wNew());wizDraw();return}
+ const a=t.dataset.wz;if(!a)return;
+ if(a==='x'){wizClose();return}
+ if(a==='close'){wizClose();$('out')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+ if(a==='again'){wizOpen();return}
+ if(a==='next'){
+  if(W.step===1&&!wOkS().length){W.err=T('Mindestens eine Platte mit Länge und Breite eintragen.');wizDraw();return}
+  if(W.step===3&&!wOkP().length){W.err=T('Mindestens ein Teil mit Länge, Breite und Stückzahl eintragen.');wizDraw();return}
+  W.err='';W.step++;wizDraw(1);return}
+ if(a==='back'){W.err='';W.step=Math.max(0,W.step-1);wizDraw(1);return}
+ if(a==='go'){wizGo();return}
+ if(a==='fresh'){W.keep=0;W.parts=[{n:'',l:'',b:'',q:1,r:0,k:[0,0,0,0]}];W.job=''}
+ else if(a==='keep'){W.keep=1;W.parts=wcp(st.parts).map(p=>({...p,k:Array.isArray(p.k)?p.k:[0,0,0,0]}));W.job=st.job||''}
+ else if(a==='addS')W.stock.push({n:'',l:2800,b:2070,q:'',p:''});
+ else if(a==='addE'){const cols=['#1f6feb','#e11d48','#16a34a','#f59e0b','#7c3aed','#0891b2','#e6007e','#111827'];W.etypes.push({n:'',d:1,c:cols[W.etypes.length%cols.length]})}
+ else if(a==='e0'||a==='e1')W.oEdge=a==='e1'?1:0;
+ else if(a.startsWith('g:'))W.goal=a.slice(2);
+ else if(a.startsWith('f:'))W.first=a.slice(2);
+ else if(a==='addP'){W.parts.push(wNew());wizDraw();const ins=$('wov').querySelectorAll('.wzr .nm');ins[ins.length-1]?.focus();return}
+ else if(a==='csv'){const ps=parseCSV(W.csv||'');if(!ps.length){toast(T('Keine Teile erkannt'));return}
+  W.parts=W.parts.filter(p=>num(p.l)>0||num(p.b)>0||(p.n||'').trim());W.parts.push(...ps);W.csv='';toast(T('{n} Teile übernommen',{n:ps.length}))}
+ else if(a==='lists'){if(libsOk())makeListPDF();return}
+ else if(a==='plan'){if(libsOk())makePlanPDF();return}
+ else if(a==='labels'){if(libsOk())makeLabelPDF();return}
+ else if(a==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV());return}
+ wizDraw();
+});
 compute(true);renderAll();
 (async()=>{
  const show=()=>document.getElementById('authhide')?.remove();
@@ -1060,6 +1238,7 @@ compute(true);renderAll();
  let s=null;try{s=(await sb.auth.getSession()).data.session}catch(e){show();return}
  if(!s){location.replace('login.html');return}
  user=s.user;show();drawUser();loadCloud();
+ try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}
  sb.auth.onAuthStateChange((ev,ss)=>{if(ev==='SIGNED_OUT')location.replace('login.html')});
 })();
 }

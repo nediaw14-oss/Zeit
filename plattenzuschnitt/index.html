@@ -60,8 +60,12 @@ input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
 .kw .l,.kw .r{top:14px;bottom:14px;width:24px}.kw .l{left:0}.kw .r{right:0}
 .kw .t:after{left:12px;right:12px;top:7px;height:3px}.kw .b:after{left:12px;right:12px;bottom:7px;height:3px}
 .kw .l:after{top:-5px;bottom:-5px;left:10px;width:3px}.kw .r:after{top:-5px;bottom:-5px;right:10px;width:3px}
-.kw button[aria-pressed=true]:after{background:repeating-linear-gradient(90deg,var(--edge) 0 6px,transparent 6px 10px)}
-.kw .l[aria-pressed=true]:after,.kw .r[aria-pressed=true]:after{background:repeating-linear-gradient(180deg,var(--edge) 0 6px,transparent 6px 10px)}
+.kw button[aria-pressed=true]:after{background:repeating-linear-gradient(90deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
+.kw .l[aria-pressed=true]:after,.kw .r[aria-pressed=true]:after{background:repeating-linear-gradient(180deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
+.r2.e{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+input[type=color]{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--field);padding:4px;cursor:pointer}
+.chk{display:flex;gap:10px;align-items:center;font-size:15px;min-height:44px;cursor:pointer}.chk input{width:22px;height:22px;accent-color:var(--red)}
+.legs{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px}
 .kw.tr button[aria-pressed=true]:after{background:var(--red)}
 .kw small{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:#5a4320;pointer-events:none;font-weight:600}
 .kw.tr small{color:var(--mut);display:grid;margin:0;font-size:11px}
@@ -78,7 +82,7 @@ button:hover{border-color:var(--mut)}
 details{margin-top:12px}summary{cursor:pointer;font-weight:600;min-height:32px}
 textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink)}
 .leg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
-.leg i{display:inline-block;width:26px;height:3px;background:repeating-linear-gradient(90deg,var(--edge) 0 6px,transparent 6px 10px)}
+.leg i{display:inline-block;width:26px;height:3px;background:repeating-linear-gradient(90deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
 .warn{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red);border-radius:12px;padding:12px 14px;margin-bottom:18px}
 .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .acts select{width:auto;flex:1 1 220px}
@@ -121,7 +125,7 @@ textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;paddin
 const KEY='zuschnitt-v1';
 /* ---------- Sprachen ---------- */
 const D={
-en:{'Plattenzuschnitt Optimierer':'Panel Cut Optimizer','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Enter parts, the plan updates instantly. Guillotine cuts only, like a panel saw, with kerf, trimming and edge banding.',
+en:{'Kantenarten':'Edge types','+ Kantenart':'+ Edge type','Kantendicke vom Zuschnitt abziehen':'Subtract edge thickness from cut size','Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …':'Tap a side of a part repeatedly: no edge → 1st type → 2nd type → …','Kantenart löschen':'Delete edge type','Dicke':'Thickness','Farbe':'Colour','Kantendicke abgezogen':'edge thickness subtracted','Plattenzuschnitt Optimierer':'Panel Cut Optimizer','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Enter parts, the plan updates instantly. Guillotine cuts only, like a panel saw, with kerf, trimming and edge banding.',
 'Platten':'Sheets','Verschnitt':'Waste','Teile':'Parts','Kante lfm':'Edge band m','Kosten':'Cost','Einstellungen':'Settings','Projekt':'Project','Laden':'Load','Löschen':'Delete','Speichern':'Save','Als Datei sichern':'Save as file','Datei öffnen':'Open file',
 'Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).':'Saves under the name in “Job / customer”. “Open file” accepts project files (.json) and Excel lists (.csv).',
 'Teile aus Excel einfügen':'Paste parts from Excel','Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.':'Columns: name; length; width; qty; rotate (yes/no); material; edge (e.g. L1 L2). Copy from Excel and paste here.',
@@ -129,7 +133,7 @@ en:{'Plattenzuschnitt Optimierer':'Panel Cut Optimizer','Teile eintragen, der Pl
 'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Length = grain direction. “rotate” off = grain must match. Edge: tap the sides of the small part – top/bottom = length edges L1/L2, left/right = width edges B1/B2.',
 'Platten auf Lager':'Stock sheets','+ Platte':'+ Sheet','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Leave qty empty = unlimited. Same material name = same material (e.g. full sheet and offcut). Price optional for costing.',
 'Auftrag & Optionen':'Job & options','Auftrag / Kunde (steht auf Plan und Etiketten)':'Job / customer (shown on plan and labels)','z. B. Küche Huber':'e.g. Kitchen Smith','Sägeblatt':'Saw kerf','Kantendicke abziehen':'Subtract edge thickness','Kante Preis (€/lfm)':'Edge price (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Keep offcuts from (shorter side, 0 = off)',
-'Kantendicke wird beim Zuschnitt abgezogen, Etiketten zeigen Fertig- und Zuschnittmaß. Schnittrichtung, Besäumen und mehr unter „Einstellungen“.':'Edge thickness is subtracted from the cut size; labels show finished and cut size. Cut direction, trimming and more under “Settings”.',
+'Schnittrichtung, Besäumen und mehr unter „Einstellungen“.':'Cut direction, trimming and more under “Settings”.',
 'Bezeichnung':'Name','Länge':'Length','Breite':'Width','Stk':'Qty','drehen':'rotate','Kante':'Edge','Kopie':'Copy','€/Platte':'€/sheet','Noch keine Teile. Tippe auf „+ Teil“.':'No parts yet. Tap “+ Part”.',
 'Noch nichts zu schneiden':'Nothing to cut yet','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Enter your parts with length, width and quantity.','Drucken & Etiketten':'Print & labels','Schnittplan als PDF':'Cutting plan PDF','Drucken':'Print','Schnittliste kopieren':'Copy cut list','Schnittliste als CSV':'Cut list CSV','Etiketten als PDF':'Labels PDF',
 'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: one A4 landscape page per sheet with dimension chains and part list. Labels: one per part ({n}) with QR code.',
@@ -147,7 +151,7 @@ en:{'Plattenzuschnitt Optimierer':'Panel Cut Optimizer','Teile eintragen, der Pl
 'Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).':'Smallest strip the saw can still cut cleanly. Narrower offcuts are avoided (0 = off).','Wie viel an jeder Plattenkante abgeschnitten wird. Tippe auf die Seiten, die besäumt werden.':'How much is cut off each sheet edge. Tap the sides to be trimmed.',
 'Millimeter (mm)':'Millimetres (mm)','Zentimeter (cm)':'Centimetres (cm)','Zoll (in)':'Inches (in)','pro Blatt':'per sheet','Etikettendrucker':'Label printer','1 pro Seite':'1 per page','z. B.':'e.g.','Etikettenformat':'Label format','Kanten':'Edges','Teil löschen':'Delete part','Platte löschen':'Delete sheet','Teil kopieren':'Copy part',
 'Länge oben':'length top','Länge unten':'length bottom','Breite links':'width left','Breite rechts':'width right','oben':'top','unten':'bottom','links':'left','rechts':'right','Schließen':'Close','SCHNITTLISTE':'CUT LIST','PASST NICHT':'DOES NOT FIT','Zuschnitt Länge':'Cut length','Zuschnitt Breite':'Cut width','Fertig Länge':'Finished length','Fertig Breite':'Finished width','ja':'yes','nein':'no','gedr.':'rot.'},
-bs:{'Plattenzuschnitt Optimierer':'Optimizator rezanja ploča','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Unesi dijelove, plan se odmah računa. Samo prolazni rezovi kao na formatnoj pili, s listom pile, obrezivanjem i kantovanjem.',
+bs:{'Kantenarten':'Vrste kanta','+ Kantenart':'+ Vrsta kanta','Kantendicke vom Zuschnitt abziehen':'Oduzmi debljinu kanta od rezne mjere','Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …':'Dodiruj stranu dijela više puta: bez kanta → 1. vrsta → 2. vrsta → …','Kantenart löschen':'Obriši vrstu kanta','Dicke':'Debljina','Farbe':'Boja','Kantendicke abgezogen':'debljina kanta oduzeta','Plattenzuschnitt Optimierer':'Optimizator rezanja ploča','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Unesi dijelove, plan se odmah računa. Samo prolazni rezovi kao na formatnoj pili, s listom pile, obrezivanjem i kantovanjem.',
 'Platten':'Ploče','Verschnitt':'Otpad','Teile':'Dijelovi','Kante lfm':'Kant m','Kosten':'Trošak','Einstellungen':'Postavke','Projekt':'Projekt','Laden':'Učitaj','Löschen':'Obriši','Speichern':'Spremi','Als Datei sichern':'Spremi kao datoteku','Datei öffnen':'Otvori datoteku',
 'Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).':'Sprema pod imenom iz „Nalog / kupac“. „Otvori datoteku“ prima projektne datoteke (.json) i Excel liste (.csv).',
 'Teile aus Excel einfügen':'Zalijepi dijelove iz Excela','Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.':'Kolone: naziv; dužina; širina; kom; okretanje (da/ne); materijal; kant (npr. L1 L2). Kopiraj iz Excela i zalijepi ovdje.',
@@ -155,7 +159,7 @@ bs:{'Plattenzuschnitt Optimierer':'Optimizator rezanja ploča','Teile eintragen,
 'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Dužina = smjer godova. „okreni“ isključeno = godovi moraju odgovarati. Kant: dodirni strane malog dijela – gore/dolje = dužni kantovi L1/L2, lijevo/desno = širinski kantovi B1/B2.',
 'Platten auf Lager':'Ploče na stanju','+ Platte':'+ Ploča','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Prazna količina = neograničeno. Isti naziv = isti materijal (npr. cijela ploča i ostatak). Cijena je opcionalna za obračun.',
 'Auftrag & Optionen':'Nalog i opcije','Auftrag / Kunde (steht auf Plan und Etiketten)':'Nalog / kupac (piše na planu i etiketama)','z. B. Küche Huber':'npr. Kuhinja Hodžić','Sägeblatt':'List pile','Kantendicke abziehen':'Oduzmi debljinu kanta','Kante Preis (€/lfm)':'Cijena kanta (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Pamti ostatke od (kraća strana, 0 = isključeno)',
-'Kantendicke wird beim Zuschnitt abgezogen, Etiketten zeigen Fertig- und Zuschnittmaß. Schnittrichtung, Besäumen und mehr unter „Einstellungen“.':'Debljina kanta se oduzima pri rezanju, etikete pokazuju gotovu i reznu mjeru. Smjer reza, obrezivanje i više pod „Postavke“.',
+'Schnittrichtung, Besäumen und mehr unter „Einstellungen“.':'Smjer reza, obrezivanje i više pod „Postavke“.',
 'Bezeichnung':'Naziv','Länge':'Dužina','Breite':'Širina','Stk':'Kom','drehen':'okreni','Kante':'Kant','Kopie':'Kopija','€/Platte':'€/ploča','Noch keine Teile. Tippe auf „+ Teil“.':'Još nema dijelova. Dodirni „+ Dio“.',
 'Noch nichts zu schneiden':'Još nema ništa za rezati','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Unesi dijelove s dužinom, širinom i količinom.','Drucken & Etiketten':'Štampa i etikete','Schnittplan als PDF':'Plan rezanja PDF','Drucken':'Štampaj','Schnittliste kopieren':'Kopiraj listu rezova','Schnittliste als CSV':'Lista rezova CSV','Etiketten als PDF':'Etikete PDF',
 'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: jedna A4 stranica po ploči, s kotama i listom dijelova. Etikete: jedna po dijelu ({n} kom) s QR kodom.',
@@ -186,18 +190,25 @@ const dimStr=(l,b)=>cfg.ord==='lb'?`${fmt(l)} × ${fmt(b)}`:`${fmt(b)} × ${fmt(
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
 const EN=['L1','L2','B1','B2'],ENL=['Länge oben','Länge unten','Breite links','Breite rechts'];
-const kTxt=k=>{const a=EN.filter((_,j)=>k&&k[j]);return a.length?a.join(' '):''};
+const ET=()=>st.etypes||[];
+const etName=t=>(ET()[t-1]&&ET()[t-1].n)||(T('Kante')+' '+t);
+const etCol=t=>(ET()[t-1]&&ET()[t-1].c)||'#e6007e';
+const etThick=t=>t>0&&ET()[t-1]?Math.max(0,num(ET()[t-1].d)):0;
+const kUsed=k=>{const m=new Map();(k||[]).forEach((v,j)=>{if(v){if(!m.has(v))m.set(v,[]);m.get(v).push(EN[j])}});return[...m.entries()].sort((a,b)=>a[0]-b[0])};
+const kTxt=k=>kUsed(k).map(([t,a])=>(ET().length>1?etName(t)+': ':'')+a.join(' ')).join(' · ');
+const kShort=k=>kUsed(k).map(([t,a])=>(ET().length>1?t+':':'')+a.join(' ')).join(' ');
 const standalone=(()=>{try{return window.top===window.self}catch(e){return false}})();
 
 /* ---------- Zustand ---------- */
-const DEF={first:'auto',goal:'waste',et:0,ep:0,rest:150,minT:0,ts:[1,1,1,1]};
+const DEF={first:'auto',goal:'waste',rest:150,minT:0,ts:[1,1,1,1],sub:1,etypes:[{n:'ABS 0,8 mm',d:0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]};
 const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...JSON.parse(JSON.stringify(DEF)),
  stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10,p:''}],
  parts:[{n:'Seite',l:720,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Boden/Deckel',l:762,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Fachboden',l:760,b:540,q:6,r:1,k:[1,0,0,0]},
- {n:'Front',l:716,b:396,q:4,r:0,k:[1,1,1,1]},{n:'Sockel',l:800,b:100,q:4,r:1,k:[1,0,0,0]},{n:'Traverse',l:762,b:100,q:4,r:1,k:[0,0,0,0]}]});
+ {n:'Front',l:716,b:396,q:4,r:0,k:[2,2,2,2]},{n:'Sockel',l:800,b:100,q:4,r:1,k:[1,0,0,0]},{n:'Traverse',l:762,b:100,q:4,r:1,k:[0,0,0,0]}]});
 let st=demo(),last=null,tm,res=null,setOpen=false;
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
-const fix=()=>{for(const k in DEF)if(st[k]===undefined)st[k]=JSON.parse(JSON.stringify(DEF[k]));st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
+const fix=()=>{if(!Array.isArray(st.etypes)){st.sub=num(st.et)>0?1:0;st.etypes=[{n:'ABS 0,8 mm',d:num(st.et)>0?num(st.et):0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]}
+ for(const k in DEF)if(st[k]===undefined)st[k]=JSON.parse(JSON.stringify(DEF[k]));st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
 const mats=()=>[...new Set(st.stock.map(s=>(s.n||'Platte').trim()||'Platte'))];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
 
@@ -246,6 +257,10 @@ function shell(){
  <div class="card"><h2>${esc(T('Teile'))}</h2><div id="parts"></div>
   <div class="btns"><button class="pri" id="addP">${esc(T('+ Teil'))}</button><button id="clr">${esc(T('Liste leeren'))}</button><button id="demo">${esc(T('Beispiel'))}</button><button id="rAll">${esc(T('Alle drehen'))}</button><button id="rNone">${esc(T('Keine drehen'))}</button></div>
   <p class="note">${esc(T('Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.'))}</p></div>
+ <div class="card"><h2>${esc(T('Kantenarten'))}</h2><div id="etypes"></div>
+  <div class="btns"><button id="addE">${esc(T('+ Kantenart'))}</button></div>
+  <label class="chk" style="margin-top:8px"><input type="checkbox" id="sub"${st.sub?' checked':''}>${esc(T('Kantendicke vom Zuschnitt abziehen'))}</label>
+  <p class="note">${esc(T('Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …'))}</p></div>
  <div class="card"><h2>${esc(T('Platten auf Lager'))}</h2><div id="stock"></div>
   <div class="btns"><button id="addS">${esc(T('+ Platte'))}</button></div>
   <p class="note">${esc(T('Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.'))}</p></div>
@@ -253,11 +268,9 @@ function shell(){
   <label class="f" style="display:block;margin-bottom:10px"><span>${esc(T('Auftrag / Kunde (steht auf Plan und Etiketten)'))}</span><input type="text" id="job" placeholder="${esc(T('z. B. Küche Huber'))}" value="${esc(st.job||'')}"></label>
   <div class="set">
    <label class="f"><span>${esc(T('Sägeblatt'))} (${ul()})</span><input type="number" id="kerf" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.kerf))}"></label>
-   <label class="f"><span>${esc(T('Kantendicke abziehen'))} (${ul()})</span><input type="number" data-o="et" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.et))}"></label>
-   <label class="f"><span>${esc(T('Kante Preis (€/lfm)'))}</span><input type="number" data-o="ep" inputmode="decimal" min="0" step="0.01" value="${esc(st.ep)}"></label>
    <label class="f"><span>${esc(T('Reststücke merken ab (kürzere Seite, 0 = aus)'))} (${ul()})</span><input type="number" data-o="rest" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.rest))}"></label>
   </div>
-  <p class="note">${esc(T('Kantendicke wird beim Zuschnitt abgezogen, Etiketten zeigen Fertig- und Zuschnittmaß. Schnittrichtung, Besäumen und mehr unter „Einstellungen“.'))}</p></div>
+  <p class="note">${esc(T('Schnittrichtung, Besäumen und mehr unter „Einstellungen“.'))}</p></div>
 </div><div id="out"></div></div>${settingsHTML()}`;
 }
 const dimFields=(k,i,o)=>{const L=`<label class="f"><span>${esc(T('Länge'))} ${ul()}</span><input type="number" step="any" inputmode="decimal" data-k="${k}" data-i="${i}" data-f="l" data-u="1" value="${esc(inU(o.l))}"></label>`,
@@ -272,7 +285,7 @@ function partsHTML(){
  <div class="r2">${dimFields('parts',i,o)}
   <label class="f"><span>${esc(T('Stk'))}</span><input type="number" inputmode="numeric" data-k="parts" data-i="${i}" data-f="q" value="${esc(o.q)}"></label>
   <label class="rot"><input type="checkbox" data-k="parts" data-i="${i}" data-f="r" ${o.r?'checked':''}>${esc(T('drehen'))}</label>
-  <div class="kw" role="group" aria-label="${esc(T('Kanten'))}">${['t','b','l','r'].map((c,j)=>`<button class="${c}" data-edge="${i}" data-j="${j}" aria-pressed="${o.k[j]?'true':'false'}" aria-label="${esc(T('Kante')+' '+T(ENL[j]))}" title="${EN[j]}"></button>`).join('')}<small>${kTxt(o.k)?esc(T('Kante')):''}</small></div>
+  <div class="kw" role="group" aria-label="${esc(T('Kanten'))}">${['t','b','l','r'].map((c,j)=>`<button class="${c}" data-edge="${i}" data-j="${j}" aria-pressed="${o.k[j]?'true':'false'}" style="--ec:${esc(etCol(o.k[j]))}" aria-label="${esc(T('Kante')+' '+T(ENL[j]))}" title="${EN[j]}${o.k[j]?': '+esc(etName(o.k[j])):''}"></button>`).join('')}<small>${o.k.some(v=>v)?esc(T('Kante')):''}</small></div>
  </div>${M.length>1?`<div class="r3"><select data-k="parts" data-i="${i}" data-f="m" aria-label="${esc(T('Material'))}">${M.map(n=>`<option${n===(M.includes(o.m)?o.m:M[0])?' selected':''}>${esc(n)}</option>`).join('')}</select></div>`:''}</div>`).join('');
 }
 function stockHTML(){
@@ -284,7 +297,16 @@ function stockHTML(){
   <label class="f"><span>${esc(T('€/Platte'))}</span><input type="number" inputmode="decimal" step="0.01" data-k="stock" data-i="${i}" data-f="p" value="${esc(o.p)}"></label>
  </div></div>`).join('');
 }
-function drawInputs(){$('parts').innerHTML=partsHTML();$('stock').innerHTML=stockHTML();drawProj()}
+function etypesHTML(){
+ return ET().map((o,i)=>`<div class="prt">
+ <div class="r1"><input class="nm" type="text" data-k="etypes" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${esc(T('Bezeichnung'))}" aria-label="${esc(T('Bezeichnung'))}">
+ <button class="del" data-dele="${i}" aria-label="${esc(T('Kantenart löschen'))}">×</button></div>
+ <div class="r2 e">
+  <label class="f"><span>${esc(T('Dicke'))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-k="etypes" data-i="${i}" data-f="d" data-u="1" value="${esc(inU(o.d))}"></label>
+  <label class="f"><span>${esc(T('Farbe'))} (${i+1})</span><input type="color" data-k="etypes" data-i="${i}" data-f="c" value="${esc(o.c||'#e6007e')}"></label>
+ </div></div>`).join('');
+}
+function drawInputs(){$('parts').innerHTML=partsHTML();$('etypes').innerHTML=etypesHTML();$('stock').innerHTML=stockHTML();drawProj()}
 function renderAll(){shell();drawInputs();drawOut()}
 
 /* ---------- Optimierer (Guillotine) ---------- */
@@ -323,12 +345,12 @@ function pack(items,stock,kerf,tr,minT,split,fit,small){
  return{sheets,un};
 }
 function optimize(){
- const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim)),et=Math.max(0,num(st.et)),minT=Math.max(0,num(st.minT)),M=mats();
+ const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim)),sub=!!st.sub,minT=Math.max(0,num(st.minT)),M=mats();
  const tr=[0,1,2,3].map(j=>st.ts[j]?trim:0);
  const stock=st.stock.map(s=>({n:(s.n||'Platte').trim()||'Platte',l:num(s.l),b:num(s.b),q:String(s.q??'').trim()===''?9999:Math.max(0,Math.floor(num(s.q))),pr:Math.max(0,num(s.p))})).filter(s=>s.l>0&&s.b>0&&s.q>0);
  const items=[];
  st.parts.forEach((p,i)=>{const fl=num(p.l),fb=num(p.b),q=Math.floor(num(p.q)),k=p.k.slice();
-  const l=fl-(k[2]+k[3])*et,b=fb-(k[0]+k[1])*et,m=M.includes(p.m)?p.m:M[0];
+  const th=j=>sub?etThick(k[j]):0,l=fl-th(2)-th(3),b=fb-th(0)-th(1),m=M.includes(p.m)?p.m:M[0];
   for(let j=0;j<q&&j<2000;j++)if(l>0&&b>0)items.push({n:p.n||(T('Teil')+' '+(i+1)),l,b,fl,fb,r:!!p.r,c:i,k,m})});
  const orders=[(a,b)=>b.l*b.b-a.l*a.b,(a,b)=>Math.max(b.l,b.b)-Math.max(a.l,a.b),(a,b)=>b.l-a.l||b.b-a.b,(a,b)=>b.b-a.b||b.l-a.l,(a,b)=>(b.l+b.b)-(a.l+a.b)];
  const splits=st.first==='laengs'?[0]:st.first==='quer'?[1]:[0,1,2],cutsGoal=st.goal==='cuts';
@@ -354,7 +376,7 @@ function optimize(){
  const rest=Math.max(0,num(st.rest));
  all.sheets.forEach((sh,i)=>{sh.n=i+1;sh.pl.sort((a,b)=>a.y-b.y||a.x-b.x);sh.pl.forEach((x,j)=>{x.pos=String(j+1).padStart(2,'0');x.id=`${i+1}-${x.pos}`});
   sh.rests=rest>0?sh.free.filter(r=>Math.min(r.w,r.h)>=rest).sort((a,b)=>b.w*b.h-a.w*a.h):[]});
- Object.assign(all,{items,kerf,trim,et,tr});
+ Object.assign(all,{items,kerf,trim,et:sub&&items.some(x=>x.fl!==x.l||x.fb!==x.b),tr});
  return all;
 }
 function groups(){
@@ -376,7 +398,7 @@ function plan(g){
   const e=Math.min(M*0.006,x.w*0.08,x.h*0.08),X1=x.x+e,Y1=x.y+e,X2=x.x+x.w-e,Y2=x.y+x.h-e;
   const top=[X1,Y1,X2,Y1],bot=[X1,Y2,X2,Y2],lef=[X1,Y1,X1,Y2],rig=[X2,Y1,X2,Y2];
   const map=x.rot?[lef,rig,top,bot]:[top,bot,lef,rig];
-  (x.p.k||[]).forEach((v,j)=>{if(v){const[a,b,c,d]=map[j];P.push({t:'l',x1:a,y1:b,x2:c,y2:d,c:C.edge,sw:M*0.0034,dash:[M*0.011,M*0.006]})}});
+  (x.p.k||[]).forEach((v,j)=>{if(v){const[a,b,c,d]=map[j],th=etThick(v);P.push({t:'l',x1:a,y1:b,x2:c,y2:d,c:etCol(v),sw:M*Math.min(0.0062,0.0026+0.0012*th),dash:[M*0.011,M*0.006]})}});
   const vert=x.h>x.w*1.4,L=vert?x.h:x.w,T2=vert?x.w:x.h,dims=dimStr(x.p.l,x.p.b);
   let fs=Math.min(T2*0.24,ts*1.7);
   fs=Math.min(fs,L*0.84/(Math.max(String(x.p.n).length,dims.length)*0.56));
@@ -455,10 +477,11 @@ const pct=v=>v.toLocaleString(loc(),{maximumFractionDigits:1});
 function drawOut(){
  res=optimize();
  const{sheets,un,items}=res,o=$('out');
- const kl=items.reduce((s,p)=>s+(p.k[0]+p.k[1])*p.fl+(p.k[2]+p.k[3])*p.fb,0)/1000;
+ const klT=new Map();for(const p of items)p.k.forEach((v,j)=>{if(v)klT.set(v,(klT.get(v)||0)+(j<2?p.fl:p.fb)/1000)});
+ const kl=[...klT.values()].reduce((a,b)=>a+b,0);res.klT=[...klT.entries()].sort((a,b)=>a[0]-b[0]);
  const sa=sheets.reduce((s,x)=>s+x.S.l*x.S.b,0),pa=sheets.reduce((s,x)=>s+x.pl.reduce((a,y)=>a+y.w*y.h,0),0);
  const cuts=sheets.reduce((s,x)=>s+x.pl.length,0);
- const cost=sheets.reduce((s,x)=>s+x.S.pr,0)+kl*Math.max(0,num(st.ep));
+ const cost=sheets.reduce((s,x)=>s+x.S.pr,0);
  Object.assign(res,{kl,cost,waste:sa?(1-pa/sa)*100:0});
  const eur=v=>v.toLocaleString(loc(),{style:'currency',currency:'EUR'});
  $('kPl').textContent=items.length?sheets.length:'–';$('kWa').textContent=items.length?pct(res.waste)+' %':'–';
@@ -474,7 +497,8 @@ function drawOut(){
  <div class="acts" style="margin-top:10px"><select id="fmt" aria-label="${esc(T('Etikettenformat'))}">${F.map((f,k)=>opt(k,fmtSel,f.t)).join('')}</select>
  <button class="pri" id="pdf">${esc(T('Etiketten als PDF'))}</button></div>
  <p class="note" id="pnote">${esc(T('Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.',{n:cuts}))}</p>
- <p class="note"><span class="leg"><i></i>${esc(T('Kante'))}</span> · ${esc(T('Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)'))}</p></div>`;
+ ${res.klT.length?`<div class="legs">${res.klT.map(([t,m])=>`<span class="leg" style="--ec:${esc(etCol(t))}"><i></i>${esc(etName(t))} · ${pct(m)} m</span>`).join('')}</div>`:''}
+ <p class="note">${esc(T('Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)'))}</p></div>`;
  groups().forEach((g,i)=>{const sh=g.sh;
   const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
   h+=`<div class="card sheet"><div class="sh"><div class="big">${esc(T('Platte'))} ${gName(g)} ${esc(T('von'))} ${sheets.length} · ${esc(sh.S.n)}${g.cnt>1?`<span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</div><span>${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${esc(T('genutzt'))} · ${sh.cuts} ${esc(T('Schnitte'))} · ${pct(sh.cl/1000)} ${esc(T('m Schnittlänge'))}</span></div>
@@ -505,7 +529,7 @@ function makePlanPDF(){
  const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'l'}),W=297,H=210,m=12,n=res.sheets.length,d=new Date().toLocaleDateString(loc()),job=pdfSafe((st.job||'').trim());
  const Tp=(s,v)=>pdfSafe(T(s,v)),[c1,c2]=colsLB(),hd={l:Tp('Länge'),b:Tp('Breite')};
  let page=0;const foot=()=>{page++;doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor('#6b757a');doc.text(Tp('Seite {n}',{n:page}),W-m,H-6,{align:'right'});
-  doc.text(`${Tp('Verschnitt gesamt')} ${pct(res.waste)} % · ${Tp('Kante gesamt')} ${pct(res.kl)} m`,m,H-6)};
+  doc.text(pdfSafe(`${T('Verschnitt gesamt')} ${pct(res.waste)} % · ${T('Kante gesamt')} ${pct(res.kl)} m`+(res.klT.length>1?' ('+res.klT.map(([t,v])=>etName(t)+' '+pct(v)+' m').join(', ')+')':'')),m,H-6)};
  groups().forEach((g,i)=>{const sh=g.sh;
   if(i)doc.addPage();
   const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
@@ -514,10 +538,11 @@ function makePlanPDF(){
   if(g.cnt>1){const tw=doc.getTextWidth(title),s=Tp('{n}× schneiden',{n:g.cnt});doc.setFontSize(11);const w2=doc.getTextWidth(s)+4;doc.setFillColor(C.main);doc.roundedRect(m+tw+3,m+0.2,w2,6.4,1.2,1.2,'F');doc.setTextColor('#ffffff');doc.text(s,m+tw+5,m+4.8);doc.setTextColor('#1b2125')}
   doc.setFontSize(11);doc.text(job,W-m,m+5,{align:'right'});
   doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor('#4a5459');
-  doc.text(pdfSafe(`${sh.S.n} · ${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${T('genutzt')} · ${sh.cuts} ${T('Schnitte')} · ${T('Sägeblatt')} ${fmt(res.kerf)} ${ul()} · ${T('Besäumen')} ${fmt(res.trim)} ${ul()}${res.et?' · '+T('Kante {x} abgezogen',{x:fmt(res.et)+' '+ul()}):''}`),m,m+11);
+  doc.text(pdfSafe(`${sh.S.n} · ${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${T('genutzt')} · ${sh.cuts} ${T('Schnitte')} · ${T('Sägeblatt')} ${fmt(res.kerf)} ${ul()} · ${T('Besäumen')} ${fmt(res.trim)} ${ul()}${res.et?' · '+T('Kantendicke abgezogen'):''}`),m,m+11);
   doc.text(d,W-m,m+11,{align:'right'});
-  doc.setDrawColor(C.edge);doc.setLineWidth(0.6);doc.setLineDashPattern([1.6,1],0);doc.line(W-m-48,m+14.6,W-m-40,m+14.6);doc.setLineDashPattern([],0);
-  doc.setTextColor('#4a5459');doc.text(Tp('Kante'),W-m-38,m+15.6);doc.setDrawColor(C.main);doc.setLineWidth(0.35);doc.line(W-m-24,m+14.6,W-m-16,m+14.6);doc.text(Tp('Gesamt'),W-m-14,m+15.6);
+  {const it=[...res.klT.map(([t])=>({t:(ET().length>1?t+' ':'')+pdfSafe(etName(t)),c:etCol(t),w:Math.min(0.9,0.45+0.15*etThick(t)),d:1})),{t:Tp('Gesamt'),c:C.main,w:0.35,d:0}];
+   doc.setFontSize(9);let lx=W-m;for(let q=it.length-1;q>=0;q--){const e=it[q],tw=doc.getTextWidth(e.t);lx-=tw;doc.setTextColor('#4a5459');doc.text(e.t,lx,m+15.6);lx-=10;
+    doc.setDrawColor(e.c);doc.setLineWidth(e.w);doc.setLineDashPattern(e.d?[1.6,1]:[],0);doc.line(lx,m+14.6,lx+8,m+14.6);doc.setLineDashPattern([],0);lx-=5}}
   const pl=plan(g),aw=W-2*m,ah=122,k=Math.min(aw/pl.bw,ah/pl.bh),y0=m+18;
   toPDF(doc,pl,m+(aw-pl.bw*k)/2,y0,k);
   let y=y0+pl.bh*k+7;const cw=aw/3,rh=4.4,cols=[0,15,51,64,77];
@@ -532,7 +557,7 @@ function makePlanPDF(){
    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor('#1b2125');
    let nm=pdfSafe(r.p.n+(r.rot?' ('+T('gedr.')+')':''));while(nm.length>2&&doc.getTextWidth(nm)>34)nm=nm.slice(0,-2)+'…';
    const idS=pdfSafe(gId(g,r));doc.setFont('helvetica','bold');doc.setFontSize(idS.length>6?7:8.5);doc.text(idS,bx,yy);doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.text(nm,bx+cols[1],yy);
-   const v={l:r.p.l,b:r.p.b};doc.text(fmt(v[c1]),bx+cols[2]+11,yy,{align:'right'});doc.text(fmt(v[c2]),bx+cols[3]+11,yy,{align:'right'});doc.text(kTxt(r.p.k)||'-',bx+cols[4],yy);
+   const v={l:r.p.l,b:r.p.b};doc.text(fmt(v[c1]),bx+cols[2]+11,yy,{align:'right'});doc.text(fmt(v[c2]),bx+cols[3]+11,yy,{align:'right'});doc.text(pdfSafe(kShort(r.p.k))||'-',bx+cols[4],yy);
    idx++;
   }
   foot();
@@ -578,7 +603,7 @@ function cutText(){
  const{un,kerf,trim}=res;let t=`${T('SCHNITTLISTE')}${st.job?' – '+st.job:''}  (${T('Sägeblatt')} ${fmt(kerf)} ${ul()}, ${T('Besäumen')} ${fmt(trim)} ${ul()})\n`;
  groups().forEach(g=>{const sh=g.sh;t+=`\n${T('Platte')} ${gName(g)}: ${sh.S.n} ${dimStr(sh.S.l,sh.S.b)}${g.cnt>1?'  ('+T('{n}× schneiden',{n:g.cnt})+')':''}\n`;
   for(const e of groupParts(sh.pl,g))t+=`  ${e.q}x  ${e.n}  ${dimStr(e.l,e.b)}${e.k?'  '+T('Kante')+' '+e.k:''}${e.rot?'  ('+T('gedreht')+')':''}\n`});
- t+=`\n${T('Kante gesamt')}: ${pct(res.kl)} m\n`;
+ t+=`\n${T('Kante gesamt')}: ${pct(res.kl)} m\n`;for(const[k2,v]of res.klT)t+=`  ${etName(k2)}: ${pct(v)} m\n`;
  if(un.length)t+=`\n${T('PASST NICHT')}: ${un.map(p=>p.n+' '+dimStr(p.l,p.b)).join(', ')}\n`;
  return t;
 }
@@ -599,7 +624,7 @@ function parseCSV(txt){
   const n=o<0?'':c[0],a1=num(c[1+o])*f,a2=num(c[2+o])*f;if(!(a1>0&&a2>0))continue;
   const l=cfg.ord==='lb'?a1:a2,b=cfg.ord==='lb'?a2:a1;
   const qv=num(c[3+o])||1,rv=(c[4+o]||'').toLowerCase(),mv=(c[5+o]||'').trim(),kv=(c[6+o]||'').toUpperCase();
-  out.push({n,l,b,q:Math.max(1,Math.round(qv)),r:/^(j|ja|y|yes|d|da|1|x|true)/.test(rv)?1:0,m:mv||undefined,k:EN.map(e=>kv.includes(e)?1:0)});
+  out.push({n,l,b,q:Math.max(1,Math.round(qv)),r:/^(j|ja|y|yes|d|da|1|x|true)/.test(rv)?1:0,m:mv||undefined,k:EN.map(e=>{const mm=kv.match(new RegExp(e+'(?:[:=](\\d))?'));return mm?Math.min(Math.max(1,+(mm[1]||1)),Math.max(1,ET().length)):0})});
  }
  return out;
 }
@@ -619,9 +644,10 @@ const setDlg=v=>{setOpen=v;$('set').hidden=!v;if(v)$('setX').focus();else $('set
 /* ---------- Ereignisse ---------- */
 document.addEventListener('input',e=>{
  const t=e.target,k=t.dataset.k,val=t.dataset.u&&t.value!==''?num(t.value)*uf():t.value;
- if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):val;refresh();if(k==='stock'&&f==='n'){clearTimeout(tmM);tmM=setTimeout(()=>{$('parts').innerHTML=partsHTML()},600)}}
+ if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):val;refresh();if((k==='stock'&&f==='n')||k==='etypes'){clearTimeout(tmM);tmM=setTimeout(()=>{$('parts').innerHTML=partsHTML()},k==='etypes'?150:600)}}
  else if(t.id==='kerf'||t.id==='trim'){st[t.id]=val;refresh()}
  else if(t.id==='job'){st.job=t.value;save()}
+ else if(t.id==='sub'){st.sub=t.checked?1:0;refresh()}
  else if(t.dataset.o){st[t.dataset.o]=val;refresh()}
  else if(t.dataset.c){const c=t.dataset.c;cfg[c]=t.value;saveCfg();if(c==='lang'||c==='unit'||c==='ord'){renderAll();$('set').querySelector(`[data-c="${c}"]`)?.focus()}else drawOut()}
  else if(t.id==='fmt'){fmtSel=+t.value;try{localStorage.setItem(KEY+'f',fmtSel)}catch(er){}}
@@ -640,8 +666,10 @@ document.addEventListener('click',e=>{
  if(t.id==='setB'){setDlg(true)}
  else if(t.id==='setX'||t.id==='setOk'){setDlg(false)}
  else if(t.dataset.ts!==undefined){const j=+t.dataset.ts;st.ts[j]=st.ts[j]?0:1;t.setAttribute('aria-pressed',st.ts[j]?'true':'false');refresh()}
- else if(t.dataset.edge!==undefined){const p=st.parts[+t.dataset.edge],j=+t.dataset.j;p.k[j]=p.k[j]?0:1;t.setAttribute('aria-pressed',p.k[j]?'true':'false');
-  t.parentNode.querySelector('small').textContent=kTxt(p.k)?T('Kante'):'';refresh()}
+ else if(t.dataset.edge!==undefined){const p=st.parts[+t.dataset.edge],j=+t.dataset.j,n=ET().length||1;p.k[j]=(p.k[j]+1)%(n+1);t.setAttribute('aria-pressed',p.k[j]?'true':'false');
+  t.style.setProperty('--ec',etCol(p.k[j]));t.title=EN[j]+(p.k[j]?': '+etName(p.k[j]):'');t.parentNode.querySelector('small').textContent=p.k.some(v=>v)?T('Kante'):'';refresh()}
+ else if(t.dataset.dele!==undefined){snap();const i=+t.dataset.dele,tt=i+1;st.etypes.splice(i,1);st.parts.forEach(p=>p.k=p.k.map(v=>v===tt?0:v>tt?v-1:v));drawInputs();refresh();toast(T('Zeile gelöscht'),1)}
+ else if(t.id==='addE'){const cols=['#1f6feb','#e11d48','#16a34a','#f59e0b','#7c3aed','#0891b2','#e6007e','#111827'];st.etypes.push({n:'',d:1,c:cols[st.etypes.length%cols.length]});drawInputs();refresh()}
  else if(t.dataset.del){snap();st[t.dataset.del].splice(+t.dataset.i,1);drawInputs();refresh();toast(T('Zeile gelöscht'),1)}
  else if(t.dataset.dup!==undefined){const i=+t.dataset.dup;st.parts.splice(i+1,0,JSON.parse(JSON.stringify(st.parts[i])));drawInputs();refresh();toast(T('Teil kopiert'))}
  else if(t.id==='addP'){const p=st.parts[st.parts.length-1];st.parts.push({n:'',l:'',b:'',q:1,r:p?p.r:1,k:[0,0,0,0],m:p?p.m:undefined});drawInputs();refresh();

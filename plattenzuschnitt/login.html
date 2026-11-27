@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Anmelden – SchnittWundeR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b1f3a">
 <style>
 :root{--slate:#0b1f3a;--acc:#1d4ed8;--accD:#1e40af;--accL:#93b4f5;--red:#c2410c;--ink:#0f172a;--mut:#556274;--line:#e3e8ef;--field:#f4f6f6}
 *{box-sizing:border-box;min-width:0}
@@ -31,6 +32,8 @@ input{width:100%;font:16px Inter,sans-serif;padding:10px 12px;border:1px solid v
 .msg{border-radius:10px;padding:10px 12px;margin:0 0 14px;font-size:15px}
 .msg.err{background:#fde8e4;border:1px solid var(--red);color:#7a1d10}.msg.ok{background:#eaf5ea;border:1px solid #2e7d32;color:#1b4d1e}
 .back{display:inline-block;margin-top:16px;color:#b9c2c6;font-size:14px}
+.legal{margin:10px 0 0;font-size:13px;color:#8d989d}.legal a{color:#b9c2c6}
+label.ok{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;margin:4px 0 14px;cursor:pointer}label.ok input{margin-top:3px;flex:none;width:16px;height:16px}label.ok a{color:inherit}
 [hidden]{display:none!important}
 fieldset.xp{border:0;padding:0;margin:4px 0 14px}
 fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;margin-bottom:8px}
@@ -65,11 +68,13 @@ fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;mar
      <label><input type="radio" name="xp" value="kenner"><span>Ja, kenne ich<small>Direkt loslegen</small></span></label>
      <label><input type="radio" name="xp" value="neu"><span>Nein, zeig’s mir<small>Kurze Tour in 5 Schritten</small></span></label>
     </div></fieldset>
+   <label class="ok" id="dsl" hidden><input type="checkbox" id="ds"><span>Ich habe die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a> gelesen und bin einverstanden, dass meine E-Mail und meine Projekte zum Speichern verarbeitet werden.</span></label>
    <button class="pri" id="go" type="submit">Anmelden</button>
    <div class="row"><button type="button" class="lnk" id="fg">Passwort vergessen?</button><a class="lnk" href="app.html" id="off" hidden>Ohne Konto weiter</a></div>
   </form>
  </div>
  <a class="back" href="./">← zurück zur Startseite</a>
+ <p class="legal"><a href="app.html?demo=1">Ohne Konto ausprobieren</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="supa.js"></script>
@@ -84,7 +89,7 @@ const TX={in:['Willkommen zurück','Melde dich an, um deine Projekte zu öffnen.
 const msg=(t,ok)=>{const m=$('msg');m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err')};
 function setMode(m){mode=m;const[a,b,c,ac]=TX[m];$('ttl').textContent=a;$('sub').textContent=b;$('go').textContent=c;
  $('le').hidden=m==='np';$('lp').hidden=m==='fg';$('pw').autocomplete=ac;$('lpt').textContent=m==='np'?'Neues Passwort (mind. 6 Zeichen)':m==='up'?'Passwort (mind. 6 Zeichen)':'Passwort';
- $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';$('xp').hidden=m!=='up';
+ $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';$('xp').hidden=m!=='up';$('dsl').hidden=m!=='up';
  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.m===m||(m==='fg'&&b.dataset.m==='in'))));msg('')}
 const de=e=>{const s=(e&&e.message)||'';
  if(/Invalid login/i.test(s))return'E-Mail oder Passwort stimmt nicht.';if(/not confirmed/i.test(s))return'Bitte zuerst den Link in der Bestätigungs-E-Mail anklicken.';
@@ -104,6 +109,7 @@ $('f').addEventListener('submit',async e=>{e.preventDefault();if(!window.sb)retu
  if(mode!=='np'&&!/^\S+@\S+\.\S+$/.test(em)){msg('Bitte eine gültige E-Mail eingeben.');return}
  if(mode!=='fg'&&pw.length<6){msg('Das Passwort braucht mindestens 6 Zeichen.');return}
  const xp=document.querySelector('input[name=xp]:checked')?.value;
+ if(mode==='up'&&!$('ds').checked){msg('Bitte noch der Datenschutzerklärung zustimmen.');$('ds').focus();return}
  if(mode==='up'&&!xp){msg('Bitte noch auswählen, ob du so ein Tool schon kennst.');$('xp').querySelector('input').focus();return}
  go.disabled=true;
  try{

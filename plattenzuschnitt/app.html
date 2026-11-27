@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SchnittWundeR</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b1f3a">
 <style>
 /* VOICE: ruhig, präzise, werkstatttauglich – wie ein guter Ausdruck aus dem Büro
    IDEA: der Schnittplan auf Papier, der an der Formatkreissäge hängt, mit Maßketten
@@ -31,6 +32,7 @@ header p{margin:6px 0 0;color:#b9c2c6;max-width:56ch}
 .gear svg{width:20px;height:20px}
 .who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:#c9d1d5}.who button{min-height:34px;padding:0 12px;font-size:14px;background:#ffffff14;border-color:#ffffff30;color:#fff}.who a{color:var(--accL)}
 .credit{display:inline-block;margin-top:8px;font-size:13px;color:#9fabb1;letter-spacing:.01em}.credit b{color:var(--accL);font-weight:600}
+.nav .legal{align-self:center;font-size:12px;color:#8d989d}.nav .legal a{color:#b9c2c6}
 .nav{position:sticky;top:0;z-index:15;background:#151c20;border-bottom:1px solid #ffffff1f;box-shadow:0 2px 10px #0003}
 .nin{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;overflow-x:auto;padding:8px max(4vw,16px) 10px;max-width:1500px;margin:auto;scrollbar-width:thin}
 .ni{flex:none;display:flex;flex-direction:column;gap:2px}
@@ -275,7 +277,7 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Tipp: Randbeschnitt und Sägeblatt verkleinern die nutzbare Platte. Mehr Platten ins Lager oder „Alles auf eine Platte“ ausschalten.','Tip: edge trim and kerf reduce the usable sheet. Add stock or turn off “Everything on one sheet”.','Savjet: obrezivanje i list pile smanjuju korisnu ploču. Dodaj ploče ili isključi „Sve na jednu ploču“.'],
  ['Listen als PDF','Lists PDF','Liste PDF'],['Teileliste','Parts list','Lista dijelova'],['Zuschnittliste','Cutting list','Lista rezanja'],['Maserung','Grain','Godovi'],['platziert','placed','postavljeno'],['Teil aktiv','Part active','Dio aktivan'],
  ['Länge und Breite tauschen','Swap length and width','Zamijeni dužinu i širinu'],['Für alle Teile','For all parts','Za sve dijelove'],['Alle Seiten','All sides','Sve strane'],['Längsseiten','Long sides','Duže strane'],['Breitseiten','Short sides','Kraće strane'],['Keine Seiten','No sides','Bez strana'],
- ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
+ ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Konto anlegen','Create account','Napravi račun'],['Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.','Demo: projects stay in this browser only. Create an account to save them in the cloud.','Demo: projekti ostaju samo u ovom pregledniku. Sa računom ih spremaš u cloud.'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
 ].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
 [['Assistent','Wizard','Čarobnjak'],['Schritt {n} von {m}','Step {n} of {m}','Korak {n} od {m}'],['Abbrechen','Cancel','Odustani'],['Schnittliste erzeugen','Create cut list','Napravi listu rezanja'],
  ['Bekantung','Edge banding','Kantovanje'],['Optimierung','Optimization','Optimizacija'],['Zusammenfassung','Summary','Sažetak'],
@@ -361,6 +363,7 @@ function navHTML(){
  ${it('Sägeblatt','',`<span class="row"><input type="number" id="kerf" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.kerf))}">${ul()}</span>`)}
  ${it('Minimales Besäummaß','Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).',`<span class="row"><input type="number" step="any" min="0" inputmode="decimal" data-o="minT" data-u="1" value="${esc(inU(st.minT))}">${ul()}</span>`)}
  <div class="ni" title="${esc(T('Wie viel an jeder Plattenkante abgeschnitten wird. Tippe auf die Seiten, die besäumt werden.'))}"><span>${esc(T('Randbeschnitt'))}</span><span class="row"><input type="number" step="any" min="0" inputmode="decimal" id="trim" data-u="1" value="${esc(inU(st.trim))}" aria-label="${esc(T('Randbeschnitt'))}">${ul()}<span class="kw tr" role="group" aria-label="${esc(T('Randbeschnitt'))}">${tsb}</span></span></div>
+ <div class="ni legal"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></div>
  </div></nav>`;
 }
 function shell(){
@@ -1012,7 +1015,7 @@ const PK=KEY+'-projekte';
 const localP=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return{}}};
 const projs=()=>cloud||localP();
 function drawUser(){const w=$('who');if(!w)return;
- w.innerHTML=user?`<span>☁ ${esc(user.email)}</span><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html">${esc(T('Anmelden'))}</a>`:''}
+ w.innerHTML=user?`<span>☁ ${esc(user.email)}</span><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html?neu=1">${esc(T('Konto anlegen'))}</a>`:''}
 async function loadCloud(){
  const{data,error}=await sb.from('projects').select('name,data').order('name');
  if(error){toast(T('Cloud nicht erreichbar'));return}
@@ -1306,7 +1309,9 @@ compute(true);renderAll();
  const show=()=>document.getElementById('authhide')?.remove();
  if(!window.sb){show();return}
  let s=null;try{s=(await sb.auth.getSession()).data.session}catch(e){show();return}
- if(!s){location.replace('login.html');return}
+ if(!s){let demo=new URLSearchParams(location.search).has('demo');try{if(demo)sessionStorage.setItem('sw-demo','1');else demo=!!sessionStorage.getItem('sw-demo')}catch(e){}
+  if(!demo){location.replace('login.html');return}
+  show();drawUser();toast(T('Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.'));return}
  user=s.user;show();drawUser();loadCloud();
  if(tourWanted()){try{sessionStorage.setItem('sw-wiz','1')}catch(e){}tourOpen()}
  else try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}

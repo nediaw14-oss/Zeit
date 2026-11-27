@@ -5,8 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SchnittWundeR – Plattenzuschnitt kostenlos optimieren</title>
 <meta name="description" content="SchnittWundeR: kostenloser Zuschnitt-Optimierer für Spanplatte, MDF und Multiplex: Schnittplan mit Maßketten, Schnittfolge, Kanten, Maserung und Etiketten mit QR-Code.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SchnittWundeR – Plattenzuschnitt kostenlos optimieren">
+<meta property="og:description" content="Schnittplan mit Maßketten, Schnittfolge, Kanten und QR-Etiketten. Kostenlos, im Browser, auf Handy und PC.">
+<meta property="og:image" content="https://nediaw14-oss.github.io/Zeit/plattenzuschnitt/hero-bg.jpg">
+<meta property="og:locale" content="de_DE">
+<link rel="stylesheet" href="fonts.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b1f3a">
 <style>
 /* STIL: seriös und ruhig – Navy, Stahlgrau, ein Blau als Akzent; Inter für alles */
 :root{--navy:#0b1f3a;--navy2:#081629;--acc:#1d4ed8;--accD:#1e40af;--accL:#93b4f5;--ink:#0f172a;--mut:#556274;--bg:#f6f8fb;--card:#fff;--line:#e3e8ef}
@@ -41,6 +47,7 @@ a{color:inherit}
 .hero h1 em{font-style:normal;color:var(--accL)}
 .hero p{color:#aebbd0;font-size:18px;max-width:46ch;margin:18px 0 28px}
 .cta{display:flex;flex-wrap:wrap;gap:10px}
+.hero p.have{font-size:14px;margin:12px 0 0;color:#8fa0b8}.hero p.have a{color:#c7d3e6}
 .facts{display:flex;flex-wrap:wrap;gap:0;margin-top:36px;border-top:1px solid #ffffff1c;padding-top:20px}
 .facts div{display:flex;flex-direction:column;padding-right:22px;margin-right:22px;border-right:1px solid #ffffff1c}.facts div:last-child{border:0}
 .facts b{font:700 24px Inter,sans-serif;color:#fff;letter-spacing:-.02em}.facts span{font-size:13px;color:#8fa0b8}
@@ -107,7 +114,8 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
   <span class="tag">SchnittWundeR · Zuschnitt-Optimierer für Plattenwerkstoffe</span>
   <h1>Professionelle Zuschnittplanung für Plattenwerkstoffe. <em>Kostenlos.</em></h1>
   <p>Teile eintragen, ▶ drücken – fertig ist der Plan mit Maßketten, Schnittfolge und Etiketten. Nur durchgehende Schnitte, so wie an der Formatkreissäge.</p>
-  <div class="cta"><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a><a class="btn gh" href="login.html">Ich habe schon ein Konto</a></div>
+  <div class="cta"><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a><a class="btn gh" href="app.html?demo=1">Ohne Anmeldung ausprobieren</a></div>
+  <p class="have">Schon ein Konto? <a href="login.html">Anmelden</a></p>
   <div class="facts"><div><b>0 €</b><span>kein Abo, kein Limit</span></div><div><b>3</b><span>Sprachen: DE · EN · BS</span></div><div><b>Cloud</b><span>Projekte auf Handy und PC</span></div></div>
  </div>
  <div class="stage" id="stage" role="img" aria-label="Schnittplan: Eine Spanplatte wird Schnitt für Schnitt zugeschnitten, danach heben sich die fertigen Teile ab">
@@ -182,11 +190,11 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 <section class="end"><div class="w">
  <h2>Probier SchnittWundeR mit deinem nächsten Auftrag.</h2>
  <p>Konto in einer Minute angelegt. Deine lokalen Projekte werden beim ersten Anmelden automatisch übernommen.</p>
- <a class="btn pri" href="login.html?neu=1">Kostenlos starten</a>
+ <div class="cta" style="justify-content:center"><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a><a class="btn dk" href="app.html?demo=1">Erst mal ausprobieren</a></div>
 </div></section>
 </main>
 
-<footer><div class="w"><span>SchnittWundeR · Plattenzuschnitt Optimierer</span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
+<footer><div class="w"><span>SchnittWundeR · Plattenzuschnitt Optimierer</span><span><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 <script type="module">
 /* SchnittWundeR – 3D-Szene im Kopf: Platte wird zugeschnitten, Teile heben sich ab */

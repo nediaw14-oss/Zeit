@@ -12,7 +12,7 @@
    IDEA: der Schnittplan auf Papier, der an der Formatkreissäge hängt, mit Maßketten
    PICTURE: weiße Planblätter mit Birkenteilen, schraffiertem Rest und Magenta-Kanten
    COLOUR and TYPE: Navy-Kopf, Birke, Akzent-Blau (Rot nur für Warnungen), Kanten-Magenta; Barlow Condensed + Barlow
-   LAYOUT: Eingabe links, Pläne rechts, Kennzahlen im Kopf; auf dem Handy untereinander */
+   LAYOUT: Seiten-Panel links mit allen Eingaben und Optionen, Schnittplan groß rechts; auf dem Handy schwebendes Panel */
 :root{color-scheme:light dark;
 --bg:light-dark(#eef0ef,#101416);--card:light-dark(#ffffff,#1a2023);--ink:light-dark(#1b2125,#ecebe6);--mut:light-dark(#5f686e,#9aa4aa);
 --line:light-dark(#e1e5e6,#2b3438);--field:light-dark(#f4f6f6,#232b2f);--sh:light-dark(0 1px 2px #0000000d,0 1px 3px #0006);
@@ -51,8 +51,49 @@ header p{margin:6px 0 0;color:#b9c2c6;max-width:56ch}
 .kpi .big{font-size:clamp(28px,3.6vw,40px);font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff}
 .kpi span{font-size:13px;color:#9fabb1}
 .kpi .wa .big{color:var(--accL)}
-.wrap{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:22px;padding:22px max(4vw,16px) 56px;max-width:1500px;margin:auto}
-@media(max-width:960px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.wrap{display:grid;grid-template-columns:clamp(380px,30vw,470px) minmax(0,1fr);align-items:start}
+/* Seiten-Panel: Desktop feste Sidebar links, Handy schwebendes Panel */
+.side{position:sticky;top:0;height:100dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;background:light-dark(#e4e8e7,#0c1113);border-right:1px solid var(--line);padding:16px 14px 40px}
+.side .card{padding:14px;margin-bottom:12px}.side h2{font-size:20px;margin-bottom:10px}
+.side .opts>summary h2,.side .sset>summary h2{margin:0}
+.sset>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;margin:0}.sset>summary::-webkit-details-marker{display:none}
+.sset>summary:after{content:"";width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
+.sset[open]>summary:after{transform:rotate(-135deg);margin-bottom:-4px}.sset[open]>summary{margin-bottom:12px}
+.side .nav{position:static;background:none;border:0;box-shadow:none}
+.side .nin{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;padding:0;overflow:visible;max-width:none;align-items:end}
+.side .ni>span{color:var(--mut);font-size:12px;white-space:normal}
+.side .nav select,.side .nav input[type=number]{width:100%;min-height:42px;background:var(--field);color:var(--ink);border-color:var(--line);font-size:15px}
+.side .nav .row{color:var(--mut)}.side .nav .row input[type=number]{flex:1}
+.side .ni:has(.kw),.side .ni.legal{grid-column:1/-1}
+.side .nav .kw.tr:before{background:light-dark(#d5dbde,#3a454b)}.side .nav .kw button:after{background:light-dark(#c8ced1,#56636a)}
+.side .nav .legal{justify-self:start;color:var(--mut);flex-direction:row;gap:6px}.side .nav .legal a{color:var(--mut)}
+.sdh{display:none}
+.outc{padding:20px max(2.5vw,16px) 100px;min-height:100dvh}
+.sbt,.sbk{display:none}
+/* Desktop: App-Rahmen – Kopf oben, Panel und Plan scrollen getrennt */
+@media(min-width:961px) and (min-height:520px){
+ #app{display:flex;flex-direction:column;height:100dvh}
+ header{flex:none;padding-block:14px}header p{display:none}.credit{margin-top:4px}.who{margin-top:4px}
+ .wrap{flex:1;min-height:0;align-items:stretch}
+ .side{position:static;height:auto;min-height:0}
+ .outc{min-height:0;overflow-y:auto;scrollbar-width:thin}
+}
+@media(max-width:960px){
+ .wrap{display:block}
+ .side{position:fixed;z-index:27;left:0;top:0;bottom:0;height:auto;width:min(460px,94vw);padding:0 14px 40px;transform:translateX(-104%);transition:transform .25s ease;box-shadow:10px 0 34px #0006;visibility:hidden}
+ .side.open{transform:none;visibility:visible}
+ .sdh{display:flex;position:sticky;top:0;z-index:3;justify-content:space-between;align-items:center;gap:8px;background:inherit;padding:12px 0 10px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+ .sdh h2{margin:0;font-size:24px}.sdh .btns{margin:0;flex-wrap:nowrap}
+ .sdh .go{background:#2e7d32;border-color:#2e7d32;color:#fff}.sdh .sx{font-size:24px;padding:0 12px}
+ .sbk{display:block;position:fixed;inset:0;background:#0008;z-index:26;opacity:0;pointer-events:none;transition:opacity .25s}
+ .sbk.open{opacity:1;pointer-events:auto}
+ .sbt{display:inline-flex;align-items:center;gap:8px;position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(22px,env(safe-area-inset-bottom));z-index:25;min-height:56px;padding:0 20px 0 16px;border-radius:999px;background:var(--slate);border:1px solid #ffffff30;color:#fff;font-size:16px;box-shadow:0 6px 18px #0005}
+ .sbt svg{width:22px;height:22px}
+ .outc{padding:16px 12px 110px;min-height:0}
+ body.sopen{overflow:hidden}
+ header{padding-block:14px}header p{display:none}.hin{gap:12px 24px}.credit{margin-top:4px}
+}
+@media(prefers-reduced-motion:reduce){.side,.sbk{transition:none}}
 .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:var(--sh);border:1px solid light-dark(transparent,var(--line))}
 .prt{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:light-dark(#fcfcfb,#1e2528)}
 .r1{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin-bottom:8px}
@@ -192,7 +233,7 @@ h3.sq{font-size:17px;margin:18px 0 0}
 .trf .skip{background:transparent;border-color:transparent;color:var(--mut);padding:0 6px;text-decoration:underline;text-underline-offset:3px}
 
 @page{size:A4 landscape;margin:10mm}
-@media print{body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.inp,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
+@media print{#app{display:block!important;height:auto!important}.outc{overflow:visible!important}body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.side,.sbt,.sbk,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.outc{padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
@@ -219,7 +260,7 @@ en:{'Gleiche Platten stapeln':'Stack identical sheets','Kantenarten':'Edge types
 'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Length = grain direction. “rotate” off = grain must match. Edge: tap the sides of the small part – top/bottom = length edges L1/L2, left/right = width edges B1/B2.',
 'Platten auf Lager':'Stock sheets','+ Platte':'+ Sheet','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Leave qty empty = unlimited. Same material name = same material (e.g. full sheet and offcut). Price optional for costing.',
 'Auftrag & Optionen':'Job & options','Auftrag / Kunde (steht auf Plan und Etiketten)':'Job / customer (shown on plan and labels)','z. B. Küche Huber':'e.g. Kitchen Smith','Sägeblatt':'Saw kerf','Kantendicke abziehen':'Subtract edge thickness','Kante Preis (€/lfm)':'Edge price (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Keep offcuts from (shorter side, 0 = off)',
-'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.':'Saw kerf, cut direction, trimming and more are in the bar at the top.',
+'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen unter „Säge & Einstellungen“.':'Saw kerf, cut direction, trimming and more are under “Saw & settings”.','Säge & Einstellungen':'Saw & settings','Berechnen':'Calculate',
 'Bezeichnung':'Name','Länge':'Length','Breite':'Width','Stk':'Qty','drehen':'rotate','Kante':'Edge','Kopie':'Copy','€/Platte':'€/sheet','Noch keine Teile. Tippe auf „+ Teil“.':'No parts yet. Tap “+ Part”.',
 'Noch nichts zu schneiden':'Nothing to cut yet','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Enter your parts with length, width and quantity.','Drucken & Etiketten':'Print & labels','Schnittplan als PDF':'Cutting plan PDF','Drucken':'Print','Schnittliste kopieren':'Copy cut list','Schnittliste als CSV':'Cut list CSV','Etiketten als PDF':'Labels PDF',
 'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: one A4 landscape page per sheet with dimension chains and part list. Labels: one per part ({n}) with QR code.',
@@ -245,7 +286,7 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
 'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Dužina = smjer godova. „okreni“ isključeno = godovi moraju odgovarati. Kant: dodirni strane malog dijela – gore/dolje = dužni kantovi L1/L2, lijevo/desno = širinski kantovi B1/B2.',
 'Platten auf Lager':'Ploče na stanju','+ Platte':'+ Ploča','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Prazna količina = neograničeno. Isti naziv = isti materijal (npr. cijela ploča i ostatak). Cijena je opcionalna za obračun.',
 'Auftrag & Optionen':'Nalog i opcije','Auftrag / Kunde (steht auf Plan und Etiketten)':'Nalog / kupac (piše na planu i etiketama)','z. B. Küche Huber':'npr. Kuhinja Hodžić','Sägeblatt':'List pile','Kantendicke abziehen':'Oduzmi debljinu kanta','Kante Preis (€/lfm)':'Cijena kanta (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Pamti ostatke od (kraća strana, 0 = isključeno)',
-'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.':'List pile, smjer reza, obrezivanje i više su u traci na vrhu.',
+'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen unter „Säge & Einstellungen“.':'List pile, smjer reza, obrezivanje i više su pod „Pila i postavke“.','Säge & Einstellungen':'Pila i postavke','Berechnen':'Izračunaj',
 'Bezeichnung':'Naziv','Länge':'Dužina','Breite':'Širina','Stk':'Kom','drehen':'okreni','Kante':'Kant','Kopie':'Kopija','€/Platte':'€/ploča','Noch keine Teile. Tippe auf „+ Teil“.':'Još nema dijelova. Dodirni „+ Dio“.',
 'Noch nichts zu schneiden':'Još nema ništa za rezati','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Unesi dijelove s dužinom, širinom i količinom.','Drucken & Etiketten':'Štampa i etikete','Schnittplan als PDF':'Plan rezanja PDF','Drucken':'Štampaj','Schnittliste kopieren':'Kopiraj listu rezova','Schnittliste als CSV':'Lista rezova CSV','Etiketten als PDF':'Etikete PDF',
 'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: jedna A4 stranica po ploči, s kotama i listom dijelova. Etikete: jedna po dijelu ({n} kom) s QR kodom.',
@@ -304,7 +345,7 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Säge & Einstellungen','Saw & settings','Pila i postavke'],['Speichern & Drucken','Save & print','Spremi i štampaj'],
  ['Hier trägst du ein, welche Platten du hast: Material, Länge × Breite und Stückzahl. Stk leer = unbegrenzt. Mit Preis rechnet das Tool auch die Kosten aus.','Enter the sheets you have here: material, length × width and quantity. Empty qty = unlimited. Add a price and the tool also calculates the cost.','Ovdje upiši koje ploče imaš: materijal, dužina × širina i količina. Prazna količina = neograničeno. S cijenom alat računa i trošak.'],
  ['Jede Zeile ist ein Teil: Bezeichnung, Länge, Breite und Stückzahl. „drehen“ aus = die Maserung muss stimmen. Auf die Seiten des kleinen Rechtecks tippen = Kante dran. Listen aus Excel kannst du einfach einfügen.','Each row is one part: name, length, width and quantity. “rotate” off = grain must match. Tap the sides of the small rectangle = add edge banding. You can paste lists straight from Excel.','Svaki red je jedan dio: naziv, dužina, širina i količina. „okreni“ isključeno = godovi moraju odgovarati. Dodirni strane malog pravougaonika = dodaj kant. Liste iz Excela samo zalijepi.'],
- ['In dieser Leiste stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.','In this bar you set saw kerf, edge trim and cut direction – and whether least waste or fewest cuts matters. Language and units (mm, cm, inch) are here too.','U ovoj traci podešavaš list pile, obrezivanje i smjer reza – i da li je važnije najmanje otpada ili najmanje rezova. Ovdje su i jezik i jedinice (mm, cm, inči).'],
+ ['Hier stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.','In this bar you set saw kerf, edge trim and cut direction – and whether least waste or fewest cuts matters. Language and units (mm, cm, inch) are here too.','U ovoj traci podešavaš list pile, obrezivanje i smjer reza – i da li je važnije najmanje otpada ili najmanje rezova. Ovdje su i jezik i jedinice (mm, cm, inči).'],
  ['Tippe auf den grünen ▶-Knopf. Oben siehst du dann Platten, Verschnitt und Kante, darunter den Plan pro Platte. „Geführter Zuschnitt“ zeigt dir an der Säge Schnitt für Schnitt, was dran ist.','Tap the green ▶ button. At the top you then see sheets, waste and edge banding, below that the plan for each sheet. “Guided cutting” walks you through it cut by cut at the saw.','Dodirni zeleno ▶ dugme. Gore tada vidiš ploče, otpad i kant, ispod plan za svaku ploču. „Vođeno rezanje“ te na pili vodi rez po rez.'],
  ['Trag unter „Auftrag / Kunde“ einen Namen ein und tippe auf „Speichern“ – dann liegt das Projekt in deiner Cloud. Schnittplan, Listen und Etiketten mit QR-Code bekommst du nach dem Berechnen als PDF.','Enter a name under “Job / customer” and tap “Save” – the project is then stored in your cloud. After calculating you get the cutting plan, lists and labels with QR code as PDF.','Upiši naziv pod „Nalog / kupac“ i dodirni „Spremi“ – projekt je tada u tvom oblaku. Nakon izračuna dobiješ plan rezanja, liste i etikete s QR kodom kao PDF.'],
  ['Das war’s! Am schnellsten geht dein erster Auftrag mit dem Assistenten – oder du legst direkt selbst los.','That’s it! The quickest way to your first job is the wizard – or just get started yourself.','To je to! Najbrže do prvog naloga ide s čarobnjakom – ili odmah počni sam.']
@@ -342,7 +383,7 @@ const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...JSON.parse(JSON.stringi
  parts:[{n:'Seite',l:720,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Boden/Deckel',l:762,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Fachboden',l:760,b:540,q:6,r:1,k:[1,0,0,0]},
  {n:'Front',l:716,b:396,q:4,r:0,k:[2,2,2,2]},{n:'Sockel',l:800,b:100,q:4,r:1,k:[1,0,0,0]},{n:'Traverse',l:762,b:100,q:4,r:1,k:[0,0,0,0]}]});
 let user=null,cloud=null;
-let st=demo(),last=null,tm,res=null,setOpen=false;
+let st=demo(),last=null,tm,res=null,setOpen=false,sideOpen=false;
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
 const fix=()=>{if(!Array.isArray(st.etypes)){st.sub=num(st.et)>0?1:0;st.etypes=[{n:'ABS 0,8 mm',d:num(st.et)>0?num(st.et):0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]}
  for(const k in DEF)if(st[k]===undefined)st[k]=JSON.parse(JSON.stringify(DEF[k]));st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
@@ -371,7 +412,7 @@ function navHTML(){
 function shell(){
  document.documentElement.lang=cfg.lang;document.title='SchnittWundeR';
  $('undo').textContent=T('Rückgängig');
- $('app').innerHTML=navHTML()+`<header><div class="hin">
+ $('app').innerHTML=`<header><div class="hin">
  <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button><button class="gear" id="tourb" title="${esc(T('Kurze Tour'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>${esc(T('Tour'))}</button></div>
  <p>${esc(T('Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.'))}</p>
  <span class="credit">coded by <b>Nedi</b> / <b>Claude</b></span><div class="who" id="who"></div></div>
@@ -382,7 +423,8 @@ function shell(){
   <div><b class="big" id="kKa">–</b><span>${esc(T('Kante lfm'))}</span></div>
   <div id="kCoW" hidden><b class="big" id="kCo">–</b><span>${esc(T('Kosten'))}</span></div>
  </div></div></header>
-<div class="wrap"><div class="inp">
+<div class="wrap"><aside class="side${sideOpen?' open':''}" id="side" aria-label="${esc(T('Optionen'))}">
+ <div class="sdh"><h2>${esc(T('Optionen'))}</h2><div class="btns"><button class="go" data-run>▶ ${esc(T('Berechnen'))}</button><button class="sx" id="sclose" aria-label="${esc(T('Schließen'))}">×</button></div></div>
  <div class="card"><h2>${esc(T('Projekt'))}</h2>
   <div class="acts"><select id="proj" aria-label="${esc(T('Projekt'))}"></select><button id="pload">${esc(T('Laden'))}</button><button id="pdel">${esc(T('Löschen'))}</button></div>
   <div class="btns"><button class="pri" id="psave">${esc(T('Speichern'))}</button><button id="pjson">${esc(T('Als Datei sichern'))}</button><label class="fbtn">${esc(T('Datei öffnen'))}<input type="file" id="pfile" accept=".json,.csv,.txt" hidden></label></div>
@@ -412,8 +454,11 @@ function shell(){
   <div class="set">
    <label class="f"><span>${esc(T('Reststücke merken ab (kürzere Seite, 0 = aus)'))} (${ul()})</span><input type="number" data-o="rest" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.rest))}"></label>
   </div>
-  <p class="note">${esc(T('Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.'))}</p></div>
-</div><div class="outc"><div id="optc">${optHTML()}</div><div id="out"></div></div></div>
+  <p class="note">${esc(T('Sägeblatt, Schnittrichtung, Besäumen und mehr stehen unter „Säge & Einstellungen“.'))}</p></div>
+ <details class="card sset" open><summary><h2>${esc(T('Säge & Einstellungen'))}</h2></summary>${navHTML()}</details>
+ <div id="optc">${optHTML()}</div>
+</aside><div class="sbk${sideOpen?' open':''}" id="sbk"></div><main class="outc"><div id="out"></div></main></div>
+<button class="sbt" id="sopen" aria-controls="side" aria-expanded="${sideOpen}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>${esc(T('Optionen'))}</button>
 <button class="fab" id="run" aria-label="${esc(T('Schnittplan berechnen'))}" title="${esc(T('Schnittplan berechnen'))}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l15 8-15 8z"/></svg></button>`;
 }
 function optHTML(){
@@ -463,7 +508,18 @@ function etypesHTML(){
  </div></div>`).join('');
 }
 function drawInputs(){$('parts').innerHTML=partsHTML();$('etypes').innerHTML=etypesHTML();$('stock').innerHTML=stockHTML();drawProj()}
-function renderAll(){shell();drawInputs();renderOut();setNavH();drawUser()}
+function renderAll(){const sc=$('side')?.scrollTop||0;shell();drawInputs();renderOut();setNavH();drawUser();const sd=$('side');if(sd)sd.scrollTop=sc}
+/* Seiten-Panel (Handy: schwebend) */
+const mob=()=>matchMedia('(max-width:960px)').matches;
+function sideSet(o){sideOpen=!!o;$('side')?.classList.toggle('open',sideOpen);$('sbk')?.classList.toggle('open',sideOpen);
+ const b=$('sopen');if(b)b.setAttribute('aria-expanded',sideOpen);document.body.classList.toggle('sopen',sideOpen&&mob())}
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.closest('#sopen')){sideSet(true);return}
+ if(t.closest('#sclose')||t.closest('#sbk')){sideSet(false);return}
+ if(t.closest('[data-run]')){sideSet(false);compute();return}
+ if(t.closest('#run')&&sideOpen)sideSet(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sideOpen&&!TR&&!$('wov')&&!$('gov'))sideSet(false)});
+addEventListener('resize',()=>{if(!mob()&&sideOpen)sideSet(false)});
 const setNavH=()=>{const n=document.querySelector('.nav');document.documentElement.style.setProperty('--navh',(n&&getComputedStyle(n).position==='sticky'?n.offsetHeight:0)+'px')};
 addEventListener('resize',setNavH);
 
@@ -1277,7 +1333,7 @@ const TRDONE=KEY+'-tour-done';
 const TRS=[
  ['Platten auf Lager',()=>$('stock')?.closest('.card'),'Hier trägst du ein, welche Platten du hast: Material, Länge × Breite und Stückzahl. Stk leer = unbegrenzt. Mit Preis rechnet das Tool auch die Kosten aus.'],
  ['Teile',()=>$('parts')?.closest('.card'),'Jede Zeile ist ein Teil: Bezeichnung, Länge, Breite und Stückzahl. „drehen“ aus = die Maserung muss stimmen. Auf die Seiten des kleinen Rechtecks tippen = Kante dran. Listen aus Excel kannst du einfach einfügen.'],
- ['Säge & Einstellungen',()=>document.querySelector('.nav'),'In dieser Leiste stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.'],
+ ['Säge & Einstellungen',()=>document.querySelector('.sset'),'Hier stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.'],
  ['Schnittplan berechnen',()=>$('run'),'Tippe auf den grünen ▶-Knopf. Oben siehst du dann Platten, Verschnitt und Kante, darunter den Plan pro Platte. „Geführter Zuschnitt“ zeigt dir an der Säge Schnitt für Schnitt, was dran ist.'],
  ['Speichern & Drucken',()=>$('psave')?.closest('.card'),'Trag unter „Auftrag / Kunde“ einen Namen ein und tippe auf „Speichern“ – dann liegt das Projekt in deiner Cloud. Schnittplan, Listen und Etiketten mit QR-Code bekommst du nach dem Berechnen als PDF.']];
 let TR=null;
@@ -1306,7 +1362,10 @@ function tourDraw(){const[ttl,get,txt]=TRS[TR.i],n=TRS.length,lastS=TR.i===n-1;
  ${lastS?`<p>${esc(T('Das war’s! Am schnellsten geht dein erster Auftrag mit dem Assistenten – oder du legst direkt selbst los.'))}</p>`:''}
  <div class="trf">${lastS?`<button type="button" data-tr="back">${esc(T('Zurück'))}</button><div class="btns"><button type="button" data-tr="x">${esc(T('Selbst loslegen'))}</button><button type="button" class="pri" data-tr="wiz">${esc(T('Mit dem Assistenten starten'))}</button></div>`
   :`<button type="button" class="skip" data-tr="x">${esc(T('Tour überspringen'))}</button><div class="btns">${TR.i?`<button type="button" data-tr="back">${esc(T('Zurück'))}</button>`:''}<button type="button" class="pri" data-tr="next">${esc(T('Weiter'))} ▶</button></div>`}</div>`;
- const el=get();if(el&&getComputedStyle(el).position!=='fixed'&&getComputedStyle(el).position!=='sticky'){
+ const el=get(),inS=el&&el.closest('#side');
+ if(inS){if(mob())sideSet(true);else if(sideOpen)sideSet(false);el.scrollIntoView({block:'center',behavior:'auto'})}
+ else if(mob()&&sideOpen)sideSet(false);
+ if(inS){}else if(el&&getComputedStyle(el).position!=='fixed'&&getComputedStyle(el).position!=='sticky'){
   const nv=document.querySelector('.nav'),nh=nv&&getComputedStyle(nv).position==='sticky'?nv.offsetHeight:0,r=el.getBoundingClientRect();
   const y=scrollY+r.top-(r.height+nh+24<innerHeight?(innerHeight-nh-r.height)/2+nh:nh+16);
   scrollTo({top:Math.max(0,y),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}

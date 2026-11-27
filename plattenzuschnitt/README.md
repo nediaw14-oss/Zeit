@@ -3,6 +3,14 @@
 Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) als einzelne HTML-Datei – ohne Server, ohne Anmeldung, ohne Limit.
 
 ## Funktionen
+- **▶ Play-Button**: berechnet den Schnittplan; nach Änderungen erscheint „Schnittplan veraltet“
+- **Optionen** wie bei Cut List Optimizer: Schnittfuge, Alles auf eine Platte, Etiketten, Materialien, Kantenanleimung, Maserungsrichtung
+- **Plan bearbeiten** (Schloss): Teile ziehen (mit Einrasten), drehen, entfernen, wieder einsetzen
+- Werkzeugleiste: Zoom, Schrift größer/kleiner, Farben, Maße, Nummern, Ansicht drehen
+- **Übersicht** (Gesamt / Einstellungen) und **Schnittfolge** mit geführtem Zuschnitt Schritt für Schritt
+- **Teileliste** und **Zuschnittliste**, alles auch als PDF („Listen als PDF“)
+- Etiketten mit Kanten-Skizze (farbige Kanten, Maserungspfeil)
+- Teile an/aus, Länge ⇄ Breite tauschen, „Für alle Teile“: Kanten, Bezeichnung, Material
 - Einstellungen-Fenster: Sprache (Deutsch/English/Bosanski), Einheiten (mm/cm/Zoll), Reihenfolge der Maße, Nachkommastellen, gleiche Platten stapeln, Optimierungspriorität, Schnittrichtung, minimales Besäummaß, Randbeschnitt pro Seite
 - Projekte speichern/laden, als Datei sichern und öffnen (.json)
 - Teile aus Excel einfügen oder als .csv öffnen, Schnittliste als CSV exportieren

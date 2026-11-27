@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#2563eb">
 <title>Zeiterfassung</title>
 <style>
@@ -180,9 +181,25 @@
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(KEY));
-      if (d && Array.isArray(d.entries)) return { settings: { targetWeek: 40 }, running: null, ...d };
+      if (d && Array.isArray(d.entries)) return cleanState(d);
     } catch (e) {}
     return { entries: [], running: null, settings: { targetWeek: 40 } };
+  }
+  // Sicherheit: Daten aus Backup-Dateien/Speicher nur mit erlaubten Typen übernehmen (Schutz vor XSS)
+  function cleanEntry(x) {
+    if (!x || typeof x !== 'object') return null;
+    const start = +x.start, end = +x.end;
+    if (!isFinite(start) || !isFinite(end)) return null;
+    return { id: String(x.id ?? '').replace(/[^\w-]/g, '').slice(0, 40) || (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)),
+      start, end, pause: Math.max(0, Math.min(1440, Math.round(+x.pause || 0))),
+      project: String(x.project ?? '').slice(0, 200), note: String(x.note ?? '').slice(0, 2000) };
+  }
+  function cleanState(d) {
+    const r = d.running && typeof d.running === 'object' && isFinite(+d.running.start)
+      ? { start: +d.running.start, project: String(d.running.project ?? '').slice(0, 200), note: String(d.running.note ?? '').slice(0, 2000) } : null;
+    const tw = +(d.settings && d.settings.targetWeek);
+    return { entries: (Array.isArray(d.entries) ? d.entries : []).map(cleanEntry).filter(Boolean), running: r,
+      settings: { targetWeek: isFinite(tw) && tw >= 0 && tw <= 168 ? tw : 40 } };
   }
   let state = load();
   function save() {
@@ -340,11 +357,11 @@
         const g = groups[d], sum = g.reduce((s, e) => s + dur(e), 0);
         return `<tr class="day-head"><td colspan="3">${fmtDay(g[0].start)}</td><td class="num">${fmtHM(sum)}</td><td></td></tr>` +
           g.map(e => `<tr>
-            <td style="white-space:nowrap">${fmtTime(e.start)}–${fmtTime(e.end)}${e.pause ? `<div class="muted">Pause ${e.pause} Min.</div>` : ''}</td>
+            <td style="white-space:nowrap">${fmtTime(e.start)}–${fmtTime(e.end)}${e.pause ? `<div class="muted">Pause ${esc(e.pause)} Min.</div>` : ''}</td>
             <td>${esc(e.project) || '<span class="muted">–</span>'}<div class="muted show-sm">${esc(e.note)}</div></td>
             <td class="hide-sm">${esc(e.note)}</td>
             <td class="num">${fmtHM(dur(e))}</td>
-            <td class="num"><button class="small" data-edit="${e.id}" title="Bearbeiten">✎</button> <button class="small link" data-del="${e.id}" title="Löschen">✕</button></td>
+            <td class="num"><button class="small" data-edit="${esc(e.id)}" title="Bearbeiten">✎</button> <button class="small link" data-del="${esc(e.id)}" title="Löschen">✕</button></td>
           </tr>`).join('');
       }).join('');
     }
@@ -391,7 +408,7 @@
   $('exportCsv').onclick = () => {
     const r = getRange();
     const items = state.entries.filter(e => e.start >= r.s && e.start < r.e).sort((a, b) => a.start - b.start);
-    const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
+    const q = s => { s = String(s ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return `"${s.replace(/"/g, '""')}"`; }; // ' davor: keine Excel-Formeln (CSV-Injection)
     const lines = ['Datum;Von;Bis;Pause (Min.);Dauer (h);Dauer (hh:mm);Projekt;Notiz'];
     items.forEach(e => lines.push([
       new Date(e.start).toLocaleDateString('de-DE'), fmtTime(e.start), fmtTime(e.end), e.pause || 0,
@@ -407,10 +424,11 @@
       const d = JSON.parse(await f.text());
       if (!Array.isArray(d.entries)) throw new Error('Keine gültige Backup-Datei.');
       const replace = confirm(`${d.entries.length} Einträge gefunden.\n\nOK = vorhandene Daten ERSETZEN\nAbbrechen = mit vorhandenen Daten ZUSAMMENFÜHREN`);
-      if (replace) state = { entries: d.entries, running: d.running || null, settings: d.settings || state.settings };
+      const c = cleanState({ settings: state.settings, ...d });
+      if (replace) state = c;
       else {
         const ids = new Set(state.entries.map(x => x.id));
-        d.entries.forEach(x => { if (!ids.has(x.id)) state.entries.push(x); });
+        c.entries.forEach(x => { if (!ids.has(x.id)) state.entries.push(x); });
       }
       save(); renderAll(); alert('Import erfolgreich.');
     } catch (err) { alert('Import fehlgeschlagen: ' + err.message); }

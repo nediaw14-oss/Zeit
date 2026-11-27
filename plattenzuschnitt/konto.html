@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; worker-src 'self' blob:; connect-src 'self' https://otumisjdoxjzfyyuuklj.supabase.co wss://otumisjdoxjzfyyuuklj.supabase.co https://cdn.jsdelivr.net; img-src 'self' data: blob: https://otumisjdoxjzfyyuuklj.supabase.co; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style>html{display:none}</style><script>if(self===top)document.documentElement.style.display='block';else top.location=self.location</script>
 <title>Mein Konto – SchnittWundeR</title>
 <link rel="stylesheet" href="fonts.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -85,13 +88,13 @@ details{margin-top:4px}summary{cursor:pointer;font-weight:600;color:var(--red);m
  </section>
 
  <section class="card" aria-labelledby="h-pw">
-  <h2 id="h-pw">Passwort ändern</h2><p class="sub">Mindestens 6 Zeichen.</p>
+  <h2 id="h-pw">Passwort ändern</h2><p class="sub">Mindestens 8 Zeichen.</p>
   <div class="msg" id="m-pw" hidden role="status"></div>
   <form id="f-pw">
    <input type="email" autocomplete="username" id="pwUser" hidden>
    <label><span>Aktuelles Passwort</span><input type="password" id="pwOld" autocomplete="current-password" required></label>
-   <label><span>Neues Passwort</span><input type="password" id="pwNew" autocomplete="new-password" minlength="6" required></label>
-   <label><span>Neues Passwort wiederholen</span><input type="password" id="pwNew2" autocomplete="new-password" minlength="6" required></label>
+   <label><span>Neues Passwort</span><input type="password" id="pwNew" autocomplete="new-password" minlength="8" required></label>
+   <label><span>Neues Passwort wiederholen</span><input type="password" id="pwNew2" autocomplete="new-password" minlength="8" required></label>
    <button class="btn" type="submit">Passwort speichern</button>
   </form>
  </section>
@@ -125,7 +128,7 @@ details{margin-top:4px}summary{cursor:pointer;font-weight:600;color:var(--red);m
  <p class="legal"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
  </div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
 <script src="supa.js"></script>
 <script>
 {
@@ -144,9 +147,10 @@ const de=e=>{const s=(e&&e.message)||String(e||'');
 const fmt=d=>d?new Date(d).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):'–';
 const busy=async(btn,fn)=>{btn.disabled=true;try{await fn()}finally{btn.disabled=false}};
 let user=null,prof={};
+const okAv=u=>typeof u==='string'&&u.startsWith(SUPA_URL+'/storage/v1/object/public/avatars/');
 
 function drawPic(){const p=$('pic'),u=prof.avatar_url,n=(prof.display_name||user.email||'?').trim();
- p.innerHTML=u?`<img src="${u.replace(/"/g,'%22')}" alt="">`:'';if(!u)p.textContent=(n[0]||'?').toUpperCase();$('delAv').hidden=!u}
+ p.textContent='';if(u&&okAv(u)){const i=document.createElement('img');i.src=u;i.alt='';p.append(i)}else p.textContent=(n[0]||'?').toUpperCase();$('delAv').hidden=!u}
 function drawUser(){$('curMail').value=user.email||'';$('pwUser').value=user.email||'';
  $('since').textContent=fmt(user.created_at);$('last').textContent=fmt(user.last_sign_in_at);
  if(user.new_email)msg('m-mail',`Bestätigung ausstehend für ${user.new_email}. Klick auf den Link in der E-Mail.`,1)}
@@ -208,7 +212,7 @@ $('f-mail').addEventListener('submit',e=>{e.preventDefault();const em=$('newMail
 
 // Passwort ändern: aktuelles Passwort erst prüfen
 $('f-pw').addEventListener('submit',e=>{e.preventDefault();const o=$('pwOld').value,n=$('pwNew').value;
- if(n.length<6)return msg('m-pw','Das neue Passwort braucht mindestens 6 Zeichen.');
+ if(n.length<8)return msg('m-pw','Das neue Passwort braucht mindestens 8 Zeichen.');
  if(n!==$('pwNew2').value)return msg('m-pw','Die neuen Passwörter sind nicht gleich.');
  if(n===o)return msg('m-pw','Das neue Passwort muss anders sein als das alte.');
  busy(e.target.querySelector('button'),async()=>{

@@ -402,7 +402,7 @@ const gName=g=>g.cnt>1?`${g.a}–${g.b}`:`${g.a}`;
 const gId=(g,x)=>g.cnt>1?`${g.a}–${g.b}-${x.pos}`:x.id;
 
 /* ---------- Plan-Geometrie (gemeinsam für Bildschirm und PDF) ---------- */
-const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#f0d9a8','#e8cb92','#f4e2bc','#e4c58b','#eed2a0','#f6e7c6'],woodL:'#9c7640',woodT:'#33250f',idT:'#8a6630',dim:'#1d2226',main:'#d6402b',edge:'#e6007e'};
+const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#c8ecc9','#c6dcf7','#f9cccc','#fbefb3','#e0d2f5','#fdd9b8','#bfeee6','#f7cfe6'],woodL:'#7d878d',woodT:'#22292d',idT:'#4f5a60',dim:'#1d2226',main:'#d6402b',edge:'#e6007e'};
 function plan(g){
  const sh=g.sh,S=sh.S,M=Math.max(S.l,S.b),ts=M*0.019,gap=M*0.012,off=gap+ts*1.5,out=off+ts*1.45,P=[];
  P.push({t:'r',x:0,y:0,w:S.l,h:S.b,f:'hatch',s:C.sheet,sw:M*0.0012});

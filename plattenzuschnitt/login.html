@@ -88,7 +88,7 @@ fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;mar
 const $=id=>document.getElementById(id);
 let mode='in';
 const TX={in:['Willkommen zurück','Melde dich an, um deine Projekte zu öffnen.','Anmelden','current-password'],
- up:['Konto anlegen','Kostenlos. Deine Projekte werden in der Cloud gespeichert.','Registrieren','new-password'],
+ up:['Konto anlegen','Bis 31.01.2027 kostenlos, danach kostenpflichtig. Deine Projekte werden in der Cloud gespeichert.','Registrieren','new-password'],
  fg:['Passwort vergessen','Wir schicken dir einen Link, mit dem du ein neues Passwort setzt.','Link senden',''],
  np:['Neues Passwort','Gib dein neues Passwort ein.','Passwort speichern','new-password']};
 const msg=(t,ok)=>{const m=$('msg');m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err')};

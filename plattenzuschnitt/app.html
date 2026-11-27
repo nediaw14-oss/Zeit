@@ -341,6 +341,9 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Teil verschoben','Part moved','Dio pomjeren'],['Teil gedreht','Part rotated','Dio okrenut'],['Teil entfernt','Part removed','Dio uklonjen'],['Teil eingesetzt','Part placed','Dio postavljen'],['Kein freier Platz','No free space','Nema slobodnog mjesta'],['Maserung – Drehen nicht erlaubt','Grain – rotating not allowed','Godovi – okretanje nije dozvoljeno'],
  ['Bearbeiten: Teil ziehen zum Verschieben, antippen zum Auswählen. ▶ rechnet neu und verwirft Änderungen.','Edit: drag a part to move it, tap to select. ▶ recalculates and discards changes.','Uređivanje: povuci dio za pomjeranje, dodirni za odabir. ▶ ponovo računa i briše izmjene.'],
  ['Nicht mit durchgehenden Schnitten machbar – Teile anders anordnen.','Not possible with through cuts – rearrange parts.','Nije izvodivo prolaznim rezovima – rasporedi drugačije.'],['Erst auf ▶ tippen, dann wird der Schnittplan berechnet.','Tap ▶ to calculate the cutting plan.','Dodirni ▶ da se izračuna plan rezanja.'],
+ ['Rechentiefe','Search depth','Dubina pretrage'],['Schnell','Quick','Brzo'],['Normal (2–3 s)','Normal (2–3 s)','Normalno (2–3 s)'],['Gründlich (10 s)','Thorough (10 s)','Temeljito (10 s)'],
+ ['Nach dem Berechnen sucht SchnittWundeR im Hintergrund weiter nach einem besseren Plan. Gründlich = länger suchen, oft weniger Verschnitt.','After calculating, SchnittWundeR keeps searching for a better plan in the background. Thorough = longer search, often less waste.','Nakon izračuna SchnittWundeR u pozadini traži bolji plan. Temeljito = duža pretraga, često manje otpada.'],
+ ['Suche besseren Plan …','Searching for a better plan …','Tražim bolji plan …'],['Besserer Plan gefunden: {n} Platte(n) weniger','Better plan found: {n} sheet(s) fewer','Pronađen bolji plan: {n} ploča manje'],['Besserer Plan gefunden: Verschnitt {a} % → {b} %','Better plan found: waste {a} % → {b} %','Pronađen bolji plan: otpad {a} % → {b} %'],
  ['Geändert seit der Berechnung – ▶ tippen.','Changed since calculation – tap ▶.','Promijenjeno od izračuna – dodirni ▶.'],['Fertig!','Done!','Gotovo!'],['Alle Schnitte erledigt.','All cuts done.','Svi rezovi gotovi.'],['an','on','uklj.'],['aus','off','isklj.'],['Plan bearbeitet','Plan edited','Plan uređen'],
  ['Tipp: Randbeschnitt und Sägeblatt verkleinern die nutzbare Platte. Mehr Platten ins Lager oder „Alles auf eine Platte“ ausschalten.','Tip: edge trim and kerf reduce the usable sheet. Add stock or turn off “Everything on one sheet”.','Savjet: obrezivanje i list pile smanjuju korisnu ploču. Dodaj ploče ili isključi „Sve na jednu ploču“.'],
  ['Listen als PDF','Lists PDF','Liste PDF'],['Teileliste','Parts list','Lista dijelova'],['Zuschnittliste','Cutting list','Lista rezanja'],['Maserung','Grain','Godovi'],['platziert','placed','postavljeno'],['Teil aktiv','Part active','Dio aktivan'],
@@ -404,7 +407,7 @@ const kShort=k=>kUsed(k).map(([t,a])=>(ET().length>1?t+':':'')+a.join(' ')).join
 const standalone=(()=>{try{return window.top===window.self}catch(e){return false}})();
 
 /* ---------- Zustand ---------- */
-const DEF={first:'auto',goal:'waste',rest:150,minT:0,ts:[1,1,1,1],sub:1,oOne:0,oLab:1,oMat:1,oEdge:1,oGrain:1,etypes:[{n:'ABS 0,8 mm',d:0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]};
+const DEF={first:'auto',goal:'waste',depth:'normal',rest:150,minT:0,ts:[1,1,1,1],sub:1,oOne:0,oLab:1,oMat:1,oEdge:1,oGrain:1,etypes:[{n:'ABS 0,8 mm',d:0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]};
 const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...JSON.parse(JSON.stringify(DEF)),
  stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10,p:''}],
  parts:[{n:'Seite',l:720,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Boden/Deckel',l:762,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Fachboden',l:760,b:540,q:6,r:1,k:[1,0,0,0]},
@@ -429,6 +432,7 @@ function navHTML(){
  ${it('Nachkommastellen','',`<select data-c="dec">${[0,1,2,3].map(n=>opt(n,cfg.dec,n)).join('')}</select>`)}
  ${it('Gleiche Platten stapeln','Gleiche Platten werden einmal gezeigt, mit „n× schneiden“.',`<select data-c="stack">${opt('yes',cfg.stack,T('Ja'))}${opt('no',cfg.stack,T('Nein'))}</select>`)}
  ${it('Optimierungspriorität','Wenigste Schnitte spart Zeit an der Säge, kann aber etwas mehr Verschnitt geben.',`<select data-o="goal">${opt('waste',st.goal,T('Geringster Verschnitt'))}${opt('cuts',st.goal,T('Wenigste Schnitte'))}</select>`)}
+ ${it('Rechentiefe','Nach dem Berechnen sucht SchnittWundeR im Hintergrund weiter nach einem besseren Plan. Gründlich = länger suchen, oft weniger Verschnitt.',`<select data-o="depth">${opt('quick',st.depth,T('Schnell'))}${opt('normal',st.depth,T('Normal (2–3 s)'))}${opt('deep',st.depth,T('Gründlich (10 s)'))}</select>`)}
  ${it('Schnittrichtung','Längs = zuerst durchgehende Streifen über die Plattenlänge, quer = über die Breite.',`<select data-o="first">${opt('auto',st.first,T('Optimal'))}${opt('laengs',st.first,T('Längs'))}${opt('quer',st.first,T('Quer'))}</select>`)}
  ${it('Sägeblatt','',`<span class="row"><input type="number" id="kerf" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.kerf))}">${ul()}</span>`)}
  ${it('Minimales Besäummaß','Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).',`<span class="row"><input type="number" step="any" min="0" inputmode="decimal" data-o="minT" data-u="1" value="${esc(inU(st.minT))}">${ul()}</span>`)}
@@ -585,6 +589,39 @@ function pack(items,stock,kerf,tr,minT,split,fit,small,one){
  }
  return{sheets,un};
 }
+/* Bewertung eines Ergebnisses (auch im Hintergrund-Worker benutzt) */
+function evalR(r){
+ r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
+ r.area=r.sheets.reduce((s,sh)=>s+sh.S.l*sh.S.b,0);r.cuts=r.sheets.reduce((s,sh)=>s+sh.cuts,0);return r;
+}
+function betterR(a,b,cutsGoal){if(a.un.length!==b.un.length)return a.un.length<b.un.length;if(Math.abs(a.area-b.area)>1)return a.area<b.area;
+ if(cutsGoal)return a.cuts!==b.cuts?a.cuts<b.cuts:a.q>b.q;return Math.abs(a.q-b.q)>1e-9?a.q>b.q:a.cuts<b.cuts}
+/* Tiefen-Optimierung: verändert die Reihenfolge der Teile zufällig (Tauschen, Verschieben, Umdrehen)
+   und behält jede Variante, die nicht schlechter ist. Läuft im Web Worker, die Seite bleibt bedienbar. */
+function deepSearch(d){
+ let seed=d.seed>>>0||1;const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296,ri=n=>Math.floor(rnd()*n);
+ const out=[],t0=Date.now(),per=d.ms/Math.max(1,d.mats.length);let tries=0;
+ d.mats.forEach((m,mi)=>{
+  const byIx=new Map(m.its.map(x=>[x.ix,x])),stk=m.stk,end=Math.min(t0+d.ms,Date.now()+per);
+  const run=(ord,sp,f,sm)=>{tries++;const r=evalR(pack(ord,stk,d.kerf,d.tr,d.minT,sp,f,sm,d.one));r.cfg=[sp,f,sm];return r};
+  let curO=m.start.map(i=>byIx.get(i)),[sp0,f0,sm0]=m.cfg,cur=run(curO,sp0,f0,sm0),best=cur,bestO=curO,base=cur,stall=0;
+  const n=curO.length;
+  while(Date.now()<end&&n>1){
+   const o=curO.slice(),k=ri(4);
+   if(k===0){const a=ri(n),b=ri(n);[o[a],o[b]]=[o[b],o[a]]}
+   else if(k===1){const a=ri(n),b=ri(n);o.splice(b,0,o.splice(a,1)[0])}
+   else if(k===2){let a=ri(n),b=ri(n);if(a>b)[a,b]=[b,a];const seg=o.slice(a,b+1).reverse();o.splice(a,seg.length,...seg)}
+   else{const a=ri(n),b=Math.min(n,a+1+ri(4));const seg=o.splice(a,b-a);o.splice(ri(o.length+1),0,...seg)}
+   const sp=d.splits[ri(d.splits.length)],f=ri(2),sm=stk.length>1?ri(2):0,r=run(o,sp,f,sm);
+   if(!betterR(cur,r,d.cutsGoal)){cur=r;curO=o;stall=betterR(r,best,d.cutsGoal)?0:stall+1}else stall++;
+   if(betterR(r,best,d.cutsGoal)){best=r;bestO=o}
+   if(stall>400){curO=bestO.slice();cur=best;for(let j=0;j<Math.max(2,n>>3);j++){const a=ri(n),b=ri(n);[curO[a],curO[b]]=[curO[b],curO[a]]}stall=0}
+  }
+  out.push({better:best!==base&&betterR(best,base,d.cutsGoal),un:best.un.map(x=>x.ix),
+   sheets:best.sheets.map(sh=>({si:sh.si,cuts:sh.cuts,cl:sh.cl,pl:sh.pl.map(x=>({x:x.x,y:x.y,w:x.w,h:x.h,rot:x.rot,ix:x.p.ix}))}))});
+ });
+ return{tok:d.tok,mats:out,tries};
+}
 function optimize(){
  const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim)),sub=!!st.sub&&!!st.oEdge,minT=Math.max(0,num(st.minT)),M=st.oMat?mats():['*'];
  const tr=[0,1,2,3].map(j=>st.ts[j]?trim:0);
@@ -596,8 +633,8 @@ function optimize(){
   for(let j=0;j<q&&j<2000;j++)if(l>0&&b>0)items.push({n:p.n||(T('Teil')+' '+(i+1)),l,b,fl,fb,r:st.oGrain?!!p.r:true,c:i,k,m,mn})});
  const orders=[(a,b)=>b.l*b.b-a.l*a.b,(a,b)=>Math.max(b.l,b.b)-Math.max(a.l,a.b),(a,b)=>b.l-a.l||b.b-a.b,(a,b)=>b.b-a.b||b.l-a.l,(a,b)=>(b.l+b.b)-(a.l+a.b)];
  const splits=st.first==='laengs'?[0]:st.first==='quer'?[1]:[0,1,2],cutsGoal=st.goal==='cuts';
- const better=(a,b)=>{if(a.un.length!==b.un.length)return a.un.length<b.un.length;if(Math.abs(a.area-b.area)>1)return a.area<b.area;
-  if(cutsGoal)return a.cuts!==b.cuts?a.cuts<b.cuts:a.q>b.q;return Math.abs(a.q-b.q)>1e-9?a.q>b.q:a.cuts<b.cuts};
+ items.forEach((x,i)=>x.ix=i);
+ const better=(a,b)=>betterR(a,b,cutsGoal),mm=[];
  const all={sheets:[],un:[]};
  for(const mat of M){
   const its=items.filter(x=>x.m===mat),stk=st.oMat?stock.filter(s=>s.n===mat):stock;if(!its.length)continue;
@@ -605,19 +642,60 @@ function optimize(){
   let best=null;
   for(const o of orders){const it=its.slice().sort(o);
    for(const sp of splits)for(let f=0;f<2;f++)for(let sm=0;sm<(stk.length>1?2:1);sm++){
-    const r=pack(it,stk,kerf,tr,minT,sp,f,sm,!!st.oOne);
-    r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
-    r.area=r.sheets.reduce((s,sh)=>s+sh.S.l*sh.S.b,0);r.cuts=r.sheets.reduce((s,sh)=>s+sh.cuts,0);
+    const r=evalR(pack(it,stk,kerf,tr,minT,sp,f,sm,!!st.oOne));r.ord=it;r.cfg=[sp,f,sm];
     if(!best||better(r,best))best=r;
    }}
-  const sig=sh=>[sh.S.n,sh.S.l,sh.S.b,...sh.pl.slice().sort((a,b)=>a.y-b.y||a.x-b.x).map(x=>[x.x,x.y,x.w,x.h,x.p.c,x.p.l,x.p.b].join(','))].join('|');
-  const g=new Map();for(const sh of best.sheets){const s=sig(sh);if(!g.has(s))g.set(s,[]);g.get(s).push(sh)}
-  for(const a of g.values())all.sheets.push(...a);
+  mm.push({stk,its,best});
+  all.sheets.push(...groupSheets(best.sheets));
   all.un.push(...best.un);
  }
  Object.assign(all,{items,kerf,trim,et:sub&&items.some(x=>x.fl!==x.l||x.fb!==x.b),tr,first:st.first,restMin:Math.max(0,num(st.rest))});
+ all.deep={mm,kerf,tr,minT,one:!!st.oOne,cutsGoal,splits};
  return all;
 }
+/* gleiche Platten (gleicher Plan) hintereinander legen, damit sie gestapelt werden */
+function groupSheets(list){
+  const out=[];
+  const sig=sh=>[sh.S.n,sh.S.l,sh.S.b,...sh.pl.slice().sort((a,b)=>a.y-b.y||a.x-b.x).map(x=>[x.x,x.y,x.w,x.h,x.p.c,x.p.l,x.p.b].join(','))].join('|');
+  const g=new Map();for(const sh of list){const s=sig(sh);if(!g.has(s))g.set(s,[]);g.get(s).push(sh)}
+  for(const a of g.values())out.push(...a);
+  return out;
+}
+/* ---------- Tiefen-Optimierung im Hintergrund ---------- */
+const DEEP_MS={quick:0,normal:2500,deep:10000};
+let deepW=null,deepTok=0,deepURL=null;
+function deepStop(){if(deepW){deepW.terminate();deepW=null}const n=$('deepn');if(n)n.hidden=true}
+function deepStart(){
+ deepStop();
+ const ms=DEEP_MS[st.depth]??DEEP_MS.normal,D0=res&&res.deep;
+ if(!ms||!D0||!D0.mm.length||typeof Worker==='undefined')return;
+ if(D0.mm.every(m=>m.its.length<3))return;
+ try{
+  if(!deepURL)deepURL=URL.createObjectURL(new Blob([[pack,evalR,betterR,deepSearch].map(f=>f.toString()).join('\n')+'\nonmessage=e=>postMessage(deepSearch(e.data))'],{type:'text/javascript'}));
+  deepW=new Worker(deepURL);
+ }catch(e){deepW=null;return}
+ const tok=++deepTok,R=res;
+ deepW.onmessage=e=>{deepStop();if(e.data.tok===tok&&res===R)deepApply(e.data)};
+ deepW.onerror=()=>deepStop();
+ const n=$('deepn');if(n)n.hidden=false;
+ deepW.postMessage({tok,ms,seed:Date.now(),kerf:D0.kerf,tr:D0.tr,minT:D0.minT,one:D0.one,cutsGoal:D0.cutsGoal,splits:D0.splits,
+  mats:D0.mm.map(m=>({stk:m.stk,its:m.its.map(x=>({ix:x.ix,l:x.l,b:x.b,r:x.r})),start:m.best.ord.map(x=>x.ix),cfg:m.best.cfg}))});
+}
+function deepApply(d){
+ if(res.edited||isStale()||!d.mats.some(m=>m.better))return;
+ const before=res.sheets.length,wb=wastePct(res.sheets),sheets=[],un=[];
+ d.mats.forEach((m,i)=>{
+  const M=res.deep.mm[i];
+  if(!m.better){sheets.push(...groupSheets(M.best.sheets));un.push(...M.best.un);return}
+  const list=m.sheets.map(sh=>({si:sh.si,S:M.stk[sh.si],free:[],cuts:sh.cuts,cl:sh.cl,pl:sh.pl.map(x=>({x:x.x,y:x.y,w:x.w,h:x.h,rot:x.rot,p:res.items[x.ix]}))}));
+  const u=m.un.map(ix=>res.items[ix]);sheets.push(...groupSheets(list));un.push(...u);
+  M.best={...M.best,sheets:list,un:u};
+ });
+ res.sheets=sheets;res.un=un;res.sel=null;derive();gd=null;renderOut();
+ const k=before-sheets.length,wa=wastePct(sheets);
+ toast(k>0?T('Besserer Plan gefunden: {n} Platte(n) weniger',{n:k}):T('Besserer Plan gefunden: Verschnitt {a} % → {b} %',{a:wb.toFixed(1),b:wa.toFixed(1)}));
+}
+const wastePct=sh=>{const A=sh.reduce((s,x)=>s+x.S.l*x.S.b,0),P=sh.reduce((s,x)=>s+x.pl.reduce((a,p)=>a+p.w*p.h,0),0);return A?100*(1-P/A):0};
 /* ---------- Schnittfolge aus dem Plan ableiten (auch nach Bearbeiten) ---------- */
 const EPS=0.5;
 const usable=sh=>{const t=res.tr,S=sh.S;return{x:t[2],y:t[0],w:S.l-t[2]-t[3],h:S.b-t[0]-t[1]}};
@@ -799,10 +877,10 @@ const ICO={lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 1
  rot:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/>'};
 const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
 const srcSig=()=>{const{job,oLab,done,...r}=st;return JSON.stringify(r)};
-const setSnap=()=>({kerf:num(st.kerf),trim:num(st.trim),ts:st.ts.join(''),minT:num(st.minT),first:st.first,goal:st.goal,oOne:+!!st.oOne,oMat:+!!st.oMat,oEdge:+!!st.oEdge,oGrain:+!!st.oGrain});
+const setSnap=()=>({kerf:num(st.kerf),trim:num(st.trim),ts:st.ts.join(''),minT:num(st.minT),first:st.first,goal:st.goal,depth:st.depth,oOne:+!!st.oOne,oMat:+!!st.oMat,oEdge:+!!st.oEdge,oGrain:+!!st.oGrain});
 const isStale=()=>res?srcSig()!==res.src:true;
 function updStale(){const s=isStale(),b=$('stl');if(b)b.hidden=!s;$('run')?.classList.toggle('st',s);const d=$('sdot');if(d)d.hidden=!s}
-function compute(quiet){res=optimize();res.src=srcSig();res.set=setSnap();res.sel=null;derive();gd=null;renderOut();if(!quiet)toast(T('Schnittplan berechnet'))}
+function compute(quiet){deepStop();res=optimize();res.src=srcSig();res.set=setSnap();res.sel=null;derive();gd=null;renderOut();if(!quiet)toast(T('Schnittplan berechnet'));deepStart()}
 let ovTab=0,gd=null,gdLast=0;
 const m2=a=>(a/1e6).toLocaleString(loc(),{minimumFractionDigits:2,maximumFractionDigits:2})+' m²';
 function setKPI(){
@@ -817,7 +895,7 @@ function tbHTML(){
  ${b('zr','<b>1:1</b>','Zoom zurücksetzen',undefined,view.z===1)}${b('zi',ico('zi'),'Vergrößern')}${b('zo',ico('zo'),'Verkleinern')}<i class="sep"></i>
  ${b('fi','<b>A+</b>','Schrift größer')}${b('fo','<b>A−</b>','Schrift kleiner')}<i class="sep"></i>
  ${b('col',ico('pal'),'Farben',!!view.col)}${b('dim',ico('rul'),'Maße',!!view.dim)}${b('num',ico('num'),'Nummern',!!view.num)}${b('tr',ico('rot'),'Ansicht drehen',!!view.tr)}
- <button class="stale" id="stl"${isStale()?'':' hidden'}>⟳ ${esc(T('Schnittplan veraltet'))}</button></div>`;
+ <button class="stale" id="stl"${isStale()?'':' hidden'}>⟳ ${esc(T('Schnittplan veraltet'))}</button><span class="note" id="deepn"${deepW?'':' hidden'}>⏳ ${esc(T('Suche besseren Plan …'))}</span></div>`;
 }
 const fold={sf:false,tl:false};
 function renderOut(){

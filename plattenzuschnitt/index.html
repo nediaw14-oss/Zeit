@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plattenzuschnitt Optimierer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: nüchtern, werkstatttauglich, schnell bedienbar mit Handschuh-Daumen
+   IDEA: der ausgedruckte Schnittplan, der an der Formatkreissäge hängt
+   PICTURE: maßstäbliche Platten mit Birken-Teilen, Restholz schraffiert
+   COLOUR and TYPE: Schiefer-Platte, Birkenholz, Sägeblatt-Rot; Barlow Condensed + Barlow
+   LAYOUT: Eingabe links, Schnittpläne rechts; auf dem Handy untereinander */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbfbf9,#14181b);--ink:light-dark(#1d2226,#ecebe6);--mut:light-dark(#5d666c,#9aa3a8);
+--card:light-dark(#ffffff,#1d2226);--line:light-dark(#dfe2e3,#30373c);
+--board:light-dark(#38444b,#0c0f11);--hatch:light-dark(#4b5961,#232a2f);
+--wood:#e7c58c;--woodE:#b98d4c;--woodT:#3a2a12;--red:#d6402b;--field:light-dark(#f1f3f3,#262d32)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.big{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
+h1{font-size:clamp(32px,5vw,46px);text-wrap:balance}
+h2{font-size:24px;margin-bottom:10px}
+header{background:var(--board);color:#f3efe6;padding:22px max(4vw,16px) 18px}
+header p{margin:6px 0 0;color:#c7cdd0;max-width:62ch}
+header b{color:var(--wood)}
+.wrap{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:24px;padding:20px max(4vw,16px) 48px;max-width:1500px;margin:auto}
+@media(max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.row{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr)) 62px 40px;gap:6px;align-items:center;margin-bottom:6px}
+.hd{font-size:13px;color:var(--mut);margin-bottom:4px}
+@media(max-width:600px){.row{grid-template-columns:repeat(3,minmax(0,1fr)) 62px 40px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:8px}.row .nm{grid-column:1/-1}.hd{display:none}}
+input[type=number],input[type=text]{width:100%;font:16px Barlow,sans-serif;padding:9px 8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);min-height:44px}
+input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+input:focus-visible,button:focus-visible,label:focus-within{outline:2px solid var(--red);outline-offset:1px}
+.rot{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--mut);cursor:pointer;min-height:44px;justify-content:center;line-height:1.1}
+.rot input{width:20px;height:20px;margin:0 0 2px;accent-color:var(--red)}
+button{font:600 15px Barlow,sans-serif;border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);min-height:44px;padding:0 14px;cursor:pointer}
+.del{padding:0;font-size:22px;color:var(--mut)}
+.del:hover{color:var(--red)}
+.pri{background:var(--red);border-color:var(--red);color:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.set{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.set label,.full{font-size:14px;color:var(--mut)}.full{display:block;margin-bottom:10px}
+select{font:16px Barlow,sans-serif;min-height:44px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);max-width:100%}
+.lab{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.note{font-size:13px;color:var(--mut);margin:8px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat .big{font-size:clamp(30px,4vw,40px);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat span{font-size:14px;color:var(--mut)}
+.warn{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-bottom:16px}
+.sheet{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+.sh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin-bottom:8px}
+.sh .big{font-size:24px}.sh span{color:var(--mut);font-size:14px;white-space:nowrap}
+.sheet svg{width:100%;height:auto;display:block;border-radius:3px}
+.cl{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}
+.cl td,.cl th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.cl th{font-weight:600;color:var(--mut);font-size:13px}
+.cl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--board);color:#fff;padding:10px 16px;border-radius:8px;display:none;gap:12px;align-items:center;z-index:9}
+.toast button{min-height:36px;background:transparent;color:var(--wood);border-color:#5b6870}
+@media(prefers-reduced-motion:no-preference){.sheet{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+</style>
+</head>
+<body>
+<header>
+<h1>Plattenzuschnitt Optimierer</h1>
+<p>Teile eintragen, Plan erscheint sofort. Optimiert für <b>Formatkreissäge</b>: nur durchgehende Schnitte, mit Sägeblattstärke und Besäumung.</p>
+</header>
+<div class="wrap">
+<div>
+  <div class="panel">
+    <h2>Teile</h2>
+    <div class="row hd"><span>Bezeichnung</span><span>Länge</span><span>Breite</span><span>Stk</span><span>Drehen</span><span></span></div>
+    <div id="parts"></div>
+    <div class="btns"><button class="pri" id="addP">+ Teil</button><button id="clr">Liste leeren</button><button id="demo">Beispiel</button></div>
+    <p class="note">Länge = in Maserungsrichtung (entlang der Plattenlänge). „Drehen“ aus = Maserung muss stimmen.</p>
+  </div>
+  <div class="panel">
+    <h2>Platten auf Lager</h2>
+    <div class="row hd"><span>Material</span><span>Länge</span><span>Breite</span><span>Stk</span><span></span><span></span></div>
+    <div id="stock"></div>
+    <div class="btns"><button id="addS">+ Platte</button></div>
+  </div>
+  <div class="panel">
+    <h2>Auftrag &amp; Säge</h2>
+    <label class="full">Auftrag / Kunde (steht auf den Etiketten)<input type="text" id="job" placeholder="z. B. Küche Huber"></label>
+    <div class="set">
+      <label>Sägeblatt (mm)<input type="number" id="kerf" inputmode="decimal" min="0" step="0.1"></label>
+      <label>Besäumen je Kante (mm)<input type="number" id="trim" inputmode="decimal" min="0" step="1"></label>
+    </div>
+  </div>
+</div>
+<div id="out"></div>
+</div>
+<div class="toast" id="toast"><span id="tmsg"></span><button id="undo">Rückgängig</button></div>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+{
+const KEY='zuschnitt-v1';
+const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',
+ stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10}],
+ parts:[{n:'Seite',l:720,b:560,q:4,r:0},{n:'Boden/Deckel',l:762,b:560,q:4,r:0},{n:'Fachboden',l:760,b:540,q:6,r:1},
+ {n:'Front',l:716,b:396,q:4,r:0},{n:'Sockel',l:800,b:100,q:4,r:1},{n:'Traverse',l:762,b:100,q:4,r:1}]});
+let st=demo(),last=null,tm;
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
+const fmt=n=>(Math.round(n*10)/10).toLocaleString('de-DE');
+const $=id=>document.getElementById(id);
+
+function rowsHTML(list,kind){
+ return list.map((o,i)=>`<div class="row">
+ <input class="nm" type="text" data-k="${kind}" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${kind==='parts'?'Bezeichnung':'Material'}" aria-label="Bezeichnung">
+ <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="l" value="${esc(o.l)}" placeholder="Länge" aria-label="Länge mm">
+ <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="b" value="${esc(o.b)}" placeholder="Breite" aria-label="Breite mm">
+ <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="q" value="${esc(o.q)}" placeholder="Stk" aria-label="Stückzahl">
+ ${kind==='parts'?`<label class="rot"><input type="checkbox" data-k="parts" data-i="${i}" data-f="r" ${o.r?'checked':''}>drehen</label>`:'<span></span>'}
+ <button class="del" data-del="${kind}" data-i="${i}" aria-label="Zeile löschen">×</button></div>`).join('');
+}
+function drawInputs(){
+ $('parts').innerHTML=rowsHTML(st.parts,'parts')||'<p class="note">Noch keine Teile. Tippe auf „+ Teil“.</p>';
+ $('stock').innerHTML=rowsHTML(st.stock,'stock');
+ $('kerf').value=st.kerf;$('trim').value=st.trim;$('job').value=st.job||'';
+}
+
+/* ---------- Optimierer (Guillotine) ---------- */
+function pack(items,stock,kerf,trim,split,fit){
+ const sheets=[],avail=stock.map(s=>s.q),un=[];
+ const score=(F,w,h)=>fit?F.w*F.h-w*h:Math.min(F.w-w,F.h-h);
+ const place=(sh,ri,p,w,h,rot)=>{
+  const F=sh.free.splice(ri,1)[0];
+  sh.pl.push({x:F.x,y:F.y,w,h,p,rot});
+  const rw=F.w-w-kerf,bh=F.h-h-kerf;
+  let s=split;if(s===2)s=rw<bh?0:1;
+  const A=s===0?[{x:F.x+w+kerf,y:F.y,w:rw,h},{x:F.x,y:F.y+h+kerf,w:F.w,h:bh}]
+              :[{x:F.x+w+kerf,y:F.y,w:rw,h:F.h},{x:F.x,y:F.y+h+kerf,w,h:bh}];
+  for(const r of A)if(r.w>0&&r.h>0)sh.free.push(r);
+ };
+ for(const p of items){
+  let best=null;
+  for(const sh of sheets)sh.free.forEach((F,ri)=>{
+   const o=[[p.l,p.b,0]];if(p.r&&p.l!==p.b)o.push([p.b,p.l,1]);
+   for(const[w,h,rot]of o)if(w<=F.w&&h<=F.h){const sc=score(F,w,h);if(!best||sc<best.sc)best={sh,ri,w,h,rot,sc}}
+  });
+  if(best){place(best.sh,best.ri,p,best.w,best.h,best.rot);continue}
+  let opened=false;
+  for(let si=0;si<stock.length;si++){
+   if(avail[si]<=0)continue;const S=stock[si],uw=S.l-2*trim,uh=S.b-2*trim;
+   let o=null;if(p.l<=uw&&p.b<=uh)o=[p.l,p.b,0];else if(p.r&&p.b<=uw&&p.l<=uh)o=[p.b,p.l,1];
+   if(!o)continue;
+   const sh={si,S,free:[{x:trim,y:trim,w:uw,h:uh}],pl:[]};sheets.push(sh);avail[si]--;
+   place(sh,0,p,o[0],o[1],o[2]);opened=true;break;
+  }
+  if(!opened)un.push(p);
+ }
+ return{sheets,un};
+}
+function optimize(){
+ const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim));
+ const stock=st.stock.map(s=>({n:s.n||'Platte',l:num(s.l),b:num(s.b),q:Math.max(0,Math.floor(num(s.q)))})).filter(s=>s.l>0&&s.b>0&&s.q>0);
+ const items=[];
+ st.parts.forEach((p,i)=>{const l=num(p.l),b=num(p.b),q=Math.floor(num(p.q));
+  for(let k=0;k<q&&k<2000;k++)if(l>0&&b>0)items.push({n:p.n||('Teil '+(i+1)),l,b,r:!!p.r,c:i})});
+ const orders=[(a,b)=>b.l*b.b-a.l*a.b,(a,b)=>Math.max(b.l,b.b)-Math.max(a.l,a.b),(a,b)=>b.l-a.l||b.b-a.b,(a,b)=>b.b-a.b||b.l-a.l,(a,b)=>(b.l+b.b)-(a.l+a.b)];
+ let best=null;
+ for(const o of orders){const it=items.slice().sort(o);
+  for(let sp=0;sp<3;sp++)for(let f=0;f<2;f++){
+   const r=pack(it,stock,kerf,trim,sp,f);
+   r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
+   if(!best||r.un.length<best.un.length||(r.un.length===best.un.length&&(r.sheets.length<best.sheets.length||(r.sheets.length===best.sheets.length&&r.q>best.q))))best=r;
+  }}
+ best.items=items;best.kerf=kerf;best.trim=trim;
+ return best;
+}
+
+/* ---------- Ausgabe ---------- */
+const COLS=['#e7c58c','#dcb47a','#ecd3a4','#d9bd8e','#e3bf7e','#f0d9ae'];
+function sheetSVG(sh,idx){
+ const{S}=sh,id='h'+idx;
+ let g=`<svg viewBox="-2 -2 ${S.l+4} ${S.b+4}" role="img" aria-label="Schnittplan Platte ${idx+1}">
+ <defs><pattern id="${id}" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="40" height="40" fill="var(--board)"/><rect width="14" height="40" fill="var(--hatch)"/></pattern></defs>
+ <rect x="0" y="0" width="${S.l}" height="${S.b}" fill="url(#${id})"/>`;
+ for(const x of sh.pl){
+  const c=COLS[x.p.c%COLS.length];
+  g+=`<rect x="${x.x}" y="${x.y}" width="${x.w}" height="${x.h}" fill="${c}" stroke="#8a6630" stroke-width="3"/>`;
+  const vert=x.h>x.w*1.4,L=vert?x.h:x.w,T=vert?x.w:x.h;
+  const dims=`${fmt(x.p.l)}×${fmt(x.p.b)}`;
+  let fs=Math.min(T*0.26,90);
+  const longest=Math.max(String(x.p.n).length,dims.length);
+  fs=Math.min(fs,L*0.9/(longest*0.56));
+  if(fs<18)continue;
+  g+=`<text x="${x.x+10}" y="${x.y+Math.min(fs*0.8,40)+6}" font-size="${Math.min(fs*0.8,40)}" fill="#7a5a28" font-family="Barlow,sans-serif">${x.id}</text>`;
+  const cx=x.x+x.w/2,cy=x.y+x.h/2,tr=vert?` transform="rotate(-90 ${cx} ${cy})"`:'';
+  const two=T>fs*2.6;
+  g+=`<g${tr} font-family="Barlow,sans-serif" text-anchor="middle" fill="#3a2a12">`+
+   (two?`<text x="${cx}" y="${cy-fs*0.2}" font-size="${fs}" font-weight="600">${esc(x.p.n)}</text><text x="${cx}" y="${cy+fs*0.95}" font-size="${fs*0.85}">${dims}${x.rot?' ↻':''}</text>`
+       :`<text x="${cx}" y="${cy+fs*0.35}" font-size="${fs}" font-weight="600">${dims}</text>`)+`</g>`;
+ }
+ return g+`<text x="${S.l-14}" y="${S.b-16}" font-size="${Math.min(S.l,S.b)*0.035}" text-anchor="end" fill="#c7cdd0" font-family="Barlow,sans-serif">${fmt(S.l)} × ${fmt(S.b)}</text></svg>`;
+}
+function groupParts(pl){
+ const m=new Map();
+ for(const x of pl){const k=x.p.n+'|'+x.p.l+'|'+x.p.b;const e=m.get(k)||{n:x.p.n,l:x.p.l,b:x.p.b,q:0,rot:0};e.q++;if(x.rot)e.rot++;m.set(k,e)}
+ return[...m.values()].sort((a,b)=>b.l*b.b-a.l*a.b);
+}
+let res=null;
+function drawOut(){
+ res=optimize();
+ const{sheets,un,items}=res,o=$('out');
+ let tot=0;sheets.forEach((sh,i)=>{sh.pl.sort((a,b)=>a.y-b.y||a.x-b.x);sh.pl.forEach((x,j)=>{x.id=`${i+1}-${String(j+1).padStart(2,'0')}`;tot++})});
+ res.tot=tot;
+ if(!items.length){o.innerHTML='<div class="panel"><h2>Noch nichts zu schneiden</h2><p class="note">Trag links deine Teile mit Länge, Breite und Stückzahl ein.</p></div>';return}
+ const sa=sheets.reduce((s,x)=>s+x.S.l*x.S.b,0),pa=sheets.reduce((s,x)=>s+x.pl.reduce((a,y)=>a+y.w*y.h,0),0);
+ const waste=sa?(1-pa/sa)*100:0,cuts=sheets.reduce((s,x)=>s+x.pl.length,0);
+ let h=`<div class="stats">
+ <div class="stat"><div class="big">${sheets.length}</div><span>Platten nötig</span></div>
+ <div class="stat"><div class="big">${fmt(waste)} %</div><span>Verschnitt</span></div>
+ <div class="stat"><div class="big">${cuts}</div><span>Teile platziert</span></div>
+ <div class="stat"><div class="big">${fmt(pa/1e6)} m²</div><span>Teilefläche</span></div></div>`;
+ if(un.length){const g=groupParts(un.map(p=>({p,rot:0})));
+  h+=`<div class="warn"><b>${un.length} Teil${un.length>1?'e':''} passt nicht</b> – zu groß oder zu wenig Platten auf Lager: ${g.map(e=>`${e.q}× ${esc(e.n)} ${fmt(e.l)}×${fmt(e.b)}`).join(', ')}</div>`}
+ h+=`<div class="panel"><h2>Etiketten mit QR-Code</h2>
+ <div class="lab"><select id="fmt" aria-label="Etikettenformat">${FMTS.map((f,k)=>`<option value="${k}"${k===fmtSel?' selected':''}>${f.t}</option>`).join('')}</select>
+ <button class="pri" id="pdf">Etiketten als PDF</button><button id="copy">Schnittliste kopieren</button></div>
+ <p class="note" id="pnote">Ein Etikett pro Teil (${cuts} Stück). Nummer wie im Plan, z. B. 1-03 = Platte 1, Teil 3.</p></div>`;
+ sheets.forEach((sh,i)=>{
+  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
+  h+=`<div class="sheet"><div class="sh"><div class="big">Platte ${i+1} · ${esc(sh.S.n)}</div><span>${fmt(sh.S.l)} × ${fmt(sh.S.b)} mm · ${fmt(u)} % genutzt</span></div>
+  ${sheetSVG(sh,i)}
+  <table class="cl"><thead><tr><th>Teil</th><th class="n">Länge</th><th class="n">Breite</th><th class="n">Stk</th></tr></thead><tbody>
+  ${groupParts(sh.pl).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small style="color:var(--mut)">(${e.rot}× gedreht)</small>`:''}</td><td class="n">${fmt(e.l)}</td><td class="n">${fmt(e.b)}</td><td class="n">${e.q}</td></tr>`).join('')}
+  </tbody></table></div>`;
+ });
+ o.innerHTML=h;
+}
+const FMTS=[
+ {t:'A4 · 70 × 37 mm · 24 pro Blatt (z. B. Zweckform 3474)',w:70,h:37,c:3,r:8,mx:0,my:0.5},
+ {t:'A4 · 105 × 48 mm · 12 pro Blatt (z. B. Zweckform 3424)',w:105,h:48,c:2,r:6,mx:0,my:4.5},
+ {t:'A4 · 70 × 42,3 mm · 21 pro Blatt (z. B. Zweckform 3652)',w:70,h:42.3,c:3,r:7,mx:0,my:0.4},
+ {t:'Etikettendrucker · 100 × 50 mm · 1 pro Seite',w:100,h:50,c:1,r:1,mx:0,my:0,page:[100,50]},
+ {t:'Etikettendrucker · 62 × 29 mm · 1 pro Seite',w:62,h:29,c:1,r:1,mx:0,my:0,page:[62,29]}];
+let fmtSel=0;try{fmtSel=Math.min(+localStorage.getItem(KEY+'f')||0,FMTS.length-1)}catch(e){}
+function labelList(){
+ const out=[],job=(st.job||'').trim(),d=new Date().toLocaleDateString('de-DE');
+ res.sheets.forEach((sh,i)=>sh.pl.forEach(x=>out.push({id:x.id,n:x.p.n,l:x.p.l,b:x.p.b,mat:sh.S.n,sheet:i+1,ns:res.sheets.length,grain:!x.p.r,rot:x.rot,job,d})));
+ return out;
+}
+function qrText(L){
+ return[`Teil: ${L.n}`,`Nr: ${L.id}`,`Maß: ${fmt(L.l)} x ${fmt(L.b)} mm`,`Material: ${L.mat}`,`Platte: ${L.sheet} von ${L.ns}`,
+  L.grain?'Maserung: längs':'',L.job?`Auftrag: ${L.job}`:'',`Datum: ${L.d}`].filter(Boolean).join('\n');
+}
+function drawLabel(doc,x,y,F,L){
+ const p=Math.min(3,F.h*0.08),k=Math.min(F.h/37,F.w/70);
+ const q=qrcode(0,'L');q.addData(qrText(L),'Byte');q.make();
+ const n=q.getModuleCount(),qs=Math.min(F.h-2*p,F.w*0.42),m=qs/n;
+ doc.setFillColor(0,0,0);
+ for(let r=0;r<n;r++){let c=0;while(c<n){if(q.isDark(r,c)){let e=c;while(e<n&&q.isDark(r,e))e++;doc.rect(x+p+c*m,y+p+(F.h-2*p-qs)/2+r*m,(e-c)*m+0.01,m+0.01,'F');c=e}else c++}}
+ const tx=x+p+qs+2.5*k,tw=x+F.w-p-tx;let ty=y+p;
+ const line=(txt,size,bold)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);
+  let t=String(txt);while(t.length>1&&doc.getTextWidth(t)>tw)t=t.slice(0,-2)+'…';
+  ty+=size*0.3528*1.05;doc.text(t,tx,ty);ty+=size*0.3528*0.28};
+ line(L.n,10*k,true);
+ line(`${fmt(L.l)} × ${fmt(L.b)} mm`,12*k,true);
+ line(L.mat,7*k);
+ line(`Nr. ${L.id}  ·  Platte ${L.sheet}/${L.ns}`,7*k);
+ if(L.grain)line('Maserung längs',7*k);
+ if(L.job)line(L.job,7*k,true);
+ line(L.d,6*k);
+}
+async function makePDF(btn){
+ const note=$('pnote');
+ if(!window.jspdf||!window.qrcode){note.textContent='PDF-Bausteine laden noch nicht – kurz warten und nochmal tippen.';return}
+ const dl=(window.claude&&claude.use)?await claude.use('downloads').catch(()=>null):null;
+ qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
+ const F=FMTS[fmtSel],labs=labelList();if(!labs.length)return;
+ const doc=new jspdf.jsPDF({unit:'mm',format:F.page||'a4',orientation:F.page&&F.page[0]>F.page[1]?'l':'p'});
+ const per=F.c*F.r;
+ labs.forEach((L,i)=>{const pos=i%per;if(i&&!pos)doc.addPage();
+  drawLabel(doc,F.mx+(pos%F.c)*F.w,F.my+Math.floor(pos/F.c)*F.h,F,L)});
+ const name='Etiketten_'+((st.job||'Zuschnitt').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_')||'Zuschnitt')+'.pdf';
+ if(!dl){try{doc.save(name);note.textContent=`${labs.length} Etiketten als ${name} heruntergeladen`}catch(e){note.textContent='Download hat nicht geklappt.'}return}
+ btn.disabled=true;
+ try{await dl.save({filename:name,data:doc.output('blob')});note.textContent=`${labs.length} Etiketten gespeichert: ${name}`}
+ catch(e){note.textContent=e&&e.code==='declined'?'Speichern abgebrochen.':e&&e.code==='host_unavailable'?'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'Speichern hat nicht geklappt, bitte nochmal versuchen.'}
+ btn.disabled=false;
+}
+function cutText(){
+ const{sheets,un,kerf,trim}=res;let t=`SCHNITTLISTE  (Sägeblatt ${fmt(kerf)} mm, Besäumen ${fmt(trim)} mm)\n`;
+ sheets.forEach((sh,i)=>{t+=`\nPlatte ${i+1}: ${sh.S.n} ${fmt(sh.S.l)}x${fmt(sh.S.b)}\n`;
+  for(const e of groupParts(sh.pl))t+=`  ${e.q}x  ${e.n}  ${fmt(e.l)} x ${fmt(e.b)}${e.rot?'  (gedreht)':''}\n`});
+ if(un.length)t+=`\nPASST NICHT: ${un.map(p=>p.n+' '+fmt(p.l)+'x'+fmt(p.b)).join(', ')}\n`;
+ return t;
+}
+function toast(msg,undo){
+ $('tmsg').textContent=msg;$('undo').style.display=undo?'':'none';$('toast').style.display='flex';
+ clearTimeout(tm);tm=setTimeout(()=>$('toast').style.display='none',4000);
+}
+let deb;const refresh=()=>{save();clearTimeout(deb);deb=setTimeout(drawOut,150)};
+const snap=()=>{last=JSON.stringify(st)};
+
+document.addEventListener('input',e=>{
+ const t=e.target,k=t.dataset.k;
+ if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):f==='n'?t.value:t.value;refresh()}
+ else if(t.id==='kerf'||t.id==='trim'){st[t.id]=t.value;refresh()}
+ else if(t.id==='job'){st.job=t.value;save()}
+ else if(t.id==='fmt'){fmtSel=+t.value;try{localStorage.setItem(KEY+'f',fmtSel)}catch(e){}}
+});
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.del){snap();st[t.dataset.del].splice(+t.dataset.i,1);drawInputs();refresh();toast('Zeile gelöscht',1)}
+ else if(t.id==='addP'){const p=st.parts[st.parts.length-1];st.parts.push({n:'',l:'',b:'',q:1,r:p?p.r:1});drawInputs();refresh();
+  const ins=$('parts').querySelectorAll('.nm');ins[ins.length-1]?.focus()}
+ else if(t.id==='addS'){st.stock.push({n:'',l:2800,b:2070,q:10});drawInputs();refresh()}
+ else if(t.id==='clr'){snap();st.parts=[];drawInputs();refresh();toast('Liste geleert',1)}
+ else if(t.id==='demo'){snap();st=demo();drawInputs();refresh();toast('Beispiel geladen',1)}
+ else if(t.id==='undo'&&last){st=JSON.parse(last);last=null;drawInputs();refresh();$('toast').style.display='none'}
+ else if(t.id==='pdf'){makePDF(t)}
+ else if(t.id==='copy'){const txt=cutText();
+  navigator.clipboard.writeText(txt).then(()=>toast('Schnittliste kopiert'),()=>{
+   const a=document.createElement('textarea');a.value=txt;a.style.cssText='width:100%;height:220px;margin-bottom:16px;font:14px monospace';
+   t.parentNode.after(a);a.select();toast('Text markiert – jetzt kopieren')})}
+});
+drawInputs();drawOut();
+}
+</script>
+</body>
+</html>

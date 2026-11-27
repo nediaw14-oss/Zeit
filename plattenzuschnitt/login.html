@@ -32,6 +32,16 @@ input{width:100%;font:16px Inter,sans-serif;padding:10px 12px;border:1px solid v
 .msg.err{background:#fde8e4;border:1px solid var(--red);color:#7a1d10}.msg.ok{background:#eaf5ea;border:1px solid #2e7d32;color:#1b4d1e}
 .back{display:inline-block;margin-top:16px;color:#b9c2c6;font-size:14px}
 [hidden]{display:none!important}
+fieldset.xp{border:0;padding:0;margin:4px 0 14px}
+fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;margin-bottom:8px}
+.xpo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.xpo label{margin:0;cursor:pointer}
+.xpo input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.xpo span{display:flex;flex-direction:column;gap:2px;min-height:72px;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--field);font:600 15px Inter,sans-serif;color:var(--ink);margin:0}
+.xpo small{font-weight:400;font-size:13px;color:var(--mut)}
+.xpo input:checked+span{border-color:var(--acc);background:#e6edfc;box-shadow:inset 0 0 0 1px var(--acc)}
+.xpo input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+@media(max-width:360px){.xpo{grid-template-columns:1fr}}
 /* WhatsApp-Kontakt */
 .wa{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:10px;height:56px;padding:0 20px 0 16px;border-radius:28px;background:#25d366;color:#fff;font:600 16px Inter,system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px #0005;transition:transform .15s,box-shadow .15s}
 .wa:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0006}
@@ -50,6 +60,11 @@ input{width:100%;font:16px Inter,sans-serif;padding:10px 12px;border:1px solid v
    <h2 id="ttl">Willkommen zurück</h2><p class="sub" id="sub">Melde dich an, um deine Projekte zu öffnen.</p>
    <label id="le"><span>E-Mail</span><input type="email" id="em" autocomplete="email" required></label>
    <label id="lp"><span id="lpt">Passwort</span><input type="password" id="pw" autocomplete="current-password" minlength="6" required></label>
+   <fieldset class="xp" id="xp" hidden><legend>Kennst du dich mit Zuschnitt-Tools schon aus?</legend>
+    <div class="xpo">
+     <label><input type="radio" name="xp" value="kenner"><span>Ja, kenne ich<small>Direkt loslegen</small></span></label>
+     <label><input type="radio" name="xp" value="neu"><span>Nein, zeig’s mir<small>Kurze Tour in 5 Schritten</small></span></label>
+    </div></fieldset>
    <button class="pri" id="go" type="submit">Anmelden</button>
    <div class="row"><button type="button" class="lnk" id="fg">Passwort vergessen?</button><a class="lnk" href="app.html" id="off" hidden>Ohne Konto weiter</a></div>
   </form>
@@ -69,7 +84,7 @@ const TX={in:['Willkommen zurück','Melde dich an, um deine Projekte zu öffnen.
 const msg=(t,ok)=>{const m=$('msg');m.hidden=!t;m.textContent=t||'';m.className='msg '+(ok?'ok':'err')};
 function setMode(m){mode=m;const[a,b,c,ac]=TX[m];$('ttl').textContent=a;$('sub').textContent=b;$('go').textContent=c;
  $('le').hidden=m==='np';$('lp').hidden=m==='fg';$('pw').autocomplete=ac;$('lpt').textContent=m==='np'?'Neues Passwort (mind. 6 Zeichen)':m==='up'?'Passwort (mind. 6 Zeichen)':'Passwort';
- $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';
+ $('fg').hidden=m!=='in';$('tabs').hidden=m==='np';$('xp').hidden=m!=='up';
  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.m===m||(m==='fg'&&b.dataset.m==='in'))));msg('')}
 const de=e=>{const s=(e&&e.message)||'';
  if(/Invalid login/i.test(s))return'E-Mail oder Passwort stimmt nicht.';if(/not confirmed/i.test(s))return'Bitte zuerst den Link in der Bestätigungs-E-Mail anklicken.';
@@ -88,10 +103,13 @@ $('f').addEventListener('submit',async e=>{e.preventDefault();if(!window.sb)retu
  const em=$('em').value.trim(),pw=$('pw').value,go=$('go');
  if(mode!=='np'&&!/^\S+@\S+\.\S+$/.test(em)){msg('Bitte eine gültige E-Mail eingeben.');return}
  if(mode!=='fg'&&pw.length<6){msg('Das Passwort braucht mindestens 6 Zeichen.');return}
+ const xp=document.querySelector('input[name=xp]:checked')?.value;
+ if(mode==='up'&&!xp){msg('Bitte noch auswählen, ob du so ein Tool schon kennst.');$('xp').querySelector('input').focus();return}
  go.disabled=true;
  try{
   if(mode==='in'){const{error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;location.replace('app.html')}
-  else if(mode==='up'){const{data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:pageUrl('app.html')}});if(error)throw error;
+  else if(mode==='up'){try{localStorage.setItem('sw-erfahrung',xp)}catch(er){}
+   const{data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:pageUrl('app.html'),data:{erfahrung:xp}}});if(error)throw error;
    if(data.session)location.replace('app.html');else{msg('Fast geschafft! Wir haben dir eine E-Mail geschickt – klick auf den Link darin, dann bist du angemeldet.',1)}}
   else if(mode==='fg'){const{error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:pageUrl('login.html')});if(error)throw error;msg('Wenn es ein Konto mit dieser E-Mail gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.',1)}
   else{const{error}=await sb.auth.updateUser({password:pw});if(error)throw error;msg('Passwort gespeichert – du wirst weitergeleitet …',1);setTimeout(()=>location.replace('app.html'),900)}

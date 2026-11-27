@@ -181,6 +181,14 @@ h3.sq{font-size:17px;margin:18px 0 0}
 .wzc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wzc.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.wzc button{min-height:60px;font-size:17px}.wzc button[aria-pressed=true]{border-color:var(--acc);background:var(--accBg);color:var(--acc)}
 .wzk{display:flex;flex-wrap:wrap;gap:10px 28px;margin:4px 0 14px}.wzk div{display:flex;flex-direction:column}.wzk b{font:700 34px "Barlow Condensed",Barlow,sans-serif;font-variant-numeric:tabular-nums}.wzk span{font-size:13px;color:var(--mut)}
 @media(max-width:480px){.wzc,.wzc.c3{grid-template-columns:minmax(0,1fr)}}
+/* Kurze Tour (5 Schritte) */
+.trh{position:fixed;z-index:40;border-radius:14px;box-shadow:0 0 0 3px var(--accL),0 0 0 9999px #000a;pointer-events:none}
+.trb{position:fixed;z-index:41;width:min(400px,calc(100vw - 24px));background:var(--card);color:var(--ink);border-radius:14px;box-shadow:0 18px 50px #0007;border-top:4px solid var(--acc);padding:16px 18px 14px}
+.trb .trs{font-size:13px;color:var(--mut);margin:0 0 4px}.trb h2{font-size:24px;margin:0 0 6px}.trb p{margin:0 0 12px;font-size:16px;line-height:1.5}
+.trp{display:flex;gap:4px;margin:0 0 12px}.trp i{flex:1;height:5px;border-radius:3px;background:var(--field)}.trp i.on{background:var(--acc)}.trp i.ok{background:#2e7d32}
+.trf{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}.trf .btns{margin:0}
+.trf .skip{background:transparent;border-color:transparent;color:var(--mut);padding:0 6px;text-decoration:underline;text-underline-offset:3px}
+
 @page{size:A4 landscape;margin:10mm}
 @media print{body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.inp,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
 </style>
@@ -288,6 +296,15 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Zum Schnittplan','Go to cutting plan','Na plan rezanja'],['Auf der Seite stehen der Plan pro Platte, die Schnittfolge und alle Listen.','The page shows the plan per sheet, the cut sequence and all lists.','Na stranici su plan po ploči, redoslijed rezova i sve liste.'],
  ['Nochmal mit dem Assistenten','Run wizard again','Ponovo s čarobnjakom'],['Teile platziert','parts placed','dijelova postavljeno'],['Gespeichert als','Saved as','Spremljeno kao']
 ].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
+[['Tour','Tour','Tura'],['Kurze Tour','Quick tour','Kratka tura'],['Tour überspringen','Skip tour','Preskoči turu'],['Selbst loslegen','Start on my own','Počni sam'],['Mit dem Assistenten starten','Start with the wizard','Počni s čarobnjakom'],
+ ['Säge & Einstellungen','Saw & settings','Pila i postavke'],['Speichern & Drucken','Save & print','Spremi i štampaj'],
+ ['Hier trägst du ein, welche Platten du hast: Material, Länge × Breite und Stückzahl. Stk leer = unbegrenzt. Mit Preis rechnet das Tool auch die Kosten aus.','Enter the sheets you have here: material, length × width and quantity. Empty qty = unlimited. Add a price and the tool also calculates the cost.','Ovdje upiši koje ploče imaš: materijal, dužina × širina i količina. Prazna količina = neograničeno. S cijenom alat računa i trošak.'],
+ ['Jede Zeile ist ein Teil: Bezeichnung, Länge, Breite und Stückzahl. „drehen“ aus = die Maserung muss stimmen. Auf die Seiten des kleinen Rechtecks tippen = Kante dran. Listen aus Excel kannst du einfach einfügen.','Each row is one part: name, length, width and quantity. “rotate” off = grain must match. Tap the sides of the small rectangle = add edge banding. You can paste lists straight from Excel.','Svaki red je jedan dio: naziv, dužina, širina i količina. „okreni“ isključeno = godovi moraju odgovarati. Dodirni strane malog pravougaonika = dodaj kant. Liste iz Excela samo zalijepi.'],
+ ['In dieser Leiste stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.','In this bar you set saw kerf, edge trim and cut direction – and whether least waste or fewest cuts matters. Language and units (mm, cm, inch) are here too.','U ovoj traci podešavaš list pile, obrezivanje i smjer reza – i da li je važnije najmanje otpada ili najmanje rezova. Ovdje su i jezik i jedinice (mm, cm, inči).'],
+ ['Tippe auf den grünen ▶-Knopf. Oben siehst du dann Platten, Verschnitt und Kante, darunter den Plan pro Platte. „Geführter Zuschnitt“ zeigt dir an der Säge Schnitt für Schnitt, was dran ist.','Tap the green ▶ button. At the top you then see sheets, waste and edge banding, below that the plan for each sheet. “Guided cutting” walks you through it cut by cut at the saw.','Dodirni zeleno ▶ dugme. Gore tada vidiš ploče, otpad i kant, ispod plan za svaku ploču. „Vođeno rezanje“ te na pili vodi rez po rez.'],
+ ['Trag unter „Auftrag / Kunde“ einen Namen ein und tippe auf „Speichern“ – dann liegt das Projekt in deiner Cloud. Schnittplan, Listen und Etiketten mit QR-Code bekommst du nach dem Berechnen als PDF.','Enter a name under “Job / customer” and tap “Save” – the project is then stored in your cloud. After calculating you get the cutting plan, lists and labels with QR code as PDF.','Upiši naziv pod „Nalog / kupac“ i dodirni „Spremi“ – projekt je tada u tvom oblaku. Nakon izračuna dobiješ plan rezanja, liste i etikete s QR kodom kao PDF.'],
+ ['Das war’s! Am schnellsten geht dein erster Auftrag mit dem Assistenten – oder du legst direkt selbst los.','That’s it! The quickest way to your first job is the wizard – or just get started yourself.','To je to! Najbrže do prvog naloga ide s čarobnjakom – ili odmah počni sam.']
+].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
 let cfg={lang:'de',unit:'mm',ord:'lb',dec:1,stack:'yes'};
 let view={z:1,f:1,col:1,dim:1,num:1,tr:0};
 try{Object.assign(view,JSON.parse(localStorage.getItem('zuschnitt-v1-view'))||{})}catch(e){}
@@ -350,7 +367,7 @@ function shell(){
  document.documentElement.lang=cfg.lang;document.title='SchnittWundeR';
  $('undo').textContent=T('Rückgängig');
  $('app').innerHTML=navHTML()+`<header><div class="hin">
- <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button></div>
+ <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button><button class="gear" id="tourb" title="${esc(T('Kurze Tour'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>${esc(T('Tour'))}</button></div>
  <p>${esc(T('Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.'))}</p>
  <span class="credit">coded by <b>Nedi</b> / <b>Claude</b></span><div class="who" id="who"></div></div>
  <div class="kpi" aria-live="polite">
@@ -1231,6 +1248,59 @@ document.addEventListener('click',e=>{
  else if(a==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV());return}
  wizDraw();
 });
+/* ---------- Kurze Tour: 5 Schritte durch die Oberfläche ---------- */
+const TRDONE=KEY+'-tour-done';
+const TRS=[
+ ['Platten auf Lager',()=>$('stock')?.closest('.card'),'Hier trägst du ein, welche Platten du hast: Material, Länge × Breite und Stückzahl. Stk leer = unbegrenzt. Mit Preis rechnet das Tool auch die Kosten aus.'],
+ ['Teile',()=>$('parts')?.closest('.card'),'Jede Zeile ist ein Teil: Bezeichnung, Länge, Breite und Stückzahl. „drehen“ aus = die Maserung muss stimmen. Auf die Seiten des kleinen Rechtecks tippen = Kante dran. Listen aus Excel kannst du einfach einfügen.'],
+ ['Säge & Einstellungen',()=>document.querySelector('.nav'),'In dieser Leiste stellst du Sägeblatt, Randbeschnitt und Schnittrichtung ein – und ob möglichst wenig Verschnitt oder wenige Schnitte zählen. Auch Sprache und Einheiten (mm, cm, Zoll) findest du hier.'],
+ ['Schnittplan berechnen',()=>$('run'),'Tippe auf den grünen ▶-Knopf. Oben siehst du dann Platten, Verschnitt und Kante, darunter den Plan pro Platte. „Geführter Zuschnitt“ zeigt dir an der Säge Schnitt für Schnitt, was dran ist.'],
+ ['Speichern & Drucken',()=>$('psave')?.closest('.card'),'Trag unter „Auftrag / Kunde“ einen Namen ein und tippe auf „Speichern“ – dann liegt das Projekt in deiner Cloud. Schnittplan, Listen und Etiketten mit QR-Code bekommst du nach dem Berechnen als PDF.']];
+let TR=null;
+function tourMark(){try{localStorage.setItem(TRDONE,'1')}catch(e){}
+ if(user&&window.sb&&!(user.user_metadata||{}).tour_done)sb.auth.updateUser({data:{tour_done:true}}).catch(()=>{})}
+function tourClose(){$('trh')?.remove();$('trb')?.remove();removeEventListener('scroll',tourPos,true);removeEventListener('resize',tourPos);if(TR)tourMark();TR=null}
+function tourPos(){if(!TR)return;const el=TRS[TR.i][1](),h=$('trh'),b=$('trb');if(!h||!b)return;
+ const vw=innerWidth,vh=innerHeight,p=8;let r=el?el.getBoundingClientRect():{left:vw/2,top:vh/2,width:0,height:0};
+ const top=Math.max(4,r.top-p),left=Math.max(4,r.left-p),bot=Math.min(vh-4,r.top+r.height+p),rt=Math.min(vw-4,r.left+r.width+p);
+ Object.assign(h.style,{top:top+'px',left:left+'px',width:Math.max(0,rt-left)+'px',height:Math.max(0,bot-top)+'px'});
+ const bh=b.offsetHeight,bw=b.offsetWidth,g=12;
+ let x,y;
+ if(bot+g<=vh-bh-g){y=bot+g;x=r.left+r.width/2-bw/2}
+ else if(top-g-bh>=g){y=top-g-bh;x=r.left+r.width/2-bw/2}
+ else if(vw-rt>=bw+2*g){x=rt+g;y=Math.min(Math.max(top,g),vh-bh-g)}
+ else if(left>=bw+2*g){x=left-g-bw;y=Math.min(Math.max(top,g),vh-bh-g)}
+ else{y=vh-bh-g;x=r.left+r.width/2-bw/2}
+ x=Math.min(Math.max(g,x),vw-bw-g);
+ b.style.top=Math.max(g,y)+'px';b.style.left=x+'px'}
+function tourDraw(){const[ttl,get,txt]=TRS[TR.i],n=TRS.length,lastS=TR.i===n-1;
+ let h=$('trh'),b=$('trb');
+ if(!h){h=document.createElement('div');h.id='trh';h.className='trh';document.body.appendChild(h)}
+ if(!b){b=document.createElement('div');b.id='trb';b.className='trb';b.setAttribute('role','dialog');b.setAttribute('aria-labelledby','trt');document.body.appendChild(b)}
+ b.innerHTML=`<div class="trp" aria-hidden="true">${TRS.map((_,k)=>`<i class="${k<TR.i?'ok':k===TR.i?'on':''}"></i>`).join('')}</div>
+ <p class="trs">${esc(T('Kurze Tour'))} · ${esc(T('Schritt {n} von {m}',{n:TR.i+1,m:n}))}</p><h2 id="trt">${esc(T(ttl))}</h2><p>${esc(T(txt))}</p>
+ ${lastS?`<p>${esc(T('Das war’s! Am schnellsten geht dein erster Auftrag mit dem Assistenten – oder du legst direkt selbst los.'))}</p>`:''}
+ <div class="trf">${lastS?`<button type="button" data-tr="back">${esc(T('Zurück'))}</button><div class="btns"><button type="button" data-tr="x">${esc(T('Selbst loslegen'))}</button><button type="button" class="pri" data-tr="wiz">${esc(T('Mit dem Assistenten starten'))}</button></div>`
+  :`<button type="button" class="skip" data-tr="x">${esc(T('Tour überspringen'))}</button><div class="btns">${TR.i?`<button type="button" data-tr="back">${esc(T('Zurück'))}</button>`:''}<button type="button" class="pri" data-tr="next">${esc(T('Weiter'))} ▶</button></div>`}</div>`;
+ const el=get();if(el&&getComputedStyle(el).position!=='fixed'&&getComputedStyle(el).position!=='sticky'){
+  const nv=document.querySelector('.nav'),nh=nv&&getComputedStyle(nv).position==='sticky'?nv.offsetHeight:0,r=el.getBoundingClientRect();
+  const y=scrollY+r.top-(r.height+nh+24<innerHeight?(innerHeight-nh-r.height)/2+nh:nh+16);
+  scrollTo({top:Math.max(0,y),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+ else if(el&&el.matches('.nav'))scrollTo({top:0,behavior:'smooth'});
+ const t0=performance.now(),loop=()=>{tourPos();if(TR&&performance.now()-t0<900)requestAnimationFrame(loop)};loop();b.querySelector('.pri')?.focus({preventScroll:true})}
+function tourOpen(){wizClose();TR={i:0};addEventListener('scroll',tourPos,true);addEventListener('resize',tourPos);tourDraw()}
+document.addEventListener('click',e=>{
+ if(e.target.closest('#tourb')){tourOpen();return}
+ const t=e.target.closest('#trb button');if(!t||!TR)return;const a=t.dataset.tr;
+ if(a==='next'){TR.i=Math.min(TRS.length-1,TR.i+1);tourDraw()}
+ else if(a==='back'){TR.i=Math.max(0,TR.i-1);tourDraw()}
+ else if(a==='x')tourClose();
+ else if(a==='wiz'){tourClose();try{sessionStorage.setItem('sw-wiz','1')}catch(er){}wizOpen()}
+});
+document.addEventListener('keydown',e=>{if(!TR)return;if(e.key==='Escape')tourClose();else if(e.key==='ArrowRight'&&TR.i<TRS.length-1){TR.i++;tourDraw()}else if(e.key==='ArrowLeft'&&TR.i){TR.i--;tourDraw()}});
+/* Nach Registrierung: wer „Schritt für Schritt“ gewählt hat, bekommt einmal die Tour */
+const tourWanted=()=>{const m=(user&&user.user_metadata)||{};let done=false,ask=null;try{done=!!localStorage.getItem(TRDONE);ask=localStorage.getItem('sw-erfahrung')}catch(e){}
+ return!done&&!m.tour_done&&(m.erfahrung||ask)==='neu'};
 compute(true);renderAll();
 (async()=>{
  const show=()=>document.getElementById('authhide')?.remove();
@@ -1238,7 +1308,8 @@ compute(true);renderAll();
  let s=null;try{s=(await sb.auth.getSession()).data.session}catch(e){show();return}
  if(!s){location.replace('login.html');return}
  user=s.user;show();drawUser();loadCloud();
- try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}
+ if(tourWanted()){try{sessionStorage.setItem('sw-wiz','1')}catch(e){}tourOpen()}
+ else try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}
  sb.auth.onAuthStateChange((ev,ss)=>{if(ev==='SIGNED_OUT')location.replace('login.html')});
 })();
 }

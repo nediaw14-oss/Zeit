@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Anmelden – SchnittWundeR</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/favicon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -13,9 +15,9 @@ body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:24px 16p
  background-image:radial-gradient(60% 50% at 50% 0,#17335c 0,transparent 70%)}
 h1,h2{font-family:Inter,sans-serif;font-weight:700;line-height:1.2;letter-spacing:-.02em;margin:0}
 .box{width:min(420px,100%)}
-.logo{display:flex;align-items:center;gap:10px;font:700 20px Inter,sans-serif;letter-spacing:-.01em;text-decoration:none;color:#fff;margin:0 0 18px}
-.logo i{width:24px;height:18px;border:2px solid #fff;border-radius:3px;position:relative}.logo em{font-style:normal;font-weight:500;color:#c7d3e6}.logo sup{font-size:.55em;font-weight:600;margin-left:1px}
-.logo i:after{content:"";position:absolute;left:8px;top:-2px;bottom:-2px;border-left:2px solid var(--accL)}
+.logo img{display:block;height:34px;width:auto}.logo{display:flex;align-items:center;gap:10px;font:700 20px Inter,sans-serif;letter-spacing:-.01em;text-decoration:none;color:#fff;margin:0 0 18px}
+
+
 .card{background:#fff;border-radius:10px;padding:28px;box-shadow:0 20px 50px #0005;border-top:3px solid var(--acc)}
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--field);border-radius:10px;padding:4px;gap:4px;margin-bottom:18px}
 .tabs button{border:0;background:transparent;min-height:42px;border-radius:8px;font:600 16px Inter,sans-serif;color:var(--mut);cursor:pointer}
@@ -52,7 +54,7 @@ fieldset.xp legend{font-size:15px;font-weight:600;color:var(--ink);padding:0;mar
 </head>
 <body>
 <main class="box">
- <a class="logo" href="./"><i></i><span>Schnitt<em>WundeR</em></span></a>
+ <a class="logo" href="./"><img src="assets/logo-header.svg" alt="SchnittWundeR" width="160" height="34"></a>
  <div class="card">
   <div class="tabs" role="tablist" id="tabs"><button role="tab" data-m="in" aria-selected="true">Anmelden</button><button role="tab" data-m="up" aria-selected="false">Registrieren</button></div>
   <div id="msg" class="msg" hidden role="status"></div>

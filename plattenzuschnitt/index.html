@@ -3,75 +3,75 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Schnitt-Wunder – Plattenzuschnitt kostenlos optimieren</title>
-<meta name="description" content="Schnitt-Wunder: kostenloser Zuschnitt-Optimierer für Spanplatte, MDF und Multiplex: Schnittplan mit Maßketten, Schnittfolge, Kanten, Maserung und Etiketten mit QR-Code.">
+<title>Schnitt Wunde® – Plattenzuschnitt kostenlos optimieren</title>
+<meta name="description" content="Schnitt Wunde®: kostenloser Zuschnitt-Optimierer für Spanplatte, MDF und Multiplex: Schnittplan mit Maßketten, Schnittfolge, Kanten, Maserung und Etiketten mit QR-Code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* VOICE: ruhig, direkt, aus der Werkstatt – kein Marketing-Gerede
-   IDEA: der Schnittplan, der an der Säge hängt, ist das Produkt – also zeigen wir ihn
-   COLOUR and TYPE: Schiefer, Birke, Sägeblatt-Rot, Kanten-Magenta; Barlow Condensed + Barlow (wie das Tool) */
-:root{--slate:#1f282d;--slate2:#151c20;--wood:#e9c98f;--woodD:#c9a362;--red:#d6402b;--edge:#e6007e;--ink:#1b2125;--mut:#5f686e;--bg:#eef0ef;--card:#fff;--line:#e1e5e6}
+/* STIL: seriös und ruhig – Navy, Stahlgrau, ein Blau als Akzent; Inter für alles */
+:root{--navy:#0b1f3a;--navy2:#081629;--acc:#1d4ed8;--accD:#1e40af;--accL:#93b4f5;--ink:#0f172a;--mut:#556274;--bg:#f6f8fb;--card:#fff;--line:#e3e8ef}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3,.big{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.02;margin:0;text-wrap:balance}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.big{font-family:Inter,system-ui,sans-serif;font-weight:700;line-height:1.15;letter-spacing:-.02em;margin:0;text-wrap:balance}
 a{color:inherit}
-.w{max-width:1180px;margin:auto;padding:0 max(4vw,18px)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 22px;border-radius:10px;font:600 17px Barlow,sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer;white-space:nowrap}
-.btn.pri{background:var(--red);color:#fff}.btn.pri:hover{filter:brightness(1.08)}
-.btn.gh{border-color:#ffffff40;color:#fff}.btn.gh:hover{background:#ffffff14}
+.w{max-width:1160px;margin:auto;padding:0 max(4vw,18px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:6px;font:600 15px Inter,sans-serif;text-decoration:none;border:1px solid transparent;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn.pri{background:var(--acc);color:#fff}.btn.pri:hover{background:var(--accD)}
+.btn.gh{border-color:#ffffff38;color:#fff}.btn.gh:hover{background:#ffffff12;border-color:#ffffff60}
 .btn.dk{border-color:var(--line);background:#fff;color:var(--ink)}
-:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 /* Kopf */
-.top{background:var(--slate2);color:#f2efe8;position:sticky;top:0;z-index:10;border-bottom:1px solid #ffffff1a}
+.top{background:var(--navy2);color:#e8edf5;position:sticky;top:0;z-index:10;border-bottom:1px solid #ffffff14}
 .top .w{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px}
-.logo{display:flex;align-items:center;gap:10px;font:700 22px "Barlow Condensed",sans-serif;text-decoration:none;color:#fff}
-.logo i{width:26px;height:20px;background:var(--wood);border-radius:2px;box-shadow:inset 0 -3px 0 var(--woodD);position:relative}
-.logo i:after{content:"";position:absolute;left:3px;right:3px;top:4px;border-top:2px dashed var(--edge)}
-.top nav{display:flex;gap:8px;align-items:center}.top .btn{min-height:42px;padding:0 16px;font-size:15px}
+.logo{display:flex;align-items:center;gap:10px;font:700 19px Inter,sans-serif;letter-spacing:-.01em;text-decoration:none;color:#fff;white-space:nowrap}
+.logo i{width:24px;height:18px;border:2px solid #fff;border-radius:3px;position:relative}
+.logo i:after{content:"";position:absolute;left:8px;top:-2px;bottom:-2px;border-left:2px solid var(--accL)}
+.logo em{font-style:normal;font-weight:500;color:#c7d3e6}
+.logo sup{font-size:.55em;font-weight:600;margin-left:1px}
+.top nav{display:flex;gap:8px;align-items:center}.top .btn{min-height:40px;padding:0 16px;font-size:14px}
 @media(max-width:520px){.top .hide{display:none}}
 /* Hero */
-.hero{background:var(--slate);color:#f2efe8;border-bottom:6px solid var(--wood);box-shadow:inset 0 -6px 0 var(--woodD);padding:56px 0 64px}
-.hero .w{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:44px;align-items:center}
-@media(max-width:900px){.hero .w{grid-template-columns:minmax(0,1fr)}.hero{padding-top:36px}}
-.tag{display:inline-block;font-size:14px;font-weight:600;color:var(--wood);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
-.hero h1{font-size:clamp(42px,6.4vw,76px)}
-.hero h1 em{font-style:normal;color:var(--wood)}
-.hero p{color:#b9c2c6;font-size:19px;max-width:44ch;margin:18px 0 26px}
+.hero{background:var(--navy);color:#e8edf5;padding:64px 0 72px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(50% 65% at 78% 48%,#17335c 0,transparent 72%);pointer-events:none}
+.hero .w{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:44px;align-items:center}
+@media(max-width:900px){.hero .w{grid-template-columns:minmax(0,1fr)}.hero{padding-top:40px}}
+.tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accL);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.hero h1{font-size:clamp(36px,5vw,58px)}
+.hero h1 em{font-style:normal;color:var(--accL)}
+.hero p{color:#aebbd0;font-size:18px;max-width:46ch;margin:18px 0 28px}
 .cta{display:flex;flex-wrap:wrap;gap:10px}
-.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:28px}
-.facts div{display:flex;flex-direction:column}.facts b{font:700 32px "Barlow Condensed",sans-serif;color:#fff}.facts span{font-size:13px;color:#9fabb1}
-.sheet{background:#fff;border-radius:10px;padding:10px;box-shadow:0 24px 60px #0007;transform:rotate(-1.2deg)}
+.facts{display:flex;flex-wrap:wrap;gap:0;margin-top:36px;border-top:1px solid #ffffff1c;padding-top:20px}
+.facts div{display:flex;flex-direction:column;padding-right:22px;margin-right:22px;border-right:1px solid #ffffff1c}.facts div:last-child{border:0}
+.facts b{font:700 24px Inter,sans-serif;color:#fff;letter-spacing:-.02em}.facts span{font-size:13px;color:#8fa0b8}
+.sheet{background:#fff;border-radius:8px;padding:10px;box-shadow:0 20px 50px #0006}
 .sheet svg{display:block;width:100%;height:auto}
-.sheet .cap{display:flex;flex-wrap:wrap;gap:2px 12px;justify-content:space-between;font:600 14px Barlow,system-ui,sans-serif;color:var(--mut);padding:4px 4px 8px}
-.sheet .cap b{color:var(--ink);font-family:"Barlow Condensed",Barlow,sans-serif;font-size:18px}
+.sheet .cap{display:flex;flex-wrap:wrap;gap:2px 12px;justify-content:space-between;font:500 13px Inter,system-ui,sans-serif;color:var(--mut);padding:4px 4px 8px}
+.sheet .cap b{color:var(--ink);font-size:14px;font-weight:600}
 /* Abschnitte */
-section{padding:72px 0}
-.sh{max-width:680px;margin-bottom:34px}.sh h2{font-size:clamp(34px,4.4vw,52px)}.sh p{color:var(--mut);margin:12px 0 0}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+section{padding:88px 0}
+.sh{max-width:660px;margin-bottom:40px}.sh h2{font-size:clamp(28px,3.4vw,40px)}.sh p{color:var(--mut);margin:12px 0 0;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.grid{grid-template-columns:minmax(0,1fr)}}
-.f{background:var(--card);border-radius:14px;padding:22px;border:1px solid var(--line)}
-.f svg{width:44px;height:44px;margin-bottom:12px}
-.f h3{font-size:26px;margin-bottom:6px}.f p{margin:0;color:var(--mut);font-size:16px}
-.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:s}
+.f{background:var(--card);padding:28px}
+.f svg{width:36px;height:36px;margin-bottom:16px;padding:6px;border-radius:6px;background:#eef3fd;}
+.f svg [fill]:not([fill=none]){fill:var(--acc)}
+.f h3{font-size:18px;margin-bottom:6px}.f p{margin:0;color:var(--mut);font-size:15px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;counter-reset:s}
 @media(max-width:800px){.steps{grid-template-columns:minmax(0,1fr)}}
-.st{border-top:4px solid var(--ink);padding-top:16px}
-.st:before{counter-increment:s;content:counter(s);font:700 64px/1 "Barlow Condensed";color:var(--red);display:block;margin-bottom:6px}
-.st h3{font-size:28px}.st p{color:var(--mut);margin:8px 0 0}
-.play{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#2e7d32;color:#fff;vertical-align:-6px;font-size:12px}
-.dark{background:var(--slate);color:#f2efe8}.dark .sh p{color:#b9c2c6}
-.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 32px;margin:0;padding:0;list-style:none}
+.st{border-top:2px solid var(--line);padding-top:20px;position:relative}
+.st:after{content:"";position:absolute;left:0;top:-2px;width:48px;border-top:2px solid var(--acc)}
+.st:before{counter-increment:s;content:"0" counter(s);font:600 14px/1 Inter;letter-spacing:.08em;color:var(--acc);display:block;margin-bottom:12px}
+.st h3{font-size:20px}.st p{color:var(--mut);margin:8px 0 0;font-size:15px}
+.play{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:4px;background:var(--acc);color:#fff;vertical-align:-3px;font-size:10px}
+.dark{background:var(--navy);color:#e8edf5}.dark .sh p{color:#aebbd0}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;margin:0;padding:0;list-style:none}
 @media(max-width:700px){.list{grid-template-columns:minmax(0,1fr)}}
-.list li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff1a}
-.list li:before{content:"";flex:none;width:18px;height:3px;margin-top:12px;background:repeating-linear-gradient(90deg,var(--wood) 0 5px,transparent 5px 8px)}
-.end{text-align:center}.end h2{font-size:clamp(36px,5vw,58px)}.end p{color:var(--mut);margin:12px auto 26px;max-width:46ch}
-footer{background:var(--slate2);color:#9fabb1;font-size:14px;padding:24px 0 96px}
-footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}footer b{color:var(--wood);font-weight:600}
-.logo{white-space:nowrap}.logo em{font-style:normal;color:var(--wood)}
+.list li{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #ffffff17;font-size:15px}
+.list li:before{content:"";flex:none;width:16px;height:16px;margin-top:4px;border-radius:3px;background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E") center/100% no-repeat}
+.end{text-align:center}.end h2{font-size:clamp(28px,3.6vw,42px)}.end p{color:var(--mut);margin:12px auto 28px;max-width:48ch}
+footer{background:var(--navy2);color:#8fa0b8;font-size:13px;padding:28px 0 96px}
+footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}footer b{color:#e8edf5;font-weight:600}
 /* 3D-Bühne */
-.hero{position:relative;overflow:hidden}
-.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(55% 70% at 78% 48%,#3a4a52 0,transparent 70%);pointer-events:none}
-.hero .w{position:relative}
 .stage{position:relative;aspect-ratio:1.1;margin:-40px -5vw -50px -20px}
 @media(max-width:900px){.stage{margin:-10px -4vw 0;aspect-ratio:1.15}}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;opacity:0;transition:opacity .8s}
@@ -80,52 +80,52 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 .stage .sheet{position:absolute;left:20px;right:5vw;top:50%;translate:0 -50%}
 .stage.gl .sheet{opacity:0;visibility:hidden}
 .hud,.hint{display:none}
-.stage.gl .hud{display:flex;position:absolute;left:24px;bottom:40px;flex-direction:column;gap:2px;background:#151c20cc;border:1px solid #ffffff1f;border-radius:10px;padding:8px 14px;font-size:14px;color:#b9c2c6;backdrop-filter:blur(6px)}
-.hud b{font:700 18px "Barlow Condensed",Barlow,sans-serif;color:#fff}
+.stage.gl .hud{display:flex;position:absolute;left:24px;bottom:40px;flex-direction:column;gap:2px;background:#081629d9;border:1px solid #ffffff1a;border-radius:6px;padding:8px 14px;font-size:13px;color:#aebbd0;backdrop-filter:blur(6px)}
+.hud b{font:600 14px Inter,sans-serif;color:#fff}
 .hud span{font-variant-numeric:tabular-nums}
-.stage.gl .hint{display:block;position:absolute;right:6vw;bottom:48px;font-size:13px;color:#8c989e}
+.stage.gl .hint{display:block;position:absolute;right:6vw;bottom:48px;font-size:12px;color:#7d8ea8}
 @media(max-width:900px){.stage.gl .hud{left:4vw;bottom:14px}.stage.gl .hint{right:4vw;bottom:30px}}
 @media(max-width:520px){.stage.gl .hint{display:none}}
 /* WhatsApp-Kontakt */
-.wa{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:10px;height:56px;padding:0 20px 0 16px;border-radius:28px;background:#25d366;color:#fff;font:600 16px Barlow,system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px #0005;transition:transform .15s,box-shadow .15s}
-.wa:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0006}
+.wa{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:10px;height:52px;padding:0 18px 0 14px;border-radius:26px;background:#25d366;color:#fff;font:600 15px Inter,system-ui,sans-serif;text-decoration:none;box-shadow:0 6px 20px #0004;transition:transform .15s,box-shadow .15s}
+.wa:hover{transform:translateY(-2px);box-shadow:0 10px 24px #0005}
 .wa:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.wa svg{width:28px;height:28px;flex:none}
-@media(max-width:600px){.wa{width:58px;height:58px;padding:0;justify-content:center}.wa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+.wa svg{width:26px;height:26px;flex:none}
+@media(max-width:600px){.wa{width:56px;height:56px;padding:0;justify-content:center}.wa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 </style>
 </head>
 <body>
 <header class="top"><div class="w">
- <a class="logo" href="./"><i></i><span>Schnitt<em>-Wunder</em></span></a>
+ <a class="logo" href="./"><i></i><span>Schnitt <em>Wunde</em><sup>®</sup></span></a>
  <nav><a class="btn gh hide" href="login.html">Anmelden</a><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a></nav>
 </div></header>
 
 <main>
 <div class="hero"><div class="w">
  <div>
-  <span class="tag">Schnitt-Wunder · Zuschnitt-Optimierer für Plattenwerkstoffe</span>
-  <h1>Der Schnittplan für die Säge. <em>Kostenlos.</em></h1>
+  <span class="tag">Schnitt Wunde® · Zuschnitt-Optimierer für Plattenwerkstoffe</span>
+  <h1>Professionelle Zuschnittplanung für Plattenwerkstoffe. <em>Kostenlos.</em></h1>
   <p>Teile eintragen, ▶ drücken – fertig ist der Plan mit Maßketten, Schnittfolge und Etiketten. Nur durchgehende Schnitte, so wie an der Formatkreissäge.</p>
   <div class="cta"><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a><a class="btn gh" href="login.html">Ich habe schon ein Konto</a></div>
-  <div class="facts"><div><b>0 €</b><span>kein Abo, kein Limit</span></div><div><b>3</b><span>Sprachen: DE · EN · BS</span></div><div><b>☁</b><span>Projekte auf Handy und PC</span></div></div>
+  <div class="facts"><div><b>0 €</b><span>kein Abo, kein Limit</span></div><div><b>3</b><span>Sprachen: DE · EN · BS</span></div><div><b>Cloud</b><span>Projekte auf Handy und PC</span></div></div>
  </div>
  <div class="stage" id="stage" role="img" aria-label="Schnittplan: Eine Spanplatte wird Schnitt für Schnitt zugeschnitten, danach heben sich die fertigen Teile ab">
   <div class="sheet">
   <div class="cap"><b>Platte 1 von 2 · Spanplatte 19 weiß</b><span>85 % genutzt · 12 Schnitte</span></div>
-  <svg viewBox="-60 -60 2920 2190" font-family="Barlow,sans-serif" role="img" aria-label="Schnittplan mit Teilen, Kanten und Reststück">
+  <svg viewBox="-60 -60 2920 2190" font-family="Inter,sans-serif" role="img" aria-label="Schnittplan mit Teilen, Kanten und Reststück">
    <defs><pattern id="h" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="40" height="40" fill="#e9ecee"/><rect width="11" height="40" fill="#d2d8db"/></pattern></defs>
    <rect x="0" y="0" width="2800" height="2070" fill="url(#h)" stroke="#6f7c83" stroke-width="4"/>
    <g stroke="#7d878d" stroke-width="3">
-    <rect x="10" y="10" width="762" height="560" fill="#c6dcf7"/><rect x="776" y="10" width="762" height="560" fill="#c6dcf7"/><rect x="1542" y="10" width="760" height="540" fill="#f9cccc"/>
-    <rect x="10" y="574" width="762" height="560" fill="#c6dcf7"/><rect x="776" y="574" width="760" height="540" fill="#f9cccc"/><rect x="1542" y="574" width="760" height="540" fill="#f9cccc"/>
-    <rect x="10" y="1138" width="716" height="396" fill="#fbefb3"/><rect x="730" y="1138" width="716" height="396" fill="#fbefb3"/><rect x="1450" y="1138" width="716" height="396" fill="#fbefb3"/>
-    <rect x="10" y="1538" width="800" height="100" fill="#e0d2f5"/><rect x="814" y="1538" width="800" height="100" fill="#e0d2f5"/><rect x="10" y="1642" width="762" height="100" fill="#fdd9b8"/>
-    <rect x="2306" y="10" width="100" height="800" fill="#e0d2f5"/><rect x="2410" y="10" width="100" height="800" fill="#e0d2f5"/>
+    <rect x="10" y="10" width="762" height="560" fill="#d5e1f2"/><rect x="776" y="10" width="762" height="560" fill="#d5e1f2"/><rect x="1542" y="10" width="760" height="540" fill="#e6ebf2"/>
+    <rect x="10" y="574" width="762" height="560" fill="#d5e1f2"/><rect x="776" y="574" width="760" height="540" fill="#e6ebf2"/><rect x="1542" y="574" width="760" height="540" fill="#e6ebf2"/>
+    <rect x="10" y="1138" width="716" height="396" fill="#c4d4ec"/><rect x="730" y="1138" width="716" height="396" fill="#c4d4ec"/><rect x="1450" y="1138" width="716" height="396" fill="#c4d4ec"/>
+    <rect x="10" y="1538" width="800" height="100" fill="#eef2f7"/><rect x="814" y="1538" width="800" height="100" fill="#eef2f7"/><rect x="10" y="1642" width="762" height="100" fill="#dde5ef"/>
+    <rect x="2306" y="10" width="100" height="800" fill="#eef2f7"/><rect x="2410" y="10" width="100" height="800" fill="#eef2f7"/>
    </g>
    <g stroke-width="10" stroke-dasharray="30 18" fill="none">
-    <path d="M25 25H757M791 25H1523M25 589H757M2321 25V795M2425 25V795M25 1553H795M829 1553H1599" stroke="#1f6feb"/>
-    <path d="M1557 25H2287M791 589H1521M1557 589H2287" stroke="#1f6feb"/>
-    <rect x="25" y="1153" width="686" height="366" stroke="#e11d48"/><rect x="745" y="1153" width="686" height="366" stroke="#e11d48"/><rect x="1465" y="1153" width="686" height="366" stroke="#e11d48"/>
+    <path d="M25 25H757M791 25H1523M25 589H757M2321 25V795M2425 25V795M25 1553H795M829 1553H1599" stroke="#1d4ed8"/>
+    <path d="M1557 25H2287M791 589H1521M1557 589H2287" stroke="#1d4ed8"/>
+    <rect x="25" y="1153" width="686" height="366" stroke="#0b1f3a"/><rect x="745" y="1153" width="686" height="366" stroke="#0b1f3a"/><rect x="1465" y="1153" width="686" height="366" stroke="#0b1f3a"/>
    </g>
    <g font-weight="700" font-size="64" fill="#22292d" text-anchor="middle">
     <text x="391" y="290">Boden</text><text x="1157" y="290">Boden</text><text x="1922" y="290">Fachboden</text>
@@ -139,7 +139,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
    </g>
    <rect x="1618" y="1538" width="1172" height="522" fill="none" stroke="#7d8a91" stroke-width="4" stroke-dasharray="26 16"/>
    <text x="2204" y="1815" font-size="56" fill="#56636a" text-anchor="middle">Rest 1172 × 522</text>
-   <path d="M0 2105H2800" stroke="#d6402b" stroke-width="5"/><text x="1400" y="2160" font-size="58" font-weight="700" fill="#d6402b" text-anchor="middle">2.800</text>
+   <path d="M0 2105H2800" stroke="#1d4ed8" stroke-width="5"/><text x="1400" y="2160" font-size="58" font-weight="700" fill="#1d4ed8" text-anchor="middle">2.800</text>
   </svg>
  </div>
   <div class="hud" aria-hidden="true"><b>Platte 1 von 2 · Spanplatte 19 weiß</b><span id="hud">18 Schnitte geplant</span></div>
@@ -150,12 +150,12 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 <section><div class="w">
  <div class="sh"><h2>Alles drin, was die Pro-Programme können.</h2><p>Ohne Abo und ohne Limit bei Platten oder Teilen. Gemacht von einem Schreiner für die Werkstatt.</p></div>
  <div class="grid">
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#d6402b" stroke-width="3"><rect x="4" y="8" width="36" height="28" rx="2"/><path d="M18 8v28M18 22h22M30 22v14"/></svg><h3>Wenig Verschnitt</h3><p>Guillotine-Optimierung mit Sägeblatt, Randbeschnitt und Mindest-Besäummaß. Gleiche Platten werden gestapelt.</p></div>
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke-width="4"><rect x="8" y="12" width="28" height="20" rx="1" stroke="#1b2125" stroke-width="3"/><path d="M8 12h28" stroke="#e6007e" stroke-dasharray="5 3"/><path d="M8 32h28" stroke="#1f6feb" stroke-dasharray="5 3"/></svg><h3>Kanten & Maserung</h3><p>Mehrere Kantenarten mit Dicke und Farbe, Abzug vom Zuschnitt, Laufmeter. Maserung pro Teil festlegen.</p></div>
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1b2125" stroke-width="3"><rect x="4" y="9" width="36" height="26" rx="3"/><path d="M9 14h9v9H9zM23 15h12M23 21h9M9 29h26" /></svg><h3>Etiketten mit QR</h3><p>Ein Etikett pro Teil mit QR-Code, Maß, Material und Kanten-Skizze. A4-Bögen oder Etikettendrucker.</p></div>
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#2e7d32" stroke-width="3"><circle cx="22" cy="22" r="17"/><path d="M18 14l12 8-12 8z" fill="#2e7d32"/></svg><h3>Geführter Zuschnitt</h3><p>Schnitt für Schnitt an der Säge: welches Stück, wo schneiden, was rauskommt. Rot im Plan markiert.</p></div>
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1b2125" stroke-width="3"><rect x="5" y="5" width="34" height="34" rx="2"/><rect x="11" y="11" width="13" height="10" fill="#e9c98f"/><path d="M27 28l8 8M35 28v8h-8" stroke="#d6402b"/></svg><h3>Plan selbst bearbeiten</h3><p>Teile verschieben, drehen, entfernen oder wieder einsetzen – die Schnittfolge rechnet sich mit.</p></div>
-  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1b2125" stroke-width="3"><path d="M13 32h20a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-1 16z"/></svg><h3>Projekte in der Cloud</h3><p>Angemeldet speicherst du Projekte online und öffnest sie im Büro, zu Hause oder an der Säge.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1d4ed8" stroke-width="3"><rect x="4" y="8" width="36" height="28" rx="2"/><path d="M18 8v28M18 22h22M30 22v14"/></svg><h3>Wenig Verschnitt</h3><p>Guillotine-Optimierung mit Sägeblatt, Randbeschnitt und Mindest-Besäummaß. Gleiche Platten werden gestapelt.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke-width="4"><rect x="8" y="12" width="28" height="20" rx="1" stroke="#1d4ed8" stroke-width="3"/><path d="M8 12h28" stroke="#1d4ed8" stroke-dasharray="5 3"/><path d="M8 32h28" stroke="#1d4ed8" stroke-dasharray="5 3"/></svg><h3>Kanten & Maserung</h3><p>Mehrere Kantenarten mit Dicke und Farbe, Abzug vom Zuschnitt, Laufmeter. Maserung pro Teil festlegen.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1d4ed8" stroke-width="3"><rect x="4" y="9" width="36" height="26" rx="3"/><path d="M9 14h9v9H9zM23 15h12M23 21h9M9 29h26" /></svg><h3>Etiketten mit QR</h3><p>Ein Etikett pro Teil mit QR-Code, Maß, Material und Kanten-Skizze. A4-Bögen oder Etikettendrucker.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1d4ed8" stroke-width="3"><circle cx="22" cy="22" r="17"/><path d="M18 14l12 8-12 8z" fill="#1d4ed8"/></svg><h3>Geführter Zuschnitt</h3><p>Schnitt für Schnitt an der Säge: welches Stück, wo schneiden, was rauskommt. Rot im Plan markiert.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1d4ed8" stroke-width="3"><rect x="5" y="5" width="34" height="34" rx="2"/><rect x="11" y="11" width="13" height="10" fill="#c4d4ec"/><path d="M27 28l8 8M35 28v8h-8" stroke="#1d4ed8"/></svg><h3>Plan selbst bearbeiten</h3><p>Teile verschieben, drehen, entfernen oder wieder einsetzen – die Schnittfolge rechnet sich mit.</p></div>
+  <div class="f"><svg viewBox="0 0 44 44" fill="none" stroke="#1d4ed8" stroke-width="3"><path d="M13 32h20a7 7 0 0 0 0-14 10 10 0 0 0-19-2 8 8 0 0 0-1 16z"/></svg><h3>Projekte in der Cloud</h3><p>Angemeldet speicherst du Projekte online und öffnest sie im Büro, zu Hause oder an der Säge.</p></div>
  </div>
 </div></section>
 
@@ -179,16 +179,16 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 </div></section>
 
 <section class="end"><div class="w">
- <h2>Probier Schnitt-Wunder mit deinem nächsten Auftrag.</h2>
+ <h2>Probier Schnitt Wunde® mit deinem nächsten Auftrag.</h2>
  <p>Konto in einer Minute angelegt. Deine lokalen Projekte werden beim ersten Anmelden automatisch übernommen.</p>
  <a class="btn pri" href="login.html?neu=1">Kostenlos starten</a>
 </div></section>
 </main>
 
-<footer><div class="w"><span>Schnitt-Wunder · Plattenzuschnitt Optimierer</span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
+<footer><div class="w"><span>Schnitt Wunde® · Plattenzuschnitt Optimierer</span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 <script type="module">
-/* Schnitt-Wunder – 3D-Szene im Kopf: Platte wird zugeschnitten, Teile heben sich ab */
+/* Schnitt Wunde® – 3D-Szene im Kopf: Platte wird zugeschnitten, Teile heben sich ab */
 import * as THREE from 'three';
 
 const stage = document.getElementById('stage');
@@ -198,15 +198,15 @@ const S = 1 / 1000, T = 0.04, TOP = 0.05, BASE = 0.049;
 const X = x => (x - 1400) * S, Z = y => (y - 1035) * S;
 
 // Teile aus dem Beispielplan: x, y, Länge, Breite, Farbe, Name, Kanten (t/b/l/r), Kantenfarbe
-const B = '#1f6feb', R = '#e11d48';
+const B = '#1d4ed8', R = '#0b1f3a';
 const PARTS = [
-  [10, 10, 762, 560, '#c6dcf7', 'Boden', 't', B], [776, 10, 762, 560, '#c6dcf7', 'Boden', 't', B],
-  [1542, 10, 760, 540, '#f9cccc', 'Fachboden', 't', B], [10, 574, 762, 560, '#c6dcf7', 'Boden', 't', B],
-  [776, 574, 760, 540, '#f9cccc', 'Fachboden', 't', B], [1542, 574, 760, 540, '#f9cccc', 'Fachboden', 't', B],
-  [10, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R], [730, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R],
-  [1450, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R], [10, 1538, 800, 100, '#e0d2f5', 'Blende', 't', B],
-  [814, 1538, 800, 100, '#e0d2f5', 'Blende', 't', B], [10, 1642, 762, 100, '#fdd9b8', 'Leiste', '', B],
-  [2306, 10, 100, 800, '#e0d2f5', 'Lisene', 'l', B], [2410, 10, 100, 800, '#e0d2f5', 'Lisene', 'l', B],
+  [10, 10, 762, 560, '#d5e1f2', 'Boden', 't', B], [776, 10, 762, 560, '#d5e1f2', 'Boden', 't', B],
+  [1542, 10, 760, 540, '#e6ebf2', 'Fachboden', 't', B], [10, 574, 762, 560, '#d5e1f2', 'Boden', 't', B],
+  [776, 574, 760, 540, '#e6ebf2', 'Fachboden', 't', B], [1542, 574, 760, 540, '#e6ebf2', 'Fachboden', 't', B],
+  [10, 1138, 716, 396, '#c4d4ec', 'Front', 'tblr', R], [730, 1138, 716, 396, '#c4d4ec', 'Front', 'tblr', R],
+  [1450, 1138, 716, 396, '#c4d4ec', 'Front', 'tblr', R], [10, 1538, 800, 100, '#eef2f7', 'Blende', 't', B],
+  [814, 1538, 800, 100, '#eef2f7', 'Blende', 't', B], [10, 1642, 762, 100, '#dde5ef', 'Leiste', '', B],
+  [2306, 10, 100, 800, '#eef2f7', 'Lisene', 'l', B], [2410, 10, 100, 800, '#eef2f7', 'Lisene', 'l', B],
 ];
 const REST = [1618, 1538, 1172, 522];
 // Schnittfolge (Guillotine): [x1,y1,x2,y2] in mm
@@ -227,7 +227,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 stage.prepend(renderer.domElement);
 renderer.domElement.setAttribute('aria-hidden', 'true');
 
-try { await Promise.race([document.fonts.load('700 40px "Barlow Condensed"'), new Promise(r => setTimeout(r, 1500))]); } catch (e) {}
+try { await Promise.race([document.fonts.load('700 40px Inter'), new Promise(r => setTimeout(r, 1500))]); } catch (e) {}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 30);
@@ -251,10 +251,10 @@ function partTex(w, h, fill, label) {
   const vert = h > w * 2, L = vert ? ch : cw, sh = vert ? w : h, dims = `${w} × ${h}`;
   g.save(); g.translate(cw / 2, ch / 2); if (vert) g.rotate(-Math.PI / 2);
   if (sh >= 300) {
-    g.font = `700 ${64 * k}px "Barlow Condensed",Barlow,sans-serif`; g.fillText(label, 0, -22 * k);
-    g.font = `500 ${48 * k}px Barlow,sans-serif`; g.fillText(dims, 0, 36 * k);
+    g.font = `700 ${64 * k}px Inter,sans-serif`; g.fillText(label, 0, -22 * k);
+    g.font = `500 ${48 * k}px Inter,sans-serif`; g.fillText(dims, 0, 36 * k);
   } else {
-    g.font = `600 ${Math.min(46, sh * .46) * k}px Barlow,sans-serif`; g.fillText(`${label} · ${dims}`, 0, 2, L - 20);
+    g.font = `600 ${Math.min(46, sh * .46) * k}px Inter,sans-serif`; g.fillText(`${label} · ${dims}`, 0, 2, L - 20);
   }
   g.restore(); return tex(c);
 }
@@ -308,14 +308,14 @@ PARTS.forEach(([x, y, w, h, f, l, ed, ec], i) => addPiece(x, y, w, h, partTex(w,
   const [x, y, w, h] = REST, k = .5, [c, g] = cnv(w * k, h * k);
   g.fillStyle = '#e6e9ea'; g.fillRect(0, 0, c.width, c.height);
   g.setLineDash([14, 9]); g.strokeStyle = '#7d8a91'; g.lineWidth = 4; g.strokeRect(3, 3, c.width - 6, c.height - 6);
-  g.fillStyle = '#56636a'; g.font = '500 30px Barlow,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#56636a'; g.font = '500 30px Inter,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
   g.fillText(`Rest ${w} × ${h}`, c.width / 2, c.height / 2);
   addPiece(x, y, w, h, tex(c), '', B, true, 14);
 }
 
 // Schnittlinien
 const cuts = []; let tt = .9;
-const lineMat = () => new THREE.MeshBasicMaterial({ color: '#ff5233', transparent: true, depthWrite: false });
+const lineMat = () => new THREE.MeshBasicMaterial({ color: '#3b82f6', transparent: true, depthWrite: false });
 for (const [x1, y1, x2, y2] of CUTS) {
   const a = new THREE.Vector3(X(x1), TOP + .0012, Z(y1)), b = new THREE.Vector3(X(x2), TOP + .0012, Z(y2));
   const len = a.distanceTo(b), alongX = y1 === y2;
@@ -339,7 +339,7 @@ const blade = new THREE.Group(), spin = new THREE.Group(); blade.add(spin); grou
   const g = new THREE.ExtrudeGeometry(sh, { depth: .004, bevelEnabled: false }); g.translate(0, 0, -.002);
   const disc = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: '#cfd5d9', metalness: .55, roughness: .28 }));
   disc.castShadow = true; spin.add(disc);
-  const hub = new THREE.Mesh(new THREE.CylinderGeometry(.042, .042, .007, 32), new THREE.MeshStandardMaterial({ color: '#d6402b', roughness: .4 }));
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(.042, .042, .007, 32), new THREE.MeshStandardMaterial({ color: '#0b1f3a', roughness: .4 }));
   hub.rotation.x = Math.PI / 2; spin.add(hub);
   for (let i = 0; i < 3; i++) { // Schlitze im Blatt
     const sl = new THREE.Mesh(new THREE.BoxGeometry(.03, .004, .0045), new THREE.MeshBasicMaterial({ color: '#7c858a' }));
@@ -376,8 +376,8 @@ function stepDust(dt) {
 }
 
 // Licht und Schatten
-scene.add(new THREE.HemisphereLight('#ffffff', '#3b464c', 1.5));
-const sun = new THREE.DirectionalLight('#fff4e2', 2.1); sun.position.set(-1.6, 3.6, 1.8);
+scene.add(new THREE.HemisphereLight('#ffffff', '#1a2a44', 1.5));
+const sun = new THREE.DirectionalLight('#ffffff', 2.1); sun.position.set(-1.6, 3.6, 1.8);
 sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, { left: -2.4, right: 2.4, top: 2.4, bottom: -2.4, near: .5, far: 9 });
 sun.shadow.bias = -.0004; sun.shadow.normalBias = .01; scene.add(sun);
@@ -494,6 +494,6 @@ if (!RM) {
   raf = requestAnimationFrame(loop);
 }
 </script>
-<a class="wa" href="https://wa.me/4917671337129?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20Schnitt-Wunder." target="_blank" rel="noopener" aria-label="Kontakt per WhatsApp: +49 176 71337129"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.4.7 4.7 1.9 6.7L3 29l6.9-2.2c1.9 1 4 1.6 6.1 1.6 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.1c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.3 1.3-4-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.7C5.4 9.8 10.1 5.2 16 5.2s10.6 4.7 10.6 10.5S21.8 26.1 16 26.1z"/><path fill="#fff" d="M21.9 18.6c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8 0 1.6 1.2 3.2 1.3 3.4.2.2 2.3 3.5 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.7-.4z"/></svg><span>WhatsApp</span></a>
+<a class="wa" href="https://wa.me/4917671337129?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20Schnitt%20Wunde%C2%AE." target="_blank" rel="noopener" aria-label="Kontakt per WhatsApp: +49 176 71337129"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.4.7 4.7 1.9 6.7L3 29l6.9-2.2c1.9 1 4 1.6 6.1 1.6 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.1c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.3 1.3-4-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.7C5.4 9.8 10.1 5.2 16 5.2s10.6 4.7 10.6 10.5S21.8 26.1 16 26.1z"/><path fill="#fff" d="M21.9 18.6c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8 0 1.6 1.2 3.2 1.3 3.4.2.2 2.3 3.5 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.7-.4z"/></svg><span>WhatsApp</span></a>
 </body>
 </html>

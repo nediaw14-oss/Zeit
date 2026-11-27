@@ -208,7 +208,8 @@ textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;paddin
 button.wide{width:100%;font-size:18px}
 h3.sq{font-size:17px;margin:18px 0 0}
 .dlg.wide{width:min(920px,100%)}.gb{padding:14px 20px}.dlg .pw svg{min-width:0}
-.gst{font-weight:600;color:var(--mut)}.gcut{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:6px 0 12px;font-size:18px}.gcut b{font:700 30px "Barlow Condensed",Barlow,sans-serif;color:var(--acc)}
+.gst{font-weight:600;color:var(--mut)}.shr h3{margin:14px 0 6px;font-size:15px}.shr h3:first-child{margin-top:0}.shr .wide{margin-top:12px}.shb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.shb button{min-height:48px}.shb .wa{background:#25d366;color:#08311a;border-color:#25d366;font-weight:700}
+.gcut{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:6px 0 12px;font-size:18px}.gcut b{font:700 30px "Barlow Condensed",Barlow,sans-serif;color:#dc2626}
 .gprog{height:6px;border-radius:3px;background:var(--field);margin-top:12px;overflow:hidden}.gprog i{display:block;height:100%;background:#2e7d32}
 .df{gap:8px}
 /* Assistent (Wizard) */
@@ -350,6 +351,8 @@ bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta'
  ['Trag unter „Auftrag / Kunde“ einen Namen ein und tippe auf „Speichern“ – dann liegt das Projekt in deiner Cloud. Schnittplan, Listen und Etiketten mit QR-Code bekommst du nach dem Berechnen als PDF.','Enter a name under “Job / customer” and tap “Save” – the project is then stored in your cloud. After calculating you get the cutting plan, lists and labels with QR code as PDF.','Upiši naziv pod „Nalog / kupac“ i dodirni „Spremi“ – projekt je tada u tvom oblaku. Nakon izračuna dobiješ plan rezanja, liste i etikete s QR kodom kao PDF.'],
  ['Das war’s! Am schnellsten geht dein erster Auftrag mit dem Assistenten – oder du legst direkt selbst los.','That’s it! The quickest way to your first job is the wizard – or just get started yourself.','To je to! Najbrže do prvog naloga ide s čarobnjakom – ili odmah počni sam.']
 ].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
+[["Teilen", "Share", "Podijeli"],["Schnittplan teilen", "Share cutting plan", "Podijeli plan rezanja"],["Was soll mit?", "What to include?", "Šta poslati?"],["Etiketten mit QR-Code (PDF)", "Labels with QR code (PDF)", "Etikete s QR kodom (PDF)"],["Projektdatei (zum Weiterbearbeiten)", "Project file (for editing)", "Projektna datoteka (za uređivanje)"],["Empfänger (optional)", "Recipient (optional)", "Primalac (opcionalno)"],["Handynummer oder E-Mail", "Mobile number or e-mail", "Broj mobitela ili e-mail"],["Nummer mit Ländervorwahl, z. B. +49 176 …", "Number with country code, e.g. +44 7700 …", "Broj s pozivnim brojem države, npr. +387 61 …"],["Mit Anhängen teilen (WhatsApp, E-Mail …)", "Share with attachments (WhatsApp, e-mail …)", "Podijeli s prilozima (WhatsApp, e-mail …)"],["E-Mail", "E-mail", "E-mail"],["Link kopieren", "Copy link", "Kopiraj link"],["Link kopiert", "Link copied", "Link kopiran"],["Dateien speichern", "Save files", "Spremi datoteke"],["„Mit Anhängen teilen“ hängt die Dateien direkt an. WhatsApp, E-Mail und SMS schicken eine Nachricht mit Link – darüber öffnet der Empfänger den kompletten Plan mit Listen und QR-Etiketten.", "“Share with attachments” attaches the files directly. WhatsApp, e-mail and SMS send a message with a link – the recipient opens the complete plan with lists and QR labels from it.", "„Podijeli s prilozima“ direktno prilaže datoteke. WhatsApp, e-mail i SMS šalju poruku s linkom – preko njega primalac otvara cijeli plan s listama i QR etiketama."],["WhatsApp, E-Mail und SMS schicken eine Nachricht mit Link – darüber öffnet der Empfänger den kompletten Plan mit Listen und QR-Etiketten. Dateien zum Anhängen bekommst du über „Dateien speichern“.", "WhatsApp, e-mail and SMS send a message with a link – the recipient opens the complete plan with lists and QR labels from it. Use “Save files” to get files for attaching.", "WhatsApp, e-mail i SMS šalju poruku s linkom – preko njega primalac otvara cijeli plan s listama i QR etiketama. Datoteke za prilaganje dobiješ preko „Spremi datoteke“."],["Kompletter Plan mit Listen und QR-Etiketten", "Complete plan with lists and QR labels", "Kompletan plan s listama i QR etiketama"],["Geteilter Schnittplan geöffnet", "Shared cutting plan opened", "Podijeljeni plan rezanja otvoren"],["Link ist beschädigt oder unvollständig.", "Link is damaged or incomplete.", "Link je oštećen ili nepotpun."]].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
+
 let cfg={lang:'de',unit:'mm',ord:'lb',dec:1,stack:'yes'};
 let view={z:1,f:1,col:1,dim:1,num:1,tr:0};
 try{Object.assign(view,JSON.parse(localStorage.getItem('zuschnitt-v1-view'))||{})}catch(e){}
@@ -662,7 +665,7 @@ const gName=g=>g.cnt>1?`${g.a}–${g.b}`:`${g.a}`;
 const gId=(g,x)=>g.cnt>1?`${g.a}–${g.b}-${x.pos}`:x.id;
 
 /* ---------- Plan-Geometrie (gemeinsam für Bildschirm und PDF) ---------- */
-const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#c8ecc9','#c6dcf7','#f9cccc','#fbefb3','#e0d2f5','#fdd9b8','#bfeee6','#f7cfe6'],woodL:'#7d878d',woodT:'#22292d',idT:'#4f5a60',dim:'#1d2226',main:'#1d4ed8',edge:'#e6007e'};
+const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#c8ecc9','#c6dcf7','#f9cccc','#fbefb3','#e0d2f5','#fdd9b8','#bfeee6','#f7cfe6'],woodL:'#7d878d',woodT:'#22292d',idT:'#4f5a60',dim:'#1d2226',main:'#1d4ed8',cut:'#dc2626',edge:'#e6007e'};
 const PV=()=>({f:1,col:1,dim:1,num:1,lab:st.oLab,tr:0});
 const tp=r=>({x:r.y,y:r.x,w:r.h,h:r.w});
 const tview=g=>({...g,sh:{...g.sh,S:{...g.sh.S,l:g.sh.S.b,b:g.sh.S.l},pl:g.sh.pl.map((x,i)=>({...x,...tp(x),rot:!x.rot,_i:i})),rests:(g.sh.rests||[]).map(r=>({...tp(r),ow:r.w,oh:r.h}))}});
@@ -716,8 +719,9 @@ function plan(g,V=PV()){
   const ln=n=>{let R=n.R,d=n.d;if(V.tr){R=tp(R);d=d==='x'?'y':'x'}const m=n.c+kerf0/2;return d==='x'?{x1:R.x+m,y1:R.y,x2:R.x+m,y2:R.y+R.h}:{x1:R.x,y1:R.y+m,x2:R.x+R.w,y2:R.y+m}};
   for(const n of V.hl.done)P.push({t:'l',...ln(n),c:'#56636a',sw:M*0.003});
   const c=V.hl.cur,R=V.tr?tp(c.R):c.R;
-  P.push({t:'r',...R,f:'rgba(214,64,43,.10)',s:C.main,sw:M*0.003,dash:[M*0.01,M*0.006]});
-  P.push({t:'l',...ln(c),c:C.main,sw:M*0.009});
+  /* Geführter Zuschnitt: aktueller Schnitt in Rot */
+  P.push({t:'r',...R,f:'rgba(220,38,38,.10)',s:C.cut,sw:M*0.003,dash:[M*0.01,M*0.006]});
+  P.push({t:'l',...ln(c),c:C.cut,sw:M*0.009});
  }
  return{P,bx:-out,by:-out,bw:S.l+2*out,bh:S.b+2*out,M};
 }
@@ -840,7 +844,7 @@ function renderOut(){
  /* Drucken */
  const F=FMTS();
  h+=`<div class="card acts-card"><h2>${esc(T('Drucken & Etiketten'))}</h2>
- <div class="acts"><button class="pri" id="plan">${esc(T('Schnittplan als PDF'))}</button><button id="lists">${esc(T('Listen als PDF'))}</button>${standalone?`<button id="prt">${esc(T('Drucken'))}</button>`:''}<button id="copy">${esc(T('Schnittliste kopieren'))}</button><button id="csvout">${esc(T('Schnittliste als CSV'))}</button><button id="cncout">${esc(T('CNC-Export'))}</button></div>
+ <div class="acts"><button class="pri" id="share">${esc(T('Teilen'))}</button><button class="pri" id="plan">${esc(T('Schnittplan als PDF'))}</button><button id="lists">${esc(T('Listen als PDF'))}</button>${standalone?`<button id="prt">${esc(T('Drucken'))}</button>`:''}<button id="copy">${esc(T('Schnittliste kopieren'))}</button><button id="csvout">${esc(T('Schnittliste als CSV'))}</button><button id="cncout">${esc(T('CNC-Export'))}</button></div>
  <div class="acts" style="margin-top:10px"><select id="fmt" aria-label="${esc(T('Etikettenformat'))}">${F.map((f,k)=>opt(k,fmtSel,f.t)).join('')}</select>
  <button class="pri" id="pdf">${esc(T('Etiketten als PDF'))}</button></div>
  <p class="note" id="pnote">${esc(T('Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.',{n:npl}))}</p>
@@ -944,7 +948,7 @@ function openCNC(){
 }
 const fname=(p,ext='pdf')=>p+'_'+(((st.job||'').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_'))||'Zuschnitt')+'.'+ext;
 const pdfSafe=s=>String(s).replace(/[čć]/g,'c').replace(/[ČĆ]/g,'C').replace(/š/g,'s').replace(/Š/g,'S').replace(/ž/g,'z').replace(/Ž/g,'Z').replace(/đ/g,'dj').replace(/Đ/g,'Dj').replace(/[“”„]/g,'"').replace(/–/g,'-');
-function makePlanPDF(){
+function makePlanPDF(out){
  /* Layout: schmale Info-Spalte links (klein, tabellarisch), Plan rechts so groß wie möglich */
  const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'l'}),W=297,H=210,m=7,SW=62,n=res.sheets.length,d=new Date().toLocaleDateString(loc()),job=pdfSafe((st.job||'').trim());
  const Tp=(s,v)=>pdfSafe(T(s,v)),[c1,c2]=colsLB(),hd={l:Tp('Länge'),b:Tp('Breite')},yMax=H-m-5,rh=3.3,cols=[0,9,38,47,49];
@@ -988,9 +992,9 @@ function makePlanPDF(){
    while(c<nc&&idx<rows.length){const bx=m+c*(SW+5);let yy=m+10;head(bx,yy);yy+=rh+0.4;let j=0;while(idx<rows.length&&yy<=yMax){row(g,rows[idx],bx,yy,j++);yy+=rh;idx++}c++}
    foot()}
  });
- saveDoc(doc,fname('Schnittplan'));
+ if(out)return doc;saveDoc(doc,fname('Schnittplan'));
 }
-function makeListPDF(){
+function makeListPDF(out){
  const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'p'}),W=210,H=297,m=12,[c1,c2]=colsLB(),hd={l:T('Länge'),b:T('Breite')};
  const job=pdfSafe((st.job||'').trim()),d=new Date().toLocaleDateString(loc());let y=m;
  const title=t=>{doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor('#1b2125');doc.text(pdfSafe(t),m,y+5);doc.setFontSize(10);doc.text(job,W-m,y+5,{align:'right'});doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor('#4a5459');doc.text(d,W-m,y+10,{align:'right'});y+=15};
@@ -1008,7 +1012,7 @@ function makeListPDF(){
  doc.addPage();y=m;title(T('Schnittfolge'));
  res.G.forEach(g=>{if(y>H-30){doc.addPage();y=m}doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor('#1b2125');doc.text(pdfSafe(`${T('Platte')} ${gName(g)} · ${g.sh.S.n}${g.cnt>1?' · '+T('{n}× schneiden',{n:g.cnt}):''}`),m,y);y+=6;
   table([{h:'#',x:m,w:8,r:1},{h:T('Teil'),x:24,w:40},{h:T('Schnitt'),x:68,w:28},{h:T('Ergebnis'),x:100,w:98}],g.sh.seq.map((n,k)=>[k+1,dimStr(n.R.w,n.R.h),n.d+'='+fmt(n.c),resTxt(n)]));y+=4});
- saveDoc(doc,fname('Listen'));
+ if(out)return doc;saveDoc(doc,fname('Listen'));
 }
 function labelList(){
  const out=[],job=(st.job||'').trim(),d=new Date().toLocaleDateString(loc());
@@ -1050,13 +1054,87 @@ function drawLabel(doc,x,y,F,L){
  if(L.job)line(L.job,7*k,true);
  line(L.d,6*k);
 }
-function makeLabelPDF(){
+function makeLabelPDF(out){
  qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
- const F=FMTS()[fmtSel],labs=labelList();if(!labs.length)return;
+ const F=FMTS()[fmtSel],labs=labelList();if(!labs.length)return null;
  const doc=new jspdf.jsPDF({unit:'mm',format:F.page||'a4',orientation:F.page&&F.page[0]>F.page[1]?'l':'p'}),per=F.c*F.r;
  labs.forEach((L,i)=>{const pos=i%per;if(i&&!pos)doc.addPage();drawLabel(doc,F.mx+(pos%F.c)*F.w,F.my+Math.floor(pos/F.c)*F.h,F,L)});
- saveDoc(doc,fname('Etiketten'));
+ if(out)return doc;saveDoc(doc,fname('Etiketten'));
 }
+/* ---------- Teilen (E-Mail, WhatsApp, SMS, Teilen-Menü) ---------- */
+// Projekt-Link: Projekt steckt komprimiert im #p=…-Teil der Adresse – kein Server nötig, Empfänger braucht kein Konto
+const b64u=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const ub64=t=>{const s=atob(t.replace(/-/g,'+').replace(/_/g,'/'));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+async function packState(o){const raw=new TextEncoder().encode(JSON.stringify(o));
+ if(window.CompressionStream){try{const z=new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());return'z'+b64u(z)}catch(e){}}
+ return'j'+b64u(raw)}
+async function unpackState(t){const k=t[0],u=ub64(t.slice(1));
+ const raw=k==='z'?new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer()):u;
+ return JSON.parse(new TextDecoder().decode(raw))}
+async function shareLink(){const{...o}=st;return location.origin+location.pathname+'?demo=1#p='+await packState(o)}
+async function importHash(){const m=location.hash.match(/^#p=([\w-]+)/);if(!m)return;
+ try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+ let o=null;try{o=await unpackState(m[1])}catch(e){}
+ if(o&&loadState(o)){compute(true);toast(T('Geteilter Schnittplan geöffnet'),1)}else toast(T('Link ist beschädigt oder unvollständig.'))}
+const SHF=[['plan','Schnittplan als PDF',1],['lists','Listen als PDF',1],['labels','Etiketten mit QR-Code (PDF)',1],['csv','Schnittliste als CSV',0],['json','Projektdatei (zum Weiterbearbeiten)',0]];
+let shSel=null,shTo='';
+try{shSel=JSON.parse(localStorage.getItem(KEY+'-share'))}catch(e){}
+if(!shSel||typeof shSel!=='object')shSel=Object.fromEntries(SHF.map(([k,,d])=>[k,d]));
+const canFiles=()=>{try{return!!(navigator.canShare&&navigator.canShare({files:[new File(['x'],'x.txt',{type:'text/plain'})]}))}catch(e){return false}};
+function shareFiles(){
+ const f=[],add=(blob,name)=>f.push(new File([blob],name,{type:blob.type||'application/octet-stream'}));
+ if(shSel.plan){const d=makePlanPDF(1);if(d)add(d.output('blob'),fname('Schnittplan'))}
+ if(shSel.lists){const d=makeListPDF(1);if(d)add(d.output('blob'),fname('Listen'))}
+ if(shSel.labels){const d=makeLabelPDF(1);if(d)add(d.output('blob'),fname('Etiketten'))}
+ if(shSel.csv)add(new Blob(['﻿'+cutCSV()],{type:'text/csv'}),fname('Schnittliste','csv'));
+ if(shSel.json)add(new Blob([JSON.stringify(st,null,1)],{type:'application/json'}),fname('Projekt','json'));
+ return f}
+function shareSummary(){const job=(st.job||'').trim(),cuts=res.sheets.reduce((s,x)=>s+x.cuts,0);
+ return`SchnittWundeR – ${T('Schnittplan')}${job?': '+job:''}\n${res.sheets.length} ${T('Platten')} · ${T('Verschnitt gesamt')} ${pct(res.waste)} % · ${cuts} ${T('Schnitte')}${res.kl?` · ${T('Kante gesamt')} ${pct(res.kl)} m`:''}`}
+let shLink='';
+function shareText(full){const link=shLink||(location.origin+location.pathname);
+ return`${shareSummary()}\n\n${T('Kompletter Plan mit Listen und QR-Etiketten')}:\n${link}${full?'\n\n'+cutText():''}`}
+function shOpen(){if(!res||!res.sheets.length){toast(T('Erst den Schnittplan berechnen (▶).'));return}
+ let ov=$('shov');if(!ov){ov=document.createElement('div');ov.id='shov';ov.className='ovl';document.body.appendChild(ov)}
+ const nf=canFiles();shLink='';shareLink().then(l=>shLink=l).catch(()=>{});
+ ov.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="sht"><div class="dh"><h2 id="sht">${esc(T('Schnittplan teilen'))}</h2><button id="shx" aria-label="${esc(T('Schließen'))}">×</button></div>
+ <div class="gb shr"><h3>${esc(T('Was soll mit?'))}</h3>
+ ${SHF.map(([k,l])=>`<label class="chk"><input type="checkbox" data-shf="${k}"${shSel[k]?' checked':''}>${esc(T(l))}</label>`).join('')}
+ <h3>${esc(T('Empfänger (optional)'))}</h3>
+ <input type="text" id="shto" inputmode="email" autocomplete="off" value="${esc(shTo)}" placeholder="${esc(T('Handynummer oder E-Mail'))}" aria-label="${esc(T('Handynummer oder E-Mail'))}">
+ <p class="note">${esc(T('Nummer mit Ländervorwahl, z. B. +49 176 …'))}</p>
+ ${nf?`<button class="pri wide" id="shnat">⇪ ${esc(T('Mit Anhängen teilen (WhatsApp, E-Mail …)'))}</button>`:''}
+ <div class="shb"><button id="shwa" class="wa">WhatsApp</button><button id="shml">${esc(T('E-Mail'))}</button><button id="shsms">SMS</button><button id="shln">${esc(T('Link kopieren'))}</button></div>
+ <p class="note">${esc(nf?T('„Mit Anhängen teilen“ hängt die Dateien direkt an. WhatsApp, E-Mail und SMS schicken eine Nachricht mit Link – darüber öffnet der Empfänger den kompletten Plan mit Listen und QR-Etiketten.'):T('WhatsApp, E-Mail und SMS schicken eine Nachricht mit Link – darüber öffnet der Empfänger den kompletten Plan mit Listen und QR-Etiketten. Dateien zum Anhängen bekommst du über „Dateien speichern“.'))}</p>
+ ${nf?'':`<button class="wide" id="shdl">${esc(T('Dateien speichern'))}</button>`}</div></div>`;
+ ov.querySelector('#shnat,#shwa')?.focus()}
+const shClose=()=>$('shov')?.remove();
+const shPhone=()=>{let d=shTo.replace(/[^\d+]/g,'');if(!/\d{6}/.test(d))return'';if(d.startsWith('+'))d=d.slice(1);else if(d.startsWith('00'))d=d.slice(2);else if(d.startsWith('0'))d='49'+d.slice(1);return d.replace(/\D/g,'')};
+const shMail=()=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(shTo.trim())?shTo.trim():'';
+const go=u=>{const a=document.createElement('a');a.href=u;a.target=/^https?:/.test(u)?'_blank':'_self';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()};
+async function shAct(id){
+ if(id==='shnat'){if(!libsOk())return;const files=shareFiles();
+  const data={title:'SchnittWundeR – '+((st.job||'').trim()||T('Schnittplan')),text:shareText(0)};
+  if(files.length)data.files=files;
+  try{await navigator.share(data);shClose()}catch(e){if(e&&e.name!=='AbortError'){try{delete data.files;await navigator.share(data)}catch(e2){}}}
+  return}
+ if(id==='shdl'){if(!libsOk())return;const files=shareFiles();for(const f of files)await saveData(f.name,f);return}
+ if(id==='shwa'){const t=shareText(1),n=shPhone();go(`https://wa.me/${n}?text=${encodeURIComponent(t)}`);return}
+ if(id==='shml'){let t=shareText(1);if(t.length>1800)t=shareText(0);
+  go(`mailto:${encodeURIComponent(shMail())}?subject=${encodeURIComponent('SchnittWundeR – '+((st.job||'').trim()||T('Schnittplan')))}&body=${encodeURIComponent(t)}`);return}
+ if(id==='shsms'){const t=shareText(0),n=shPhone();go(`sms:${n?'+'+n:''}${/iPhone|iPad|Mac/.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(t)}`);return}
+ if(id==='shln'){const l=shLink||await shareLink();try{await navigator.clipboard.writeText(l);toast(T('Link kopiert'))}catch(e){prompt(T('Link kopieren'),l)}}
+}
+document.addEventListener('click',e=>{
+ if(e.target.id==='shov'){shClose();return}
+ const t=e.target.closest('button');if(!t)return;
+ if(t.id==='share'){shOpen();return}
+ if(t.id==='shx'){shClose();return}
+ if(/^sh(nat|wa|ml|sms|ln|dl)$/.test(t.id))shAct(t.id);
+});
+document.addEventListener('input',e=>{if(e.target.id==='shto')shTo=e.target.value});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.shf;if(!k)return;shSel[k]=e.target.checked?1:0;try{localStorage.setItem(KEY+'-share',JSON.stringify(shSel))}catch(er){}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('shov'))shClose()});
 function cutText(){
  const{un,kerf,trim}=res;let t=`${T('SCHNITTLISTE')}${st.job?' – '+st.job:''}  (${T('Sägeblatt')} ${fmt(kerf)} ${ul()}, ${T('Besäumen')} ${fmt(trim)} ${ul()})\n`;
  groups().forEach(g=>{const sh=g.sh;t+=`\n${T('Platte')} ${gName(g)}: ${sh.S.n} ${dimStr(sh.S.l,sh.S.b)}${g.cnt>1?'  ('+T('{n}× schneiden',{n:g.cnt})+')':''}\n`;
@@ -1257,7 +1335,7 @@ function wizBody(){
   ${un?`<div class="warn"><b>${esc(T('{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:',{n:un}))}</b> ${esc([...new Set(res.un.map(p=>p.n||T('Teil')))].join(', '))}</div>`:''}
   ${W.saved?`<p class="note" style="margin-top:0">${cloud?"☁ ":""}${esc(T("Gespeichert als"))}: <b>${esc(W.saved)}</b></p>`:''}
   <p class="lead">${esc(T('Auf der Seite stehen der Plan pro Platte, die Schnittfolge und alle Listen.'))}</p>
-  <div class="acts"><button type="button" class="pri" data-wz="lists">${esc(T('Listen als PDF'))}</button><button type="button" data-wz="plan">${esc(T('Schnittplan als PDF'))}</button><button type="button" data-wz="labels">${esc(T('Etiketten als PDF'))}</button><button type="button" data-wz="csvout">${esc(T('Schnittliste als CSV'))}</button><button type="button" data-wz="cnc">${esc(T('CNC-Export'))}</button></div>`;
+  <div class="acts"><button type="button" class="pri" id="share">${esc(T('Teilen'))}</button><button type="button" class="pri" data-wz="lists">${esc(T('Listen als PDF'))}</button><button type="button" data-wz="plan">${esc(T('Schnittplan als PDF'))}</button><button type="button" data-wz="labels">${esc(T('Etiketten als PDF'))}</button><button type="button" data-wz="csvout">${esc(T('Schnittliste als CSV'))}</button><button type="button" data-wz="cnc">${esc(T('CNC-Export'))}</button></div>`;
 }
 function wizDraw(top){
  let ov=$('wov');const first=!ov;
@@ -1384,7 +1462,7 @@ document.addEventListener('keydown',e=>{if(!TR)return;if(e.key==='Escape')tourCl
 /* Nach Registrierung: wer „Schritt für Schritt“ gewählt hat, bekommt einmal die Tour */
 const tourWanted=()=>{const m=(user&&user.user_metadata)||{};let done=false,ask=null;try{done=!!localStorage.getItem(TRDONE);ask=localStorage.getItem('sw-erfahrung')}catch(e){}
  return!done&&!m.tour_done&&(m.erfahrung||ask)==='neu'};
-compute(true);renderAll();
+compute(true);renderAll();importHash();
 (async()=>{
  const show=()=>document.getElementById('authhide')?.remove();
  if(!window.sb){show();return}

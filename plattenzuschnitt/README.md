@@ -3,6 +3,14 @@
 Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) als einzelne HTML-Datei – ohne Server, ohne Anmeldung, ohne Limit.
 
 ## Funktionen
+- Projekte speichern/laden, als Datei sichern und öffnen (.json)
+- Teile aus Excel einfügen oder als .csv öffnen, Schnittliste als CSV exportieren
+- Mehrere Materialien (Teil → Material), unbegrenztes Lager (Stk leer)
+- Kanten pro Teil (L1/L2/B1/B2) als gestrichelte Linie, Kantendicke abziehen, lfm-Summe
+- Erster Schnitt längs/quer/automatisch, Ziel wenig Verschnitt oder wenig Schnitte
+- Kosten (€/Platte, €/lfm Kante), Anzahl Schnitte und Schnittlänge
+- Reststücke anzeigen und ins Lager übernehmen
+- Maßketten rundum an jeder Platte, Schnittplan als PDF (A4 quer) und Drucken
 - Teileliste mit Bezeichnung, Länge, Breite, Stückzahl und „drehen erlaubt“ (Maserung)
 - Mehrere Plattenformate auf Lager mit Stückzahl
 - Sägeblattstärke und Besäumen je Kante einstellbar

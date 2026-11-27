@@ -5,94 +5,148 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Plattenzuschnitt Optimierer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* VOICE: nüchtern, werkstatttauglich, schnell bedienbar mit Handschuh-Daumen
-   IDEA: der ausgedruckte Schnittplan, der an der Formatkreissäge hängt
-   PICTURE: maßstäbliche Platten mit Birken-Teilen, Restholz schraffiert
-   COLOUR and TYPE: Schiefer-Platte, Birkenholz, Sägeblatt-Rot; Barlow Condensed + Barlow
-   LAYOUT: Eingabe links, Schnittpläne rechts; auf dem Handy untereinander */
+/* VOICE: ruhig, präzise, werkstatttauglich – wie ein guter Ausdruck aus dem Büro
+   IDEA: der Schnittplan auf Papier, der an der Formatkreissäge hängt, mit Maßketten
+   PICTURE: weiße Planblätter mit Birkenteilen, schraffiertem Rest und Magenta-Kanten
+   COLOUR and TYPE: Schiefer-Kopf, Birke, Sägeblatt-Rot, Kanten-Magenta; Barlow Condensed + Barlow
+   LAYOUT: Eingabe links, Pläne rechts, Kennzahlen im Kopf; auf dem Handy untereinander */
 :root{color-scheme:light dark;
---bg:light-dark(#fbfbf9,#14181b);--ink:light-dark(#1d2226,#ecebe6);--mut:light-dark(#5d666c,#9aa3a8);
---card:light-dark(#ffffff,#1d2226);--line:light-dark(#dfe2e3,#30373c);
---board:light-dark(#38444b,#0c0f11);--hatch:light-dark(#4b5961,#232a2f);
---wood:#e7c58c;--woodE:#b98d4c;--woodT:#3a2a12;--red:#d6402b;--field:light-dark(#f1f3f3,#262d32)}
+--bg:light-dark(#eef0ef,#101416);--card:light-dark(#ffffff,#1a2023);--ink:light-dark(#1b2125,#ecebe6);--mut:light-dark(#5f686e,#9aa4aa);
+--line:light-dark(#e1e5e6,#2b3438);--field:light-dark(#f4f6f6,#232b2f);--sh:light-dark(0 1px 2px #0000000d,0 1px 3px #0006);
+--slate:#1f282d;--wood:#e9c98f;--red:#d6402b;--edge:#e6007e}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
-*{box-sizing:border-box;min-width:0}
+*{box-sizing:border-box;min-width:0}[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
 h1,h2,.big{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
-h1{font-size:clamp(32px,5vw,46px);text-wrap:balance}
-h2{font-size:24px;margin-bottom:10px}
-header{background:var(--board);color:#f3efe6;padding:22px max(4vw,16px) 18px}
-header p{margin:6px 0 0;color:#c7cdd0;max-width:62ch}
-header b{color:var(--wood)}
-.wrap{display:grid;grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:24px;padding:20px max(4vw,16px) 48px;max-width:1500px;margin:auto}
-@media(max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
-.row{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr)) 62px 40px;gap:6px;align-items:center;margin-bottom:6px}
-.hd{font-size:13px;color:var(--mut);margin-bottom:4px}
-@media(max-width:600px){.row{grid-template-columns:repeat(3,minmax(0,1fr)) 62px 40px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:8px}.row .nm{grid-column:1/-1}.hd{display:none}}
-input[type=number],input[type=text]{width:100%;font:16px Barlow,sans-serif;padding:9px 8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);min-height:44px}
+h1{font-size:clamp(32px,4.6vw,48px);text-wrap:balance}
+h2{font-size:22px;margin-bottom:12px}
+header{background:var(--slate);color:#f2efe8;padding:24px max(4vw,16px) 22px;border-bottom:6px solid var(--wood);box-shadow:inset 0 -6px 0 #c9a362}
+.hin{max-width:1500px;margin:auto;display:flex;flex-wrap:wrap;gap:18px 40px;align-items:flex-end;justify-content:space-between}
+header p{margin:6px 0 0;color:#b9c2c6;max-width:56ch}
+.kpi{display:flex;flex-wrap:wrap;gap:10px 28px}
+.kpi div{display:flex;flex-direction:column}
+.kpi .big{font-size:clamp(28px,3.6vw,40px);font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff}
+.kpi span{font-size:13px;color:#9fabb1}
+.kpi .wa .big{color:var(--wood)}
+.wrap{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:22px;padding:22px max(4vw,16px) 56px;max-width:1500px;margin:auto}
+@media(max-width:960px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:var(--sh);border:1px solid light-dark(transparent,var(--line))}
+.prt{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:light-dark(#fcfcfb,#1e2528)}
+.r1{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin-bottom:8px}
+.r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px 52px 96px;gap:8px;align-items:end}
+.r2.s{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px 76px}
+.r1.p{grid-template-columns:minmax(0,1fr) 44px 44px}
+.r3{margin-top:8px}
+.dup{padding:0;font-size:13px;color:var(--mut);background:transparent}
+details{margin-top:12px}summary{cursor:pointer;font-weight:600;min-height:32px}
+textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink)}
+.fl{display:inline-flex;align-items:center;justify-content:center}
+.rest td{color:var(--mut)}
+@media(max-width:600px){.r2.s{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px}.r2.s .f:last-child{grid-column:1/3}.r2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px}.r2 .rot{grid-column:1}.r2 .kw{grid-column:2/4;justify-self:start}}
+.f span{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+input[type=number],input[type=text],select{width:100%;font:16px Barlow,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);min-height:44px}
 input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
-input:focus-visible,button:focus-visible,label:focus-within{outline:2px solid var(--red);outline-offset:1px}
-.rot{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--mut);cursor:pointer;min-height:44px;justify-content:center;line-height:1.1}
-.rot input{width:20px;height:20px;margin:0 0 2px;accent-color:var(--red)}
-button{font:600 15px Barlow,sans-serif;border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);min-height:44px;padding:0 14px;cursor:pointer}
-.del{padding:0;font-size:22px;color:var(--mut)}
+.nm{font-weight:600}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.rot{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--mut);cursor:pointer;min-height:56px}
+.rot input{width:22px;height:22px;margin:0 0 3px;accent-color:var(--red)}
+.kw{position:relative;width:96px;height:56px}
+.kw:before{content:"";position:absolute;inset:9px 12px;background:var(--wood);border-radius:2px;opacity:.9}
+.kw button{position:absolute;padding:0;border:0;background:transparent;min-height:0;border-radius:4px}
+.kw button:after{content:"";position:absolute;background:light-dark(#c8ced1,#4a555b)}
+.kw .t,.kw .b{left:0;right:0;height:18px}.kw .t{top:0}.kw .b{bottom:0}
+.kw .l,.kw .r{top:14px;bottom:14px;width:24px}.kw .l{left:0}.kw .r{right:0}
+.kw .t:after{left:12px;right:12px;top:7px;height:3px}.kw .b:after{left:12px;right:12px;bottom:7px;height:3px}
+.kw .l:after{top:-5px;bottom:-5px;left:10px;width:3px}.kw .r:after{top:-5px;bottom:-5px;right:10px;width:3px}
+.kw button[aria-pressed=true]:after{background:repeating-linear-gradient(90deg,var(--edge) 0 6px,transparent 6px 10px)}
+.kw .l[aria-pressed=true]:after,.kw .r[aria-pressed=true]:after{background:repeating-linear-gradient(180deg,var(--edge) 0 6px,transparent 6px 10px)}
+.kw small{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:#5a4320;pointer-events:none;font-weight:600}
+button{font:600 15px Barlow,sans-serif;border-radius:8px;border:1px solid var(--line);background:var(--field);color:var(--ink);min-height:44px;padding:0 16px;cursor:pointer}
+button:hover{border-color:var(--mut)}
+.del{padding:0;font-size:22px;color:var(--mut);background:transparent}
 .del:hover{color:var(--red)}
 .pri{background:var(--red);border-color:var(--red);color:#fff}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pri:hover{filter:brightness(1.08);border-color:var(--red)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .set{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.set label,.full{font-size:14px;color:var(--mut)}.full{display:block;margin-bottom:10px}
-select{font:16px Barlow,sans-serif;min-height:44px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);max-width:100%}
-.lab{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.note{font-size:13px;color:var(--mut);margin:8px 0 0}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-.stat .big{font-size:clamp(30px,4vw,40px);font-variant-numeric:tabular-nums;white-space:nowrap}
-.stat span{font-size:14px;color:var(--mut)}
-.warn{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red);border-radius:10px;padding:12px 14px;margin-bottom:16px}
-.sheet{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
-.sh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin-bottom:8px}
-.sh .big{font-size:24px}.sh span{color:var(--mut);font-size:14px;white-space:nowrap}
-.sheet svg{width:100%;height:auto;display:block;border-radius:3px}
-.cl{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}
-.cl td,.cl th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.set .w2{grid-column:1/-1}
+.note{font-size:14px;color:var(--mut);margin:10px 0 0}
+.leg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
+.leg i{display:inline-block;width:26px;height:3px;background:repeating-linear-gradient(90deg,var(--edge) 0 6px,transparent 6px 10px)}
+.warn{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red);border-radius:12px;padding:12px 14px;margin-bottom:18px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acts select{width:auto;flex:1 1 220px}
+.sheet .sh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin-bottom:12px}
+.sheet .sh .big{font-size:26px}.sheet .sh span{color:var(--mut);font-size:14px;white-space:nowrap}
+.pw{overflow-x:auto;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 1px light-dark(#e6e9ea,#000)}
+.pw svg{display:block;width:100%;height:auto}
+@media(max-width:600px){.pw svg{min-width:620px}}
+.cl{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+.cl td,.cl th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .cl th{font-weight:600;color:var(--mut);font-size:13px}
 .cl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--board);color:#fff;padding:10px 16px;border-radius:8px;display:none;gap:12px;align-items:center;z-index:9}
-.toast button{min-height:36px;background:transparent;color:var(--wood);border-color:#5b6870}
+.cl small{color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--slate);color:#fff;padding:10px 16px;border-radius:10px;display:none;gap:12px;align-items:center;z-index:9;box-shadow:0 6px 20px #0004}
+.toast button{min-height:36px;background:transparent;color:var(--wood);border-color:#56636a}
 @media(prefers-reduced-motion:no-preference){.sheet{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+@media(max-width:600px){.cl{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:2px 0;padding-inline-start:6.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6em;margin-inline-start:-6.5em;color:var(--mut)}.stack td:empty{display:none}}
+@page{size:A4 landscape;margin:10mm}
+@media print{body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.inp,.acts-card,.toast{display:none}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
 </style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
 <body>
-<header>
-<h1>Plattenzuschnitt Optimierer</h1>
-<p>Teile eintragen, Plan erscheint sofort. Optimiert für <b>Formatkreissäge</b>: nur durchgehende Schnitte, mit Sägeblattstärke und Besäumung.</p>
-</header>
+<header><div class="hin">
+ <div><h1>Plattenzuschnitt Optimierer</h1>
+ <p>Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.</p></div>
+ <div class="kpi" aria-live="polite">
+  <div><b class="big" id="kPl">–</b><span>Platten</span></div>
+  <div class="wa"><b class="big" id="kWa">–</b><span>Verschnitt</span></div>
+  <div><b class="big" id="kTe">–</b><span>Teile</span></div>
+  <div><b class="big" id="kKa">–</b><span>Kante lfm</span></div>
+  <div id="kCoW" hidden><b class="big" id="kCo">–</b><span>Kosten</span></div>
+ </div>
+</div></header>
 <div class="wrap">
-<div>
-  <div class="panel">
-    <h2>Teile</h2>
-    <div class="row hd"><span>Bezeichnung</span><span>Länge</span><span>Breite</span><span>Stk</span><span>Drehen</span><span></span></div>
-    <div id="parts"></div>
-    <div class="btns"><button class="pri" id="addP">+ Teil</button><button id="clr">Liste leeren</button><button id="demo">Beispiel</button></div>
-    <p class="note">Länge = in Maserungsrichtung (entlang der Plattenlänge). „Drehen“ aus = Maserung muss stimmen.</p>
+<div class="inp">
+  <div class="card">
+    <h2>Projekt</h2>
+    <div class="acts"><select id="proj" aria-label="Gespeicherte Projekte"></select><button id="pload">Laden</button><button id="pdel">Löschen</button></div>
+    <div class="btns"><button class="pri" id="psave">Speichern</button><button id="pjson">Als Datei sichern</button><label class="fl" style="cursor:pointer"><span class="fl" style="min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:8px;background:var(--field);font-weight:600;font-size:15px">Datei öffnen</span><input type="file" id="pfile" accept=".json,.csv,.txt" hidden></label></div>
+    <p class="note">Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).</p>
+    <details><summary>Teile aus Excel einfügen</summary>
+     <p class="note">Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.</p>
+     <textarea id="csv" placeholder="Seite;720;560;2;nein;Spanplatte 19 weiß;L1"></textarea>
+     <div class="btns"><button class="pri" id="csvadd">Teile hinzufügen</button><button id="csvrep">Liste ersetzen</button></div>
+    </details>
   </div>
-  <div class="panel">
+  <div class="card">
+    <h2>Teile</h2>
+    <div id="parts"></div>
+    <div class="btns"><button class="pri" id="addP">+ Teil</button><button id="clr">Liste leeren</button><button id="demo">Beispiel</button><button id="rAll">Alle drehen</button><button id="rNone">Keine drehen</button></div>
+    <p class="note">Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.</p>
+  </div>
+  <div class="card">
     <h2>Platten auf Lager</h2>
-    <div class="row hd"><span>Material</span><span>Länge</span><span>Breite</span><span>Stk</span><span></span><span></span></div>
     <div id="stock"></div>
     <div class="btns"><button id="addS">+ Platte</button></div>
+    <p class="note">Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.</p>
   </div>
-  <div class="panel">
-    <h2>Auftrag &amp; Säge</h2>
-    <label class="full">Auftrag / Kunde (steht auf den Etiketten)<input type="text" id="job" placeholder="z. B. Küche Huber"></label>
+  <div class="card">
+    <h2>Auftrag, Säge &amp; Optionen</h2>
+    <label class="f" style="display:block;margin-bottom:10px"><span>Auftrag / Kunde (steht auf Plan und Etiketten)</span><input type="text" id="job" placeholder="z. B. Küche Huber"></label>
     <div class="set">
-      <label>Sägeblatt (mm)<input type="number" id="kerf" inputmode="decimal" min="0" step="0.1"></label>
-      <label>Besäumen je Kante (mm)<input type="number" id="trim" inputmode="decimal" min="0" step="1"></label>
+      <label class="f"><span>Sägeblatt (mm)</span><input type="number" id="kerf" inputmode="decimal" min="0" step="0.1"></label>
+      <label class="f"><span>Besäumen je Kante (mm)</span><input type="number" id="trim" inputmode="decimal" min="0" step="1"></label>
+      <label class="f"><span>Erster Schnitt</span><select data-o="first"><option value="auto">Automatisch</option><option value="laengs">Längs</option><option value="quer">Quer</option></select></label>
+      <label class="f"><span>Ziel</span><select data-o="goal"><option value="waste">Wenig Verschnitt</option><option value="cuts">Wenig Schnitte</option></select></label>
+      <label class="f"><span>Kantendicke abziehen (mm)</span><input type="number" data-o="et" inputmode="decimal" min="0" step="0.1"></label>
+      <label class="f"><span>Kante Preis (€/lfm)</span><input type="number" data-o="ep" inputmode="decimal" min="0" step="0.01"></label>
+      <label class="f w2"><span>Reststücke merken ab (mm, kürzere Seite – 0 = aus)</span><input type="number" data-o="rest" inputmode="numeric" min="0" step="10"></label>
     </div>
+    <p class="note">Längs = zuerst durchgehende Schnitte über die Plattenlänge, quer = über die Breite. Kantendicke wird beim Zuschnitt abgezogen, Etiketten zeigen Fertig- und Zuschnittmaß.</p>
   </div>
 </div>
 <div id="out"></div>
@@ -103,42 +157,68 @@ select{font:16px Barlow,sans-serif;min-height:44px;padding:0 8px;border:1px soli
 <script>
 {
 const KEY='zuschnitt-v1';
-const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',
- stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10}],
- parts:[{n:'Seite',l:720,b:560,q:4,r:0},{n:'Boden/Deckel',l:762,b:560,q:4,r:0},{n:'Fachboden',l:760,b:540,q:6,r:1},
- {n:'Front',l:716,b:396,q:4,r:0},{n:'Sockel',l:800,b:100,q:4,r:1},{n:'Traverse',l:762,b:100,q:4,r:1}]});
-let st=demo(),last=null,tm;
+const DEF={first:'auto',goal:'waste',et:0,ep:0,rest:150};
+const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...DEF,
+ stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10,p:''}],
+ parts:[{n:'Seite',l:720,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Boden/Deckel',l:762,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Fachboden',l:760,b:540,q:6,r:1,k:[1,0,0,0]},
+ {n:'Front',l:716,b:396,q:4,r:0,k:[1,1,1,1]},{n:'Sockel',l:800,b:100,q:4,r:1,k:[1,0,0,0]},{n:'Traverse',l:762,b:100,q:4,r:1,k:[0,0,0,0]}]});
+let st=demo(),last=null,tm,res=null;
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
+const fix=()=>{for(const k in DEF)if(st[k]===undefined)st[k]=DEF[k];st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
+const mats=()=>[...new Set(st.stock.map(s=>(s.n||'Platte').trim()||'Platte'))];
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
 const fmt=n=>(Math.round(n*10)/10).toLocaleString('de-DE');
 const $=id=>document.getElementById(id);
+const EN=['L1','L2','B1','B2'],ENL=['Länge oben','Länge unten','Breite links','Breite rechts'];
+const kTxt=k=>{const a=EN.filter((_,j)=>k&&k[j]);return a.length?a.join(' '):''};
+const standalone=(()=>{try{return window.top===window.self}catch(e){return false}})();
 
-function rowsHTML(list,kind){
- return list.map((o,i)=>`<div class="row">
- <input class="nm" type="text" data-k="${kind}" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${kind==='parts'?'Bezeichnung':'Material'}" aria-label="Bezeichnung">
- <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="l" value="${esc(o.l)}" placeholder="Länge" aria-label="Länge mm">
- <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="b" value="${esc(o.b)}" placeholder="Breite" aria-label="Breite mm">
- <input type="number" inputmode="numeric" data-k="${kind}" data-i="${i}" data-f="q" value="${esc(o.q)}" placeholder="Stk" aria-label="Stückzahl">
- ${kind==='parts'?`<label class="rot"><input type="checkbox" data-k="parts" data-i="${i}" data-f="r" ${o.r?'checked':''}>drehen</label>`:'<span></span>'}
- <button class="del" data-del="${kind}" data-i="${i}" aria-label="Zeile löschen">×</button></div>`).join('');
+function partsHTML(){
+ if(!st.parts.length)return'<p class="note">Noch keine Teile. Tippe auf „+ Teil“.</p>';
+ const M=mats();
+ return st.parts.map((o,i)=>`<div class="prt">
+ <div class="r1 p"><input class="nm" type="text" data-k="parts" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="Bezeichnung" aria-label="Bezeichnung">
+ <button class="dup" data-dup="${i}" aria-label="Teil kopieren" title="Kopieren">Kopie</button>
+ <button class="del" data-del="parts" data-i="${i}" aria-label="Teil löschen">×</button></div>
+ <div class="r2">
+  <label class="f"><span>Länge mm</span><input type="number" inputmode="numeric" data-k="parts" data-i="${i}" data-f="l" value="${esc(o.l)}"></label>
+  <label class="f"><span>Breite mm</span><input type="number" inputmode="numeric" data-k="parts" data-i="${i}" data-f="b" value="${esc(o.b)}"></label>
+  <label class="f"><span>Stk</span><input type="number" inputmode="numeric" data-k="parts" data-i="${i}" data-f="q" value="${esc(o.q)}"></label>
+  <label class="rot"><input type="checkbox" data-k="parts" data-i="${i}" data-f="r" ${o.r?'checked':''}>drehen</label>
+  <div class="kw" role="group" aria-label="Kanten">${['t','b','l','r'].map((c,j)=>`<button class="${c}" data-edge="${i}" data-j="${j}" aria-pressed="${o.k[j]?'true':'false'}" aria-label="Kante ${ENL[j]}" title="Kante ${EN[j]}"></button>`).join('')}<small>${kTxt(o.k)?'Kante':''}</small></div>
+ </div>${M.length>1?`<div class="r3"><select data-k="parts" data-i="${i}" data-f="m" aria-label="Material">${M.map(n=>`<option${n===(M.includes(o.m)?o.m:M[0])?' selected':''}>${esc(n)}</option>`).join('')}</select></div>`:''}</div>`).join('');
+}
+function stockHTML(){
+ return st.stock.map((o,i)=>`<div class="prt">
+ <div class="r1"><input class="nm" type="text" data-k="stock" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="Material" aria-label="Material">
+ <button class="del" data-del="stock" data-i="${i}" aria-label="Platte löschen">×</button></div>
+ <div class="r2 s">
+  <label class="f"><span>Länge mm</span><input type="number" inputmode="numeric" data-k="stock" data-i="${i}" data-f="l" value="${esc(o.l)}"></label>
+  <label class="f"><span>Breite mm</span><input type="number" inputmode="numeric" data-k="stock" data-i="${i}" data-f="b" value="${esc(o.b)}"></label>
+  <label class="f"><span>Stk</span><input type="number" inputmode="numeric" data-k="stock" data-i="${i}" data-f="q" value="${esc(o.q)}" placeholder="∞"></label>
+  <label class="f"><span>€/Platte</span><input type="number" inputmode="decimal" step="0.01" data-k="stock" data-i="${i}" data-f="p" value="${esc(o.p)}"></label>
+ </div></div>`).join('');
 }
 function drawInputs(){
- $('parts').innerHTML=rowsHTML(st.parts,'parts')||'<p class="note">Noch keine Teile. Tippe auf „+ Teil“.</p>';
- $('stock').innerHTML=rowsHTML(st.stock,'stock');
+ $('parts').innerHTML=partsHTML();$('stock').innerHTML=stockHTML();
  $('kerf').value=st.kerf;$('trim').value=st.trim;$('job').value=st.job||'';
+ document.querySelectorAll('[data-o]').forEach(e=>e.value=st[e.dataset.o]??'');drawProj();
 }
 
 /* ---------- Optimierer (Guillotine) ---------- */
-function pack(items,stock,kerf,trim,split,fit){
+function pack(items,stock,kerf,trim,split,fit,small){
  const sheets=[],avail=stock.map(s=>s.q),un=[];
+ const order=stock.map((_,i)=>i);if(small)order.sort((a,b)=>stock[a].l*stock[a].b-stock[b].l*stock[b].b);
  const score=(F,w,h)=>fit?F.w*F.h-w*h:Math.min(F.w-w,F.h-h);
  const place=(sh,ri,p,w,h,rot)=>{
   const F=sh.free.splice(ri,1)[0];
   sh.pl.push({x:F.x,y:F.y,w,h,p,rot});
   const rw=F.w-w-kerf,bh=F.h-h-kerf;
   let s=split;if(s===2)s=rw<bh?0:1;
+  const cw=F.w-w>0,ch=F.h-h>0;
+  if(s===0){if(ch){sh.cuts++;sh.cl+=F.w}if(cw){sh.cuts++;sh.cl+=h}}else{if(cw){sh.cuts++;sh.cl+=F.h}if(ch){sh.cuts++;sh.cl+=w}}
   const A=s===0?[{x:F.x+w+kerf,y:F.y,w:rw,h},{x:F.x,y:F.y+h+kerf,w:F.w,h:bh}]
               :[{x:F.x+w+kerf,y:F.y,w:rw,h:F.h},{x:F.x,y:F.y+h+kerf,w,h:bh}];
   for(const r of A)if(r.w>0&&r.h>0)sh.free.push(r);
@@ -151,11 +231,11 @@ function pack(items,stock,kerf,trim,split,fit){
   });
   if(best){place(best.sh,best.ri,p,best.w,best.h,best.rot);continue}
   let opened=false;
-  for(let si=0;si<stock.length;si++){
+  for(const si of order){
    if(avail[si]<=0)continue;const S=stock[si],uw=S.l-2*trim,uh=S.b-2*trim;
    let o=null;if(p.l<=uw&&p.b<=uh)o=[p.l,p.b,0];else if(p.r&&p.b<=uw&&p.l<=uh)o=[p.b,p.l,1];
    if(!o)continue;
-   const sh={si,S,free:[{x:trim,y:trim,w:uw,h:uh}],pl:[]};sheets.push(sh);avail[si]--;
+   const sh={si,S,free:[{x:trim,y:trim,w:uw,h:uh}],pl:[],cuts:trim>0?4:0,cl:trim>0?2*(S.l+S.b):0};sheets.push(sh);avail[si]--;
    place(sh,0,p,o[0],o[1],o[2]);opened=true;break;
   }
   if(!opened)un.push(p);
@@ -163,82 +243,113 @@ function pack(items,stock,kerf,trim,split,fit){
  return{sheets,un};
 }
 function optimize(){
- const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim));
- const stock=st.stock.map(s=>({n:s.n||'Platte',l:num(s.l),b:num(s.b),q:Math.max(0,Math.floor(num(s.q)))})).filter(s=>s.l>0&&s.b>0&&s.q>0);
+ const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim)),et=Math.max(0,num(st.et)),M=mats();
+ const stock=st.stock.map(s=>({n:(s.n||'Platte').trim()||'Platte',l:num(s.l),b:num(s.b),q:String(s.q??'').trim()===''?9999:Math.max(0,Math.floor(num(s.q))),pr:Math.max(0,num(s.p))})).filter(s=>s.l>0&&s.b>0&&s.q>0);
  const items=[];
- st.parts.forEach((p,i)=>{const l=num(p.l),b=num(p.b),q=Math.floor(num(p.q));
-  for(let k=0;k<q&&k<2000;k++)if(l>0&&b>0)items.push({n:p.n||('Teil '+(i+1)),l,b,r:!!p.r,c:i})});
+ st.parts.forEach((p,i)=>{const fl=num(p.l),fb=num(p.b),q=Math.floor(num(p.q)),k=p.k.slice();
+  const l=fl-(k[2]+k[3])*et,b=fb-(k[0]+k[1])*et,m=M.includes(p.m)?p.m:M[0];
+  for(let j=0;j<q&&j<2000;j++)if(l>0&&b>0)items.push({n:p.n||('Teil '+(i+1)),l,b,fl,fb,r:!!p.r,c:i,k,m})});
  const orders=[(a,b)=>b.l*b.b-a.l*a.b,(a,b)=>Math.max(b.l,b.b)-Math.max(a.l,a.b),(a,b)=>b.l-a.l||b.b-a.b,(a,b)=>b.b-a.b||b.l-a.l,(a,b)=>(b.l+b.b)-(a.l+a.b)];
- let best=null;
- for(const o of orders){const it=items.slice().sort(o);
-  for(let sp=0;sp<3;sp++)for(let f=0;f<2;f++){
-   const r=pack(it,stock,kerf,trim,sp,f);
-   r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
-   if(!best||r.un.length<best.un.length||(r.un.length===best.un.length&&(r.sheets.length<best.sheets.length||(r.sheets.length===best.sheets.length&&r.q>best.q))))best=r;
-  }}
- best.items=items;best.kerf=kerf;best.trim=trim;
- return best;
+ const splits=st.first==='laengs'?[0]:st.first==='quer'?[1]:[0,1,2],cutsGoal=st.goal==='cuts';
+ const better=(a,b)=>{if(a.un.length!==b.un.length)return a.un.length<b.un.length;if(Math.abs(a.area-b.area)>1)return a.area<b.area;
+  if(cutsGoal)return a.cuts!==b.cuts?a.cuts<b.cuts:a.q>b.q;return Math.abs(a.q-b.q)>1e-9?a.q>b.q:a.cuts<b.cuts};
+ const all={sheets:[],un:[]};
+ for(const mat of M){
+  const its=items.filter(x=>x.m===mat),stk=stock.filter(s=>s.n===mat);if(!its.length)continue;
+  if(!stk.length){all.un.push(...its);continue}
+  let best=null;
+  for(const o of orders){const it=its.slice().sort(o);
+   for(const sp of splits)for(let f=0;f<2;f++)for(let sm=0;sm<(stk.length>1?2:1);sm++){
+    const r=pack(it,stk,kerf,trim,sp,f,sm);
+    r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
+    r.area=r.sheets.reduce((s,sh)=>s+sh.S.l*sh.S.b,0);r.cuts=r.sheets.reduce((s,sh)=>s+sh.cuts,0);
+    if(!best||better(r,best))best=r;
+   }}
+  all.sheets.push(...best.sheets);all.un.push(...best.un);
+ }
+ const rest=Math.max(0,num(st.rest));
+ all.sheets.forEach((sh,i)=>{sh.pl.sort((a,b)=>a.y-b.y||a.x-b.x);sh.pl.forEach((x,j)=>x.id=`${i+1}-${String(j+1).padStart(2,'0')}`);
+  sh.rests=rest>0?sh.free.filter(r=>Math.min(r.w,r.h)>=rest).sort((a,b)=>b.w*b.h-a.w*a.h):[]});
+ Object.assign(all,{items,kerf,trim,et});
+ return all;
+}
+
+/* ---------- Plan-Geometrie (gemeinsam für Bildschirm und PDF) ---------- */
+const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#f0d9a8','#e8cb92','#f4e2bc','#e4c58b','#eed2a0','#f6e7c6'],woodL:'#9c7640',woodT:'#33250f',idT:'#8a6630',dim:'#1d2226',main:'#d6402b',edge:'#e6007e'};
+function plan(sh){
+ const S=sh.S,M=Math.max(S.l,S.b),ts=M*0.019,gap=M*0.012,off=gap+ts*1.5,out=off+ts*1.45,P=[];
+ P.push({t:'r',x:0,y:0,w:S.l,h:S.b,f:'hatch',s:C.sheet,sw:M*0.0012});
+ for(const x of sh.pl){
+  P.push({t:'r',x:x.x,y:x.y,w:x.w,h:x.h,f:C.wood[x.p.c%C.wood.length],s:C.woodL,sw:M*0.0011});
+  const e=Math.min(M*0.006,x.w*0.08,x.h*0.08),X1=x.x+e,Y1=x.y+e,X2=x.x+x.w-e,Y2=x.y+x.h-e;
+  const top=[X1,Y1,X2,Y1],bot=[X1,Y2,X2,Y2],lef=[X1,Y1,X1,Y2],rig=[X2,Y1,X2,Y2];
+  const map=x.rot?[lef,rig,top,bot]:[top,bot,lef,rig];
+  (x.p.k||[]).forEach((v,j)=>{if(v){const[a,b,c,d]=map[j];P.push({t:'l',x1:a,y1:b,x2:c,y2:d,c:C.edge,sw:M*0.0034,dash:[M*0.011,M*0.006]})}});
+  const vert=x.h>x.w*1.4,L=vert?x.h:x.w,T=vert?x.w:x.h,dims=`${fmt(x.p.l)} × ${fmt(x.p.b)}`;
+  let fs=Math.min(T*0.24,ts*1.7);
+  fs=Math.min(fs,L*0.84/(Math.max(String(x.p.n).length,dims.length)*0.56));
+  const cx=x.x+x.w/2,cy=x.y+x.h/2,u=vert?[-1,0]:[0,-1],rot=vert?90:0,at=d=>[cx+u[0]*d,cy+u[1]*d];
+  if(fs>=M*0.0075){
+   if(T>fs*2.7){let[a,b]=at(fs*0.15);P.push({t:'t',x:a,y:b,s:fs,str:x.p.n,a:'m',rot,b:1,c:C.woodT});
+    [a,b]=at(-fs*0.95);P.push({t:'t',x:a,y:b,s:fs*0.85,str:dims,a:'m',rot,c:C.woodT})}
+   else{const[a,b]=at(-fs*0.35);P.push({t:'t',x:a,y:b,s:fs,str:dims,a:'m',rot,b:1,c:C.woodT})}
+  }
+  const is=Math.min(ts*0.72,x.h*0.2,x.w*0.16);
+  if(is>=M*0.0055)P.push({t:'t',x:x.x+e+M*0.006,y:x.y+e+M*0.004+is,s:is,str:x.id,a:'s',rot:0,c:C.idT});
+ }
+ for(const r of sh.rests||[]){
+  P.push({t:'r',x:r.x,y:r.y,w:r.w,h:r.h,f:null,s:'#7d8a91',sw:M*0.0012,dash:[M*0.008,M*0.005]});
+  const vert=r.h>r.w*1.4,L=vert?r.h:r.w,T=vert?r.w:r.h,str=`Rest ${fmt(r.w)} × ${fmt(r.h)}`;
+  const fs=Math.min(T*0.22,ts*1.2,L*0.84/(str.length*0.56));
+  if(fs>=M*0.0075)P.push(vert?{t:'t',x:r.x+r.w/2+fs*0.35,y:r.y+r.h/2,s:fs,str,a:'m',rot:90,c:'#56636a'}:{t:'t',x:r.x+r.w/2,y:r.y+r.h/2+fs*0.35,s:fs,str,a:'m',rot:0,c:'#56636a'});
+ }
+ const brk=a=>{a.sort((p,q)=>p-q);const o=[];for(const v of a)if(!o.length||v-o[o.length-1]>0.5)o.push(v);return o};
+ const xs=brk([0,S.l,...sh.pl.flatMap(x=>[x.x,x.x+x.w])]),ys=brk([0,S.b,...sh.pl.flatMap(x=>[x.y,x.y+x.h])]);
+ const chain=(vals,side,main)=>{
+  const hor=side==='top'||side==='bottom',neg=side==='top'||side==='left',edge=hor?(neg?0:S.b):(neg?0:S.l);
+  const base=neg?-off:edge+off,c=main?C.main:C.dim,sw=M*(main?0.0013:0.0009),tk=ts*0.28;
+  const L=(a,b,c2,d)=>P.push({t:'l',x1:hor?a:b,y1:hor?b:a,x2:hor?c2:d,y2:hor?d:c2,c,sw});
+  L(vals[0]-tk,base,vals[vals.length-1]+tk,base);
+  for(const v of vals){const e1=neg?edge-gap*0.35:edge+gap*0.35,e2=neg?base-tk*1.3:base+tk*1.3;L(v,e1,v,e2);
+   P.push({t:'l',x1:hor?v-tk:base-tk,y1:hor?base+tk:v+tk,x2:hor?v+tk:base+tk,y2:hor?base-tk:v-tk,c,sw:sw*2})}
+  for(let i=1;i<vals.length;i++){const a=vals[i-1],b=vals[i],len=b-a,str=fmt(len),s=main?ts*1.1:ts;
+   if(len<str.length*0.56*s+ts*0.35)continue;
+   const mid=(a+b)/2,lp=neg?base-ts*0.35:base+s*1.05;
+   P.push(hor?{t:'t',x:mid,y:lp,s,str,a:'m',rot:0,b:main?1:0,c}:{t:'t',x:lp,y:mid,s,str,a:'m',rot:90,b:main?1:0,c})}
+ };
+ chain(xs,'top');chain(ys,'left');chain([0,S.l],'bottom',1);chain([0,S.b],'right',1);
+ return{P,bx:-out,by:-out,bw:S.l+2*out,bh:S.b+2*out,M};
+}
+function toSVG(pl,idx){
+ const id='h'+idx,M=pl.M,hp=M*0.016;
+ let g=`<svg viewBox="${pl.bx} ${pl.by} ${pl.bw} ${pl.bh}" role="img" aria-label="Schnittplan Platte ${idx+1}" font-family="Barlow,Helvetica,sans-serif">
+ <defs><pattern id="${id}" width="${hp}" height="${hp}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${hp}" height="${hp}" fill="${C.waste}"/><rect width="${hp*0.28}" height="${hp}" fill="${C.hatch}"/></pattern></defs>
+ <rect x="${pl.bx}" y="${pl.by}" width="${pl.bw}" height="${pl.bh}" fill="${C.paper}"/>`;
+ for(const p of pl.P){
+  if(p.t==='r')g+=`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.f==='hatch'?`url(#${id})`:p.f||'none'}" stroke="${p.s}" stroke-width="${p.sw}"${p.dash?` stroke-dasharray="${p.dash.join(' ')}"`:''}/>`;
+  else if(p.t==='l')g+=`<line x1="${p.x1}" y1="${p.y1}" x2="${p.x2}" y2="${p.y2}" stroke="${p.c}" stroke-width="${p.sw}"${p.dash?` stroke-dasharray="${p.dash.join(' ')}"`:''} stroke-linecap="butt"/>`;
+  else g+=`<text x="${p.x}" y="${p.y}" font-size="${p.s}" fill="${p.c}"${p.b?' font-weight="700"':''} text-anchor="${p.a==='m'?'middle':'start'}"${p.rot?` transform="rotate(-90 ${p.x} ${p.y})"`:''}>${esc(p.str)}</text>`;
+ }
+ return g+'</svg>';
+}
+function toPDF(doc,pl,ox,oy,k){
+ const X=x=>ox+(x-pl.bx)*k,Y=y=>oy+(y-pl.by)*k;
+ for(const p of pl.P){
+  if(p.t==='r'){doc.setLineDashPattern(p.dash?p.dash.map(v=>v*k):[],0);doc.setLineWidth(Math.max(p.sw*k,0.12));doc.setDrawColor(p.s);if(p.f)doc.setFillColor(p.f==='hatch'?C.waste:p.f);doc.rect(X(p.x),Y(p.y),p.w*k,p.h*k,p.f?'FD':'S')}
+  else if(p.t==='l'){doc.setLineDashPattern(p.dash?p.dash.map(v=>v*k):[],0);doc.setLineWidth(Math.max(p.sw*k,0.1));doc.setDrawColor(p.c);doc.line(X(p.x1),Y(p.y1),X(p.x2),Y(p.y2))}
+  else{doc.setFont('helvetica',p.b?'bold':'normal');doc.setFontSize(p.s*k/0.3528);doc.setTextColor(p.c);
+   const w=doc.getTextWidth(p.str);let x=X(p.x),y=Y(p.y);
+   if(p.a==='m'){if(p.rot)y+=w/2;else x-=w/2}
+   doc.text(p.str,x,y,p.rot?{angle:90}:undefined)}
+ }
+ doc.setLineDashPattern([],0);doc.setTextColor('#000000');
 }
 
 /* ---------- Ausgabe ---------- */
-const COLS=['#e7c58c','#dcb47a','#ecd3a4','#d9bd8e','#e3bf7e','#f0d9ae'];
-function sheetSVG(sh,idx){
- const{S}=sh,id='h'+idx;
- let g=`<svg viewBox="-2 -2 ${S.l+4} ${S.b+4}" role="img" aria-label="Schnittplan Platte ${idx+1}">
- <defs><pattern id="${id}" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="40" height="40" fill="var(--board)"/><rect width="14" height="40" fill="var(--hatch)"/></pattern></defs>
- <rect x="0" y="0" width="${S.l}" height="${S.b}" fill="url(#${id})"/>`;
- for(const x of sh.pl){
-  const c=COLS[x.p.c%COLS.length];
-  g+=`<rect x="${x.x}" y="${x.y}" width="${x.w}" height="${x.h}" fill="${c}" stroke="#8a6630" stroke-width="3"/>`;
-  const vert=x.h>x.w*1.4,L=vert?x.h:x.w,T=vert?x.w:x.h;
-  const dims=`${fmt(x.p.l)}×${fmt(x.p.b)}`;
-  let fs=Math.min(T*0.26,90);
-  const longest=Math.max(String(x.p.n).length,dims.length);
-  fs=Math.min(fs,L*0.9/(longest*0.56));
-  if(fs<18)continue;
-  g+=`<text x="${x.x+10}" y="${x.y+Math.min(fs*0.8,40)+6}" font-size="${Math.min(fs*0.8,40)}" fill="#7a5a28" font-family="Barlow,sans-serif">${x.id}</text>`;
-  const cx=x.x+x.w/2,cy=x.y+x.h/2,tr=vert?` transform="rotate(-90 ${cx} ${cy})"`:'';
-  const two=T>fs*2.6;
-  g+=`<g${tr} font-family="Barlow,sans-serif" text-anchor="middle" fill="#3a2a12">`+
-   (two?`<text x="${cx}" y="${cy-fs*0.2}" font-size="${fs}" font-weight="600">${esc(x.p.n)}</text><text x="${cx}" y="${cy+fs*0.95}" font-size="${fs*0.85}">${dims}${x.rot?' ↻':''}</text>`
-       :`<text x="${cx}" y="${cy+fs*0.35}" font-size="${fs}" font-weight="600">${dims}</text>`)+`</g>`;
- }
- return g+`<text x="${S.l-14}" y="${S.b-16}" font-size="${Math.min(S.l,S.b)*0.035}" text-anchor="end" fill="#c7cdd0" font-family="Barlow,sans-serif">${fmt(S.l)} × ${fmt(S.b)}</text></svg>`;
-}
 function groupParts(pl){
  const m=new Map();
- for(const x of pl){const k=x.p.n+'|'+x.p.l+'|'+x.p.b;const e=m.get(k)||{n:x.p.n,l:x.p.l,b:x.p.b,q:0,rot:0};e.q++;if(x.rot)e.rot++;m.set(k,e)}
+ for(const x of pl){const k=x.p.n+'|'+x.p.l+'|'+x.p.b+'|'+kTxt(x.p.k);const e=m.get(k)||{n:x.p.n,l:x.p.l,b:x.p.b,fl:x.p.fl,fb:x.p.fb,k:kTxt(x.p.k),q:0,rot:0,ids:[]};e.q++;e.ids.push(x.id);if(x.rot)e.rot++;m.set(k,e)}
  return[...m.values()].sort((a,b)=>b.l*b.b-a.l*a.b);
-}
-let res=null;
-function drawOut(){
- res=optimize();
- const{sheets,un,items}=res,o=$('out');
- let tot=0;sheets.forEach((sh,i)=>{sh.pl.sort((a,b)=>a.y-b.y||a.x-b.x);sh.pl.forEach((x,j)=>{x.id=`${i+1}-${String(j+1).padStart(2,'0')}`;tot++})});
- res.tot=tot;
- if(!items.length){o.innerHTML='<div class="panel"><h2>Noch nichts zu schneiden</h2><p class="note">Trag links deine Teile mit Länge, Breite und Stückzahl ein.</p></div>';return}
- const sa=sheets.reduce((s,x)=>s+x.S.l*x.S.b,0),pa=sheets.reduce((s,x)=>s+x.pl.reduce((a,y)=>a+y.w*y.h,0),0);
- const waste=sa?(1-pa/sa)*100:0,cuts=sheets.reduce((s,x)=>s+x.pl.length,0);
- let h=`<div class="stats">
- <div class="stat"><div class="big">${sheets.length}</div><span>Platten nötig</span></div>
- <div class="stat"><div class="big">${fmt(waste)} %</div><span>Verschnitt</span></div>
- <div class="stat"><div class="big">${cuts}</div><span>Teile platziert</span></div>
- <div class="stat"><div class="big">${fmt(pa/1e6)} m²</div><span>Teilefläche</span></div></div>`;
- if(un.length){const g=groupParts(un.map(p=>({p,rot:0})));
-  h+=`<div class="warn"><b>${un.length} Teil${un.length>1?'e':''} passt nicht</b> – zu groß oder zu wenig Platten auf Lager: ${g.map(e=>`${e.q}× ${esc(e.n)} ${fmt(e.l)}×${fmt(e.b)}`).join(', ')}</div>`}
- h+=`<div class="panel"><h2>Etiketten mit QR-Code</h2>
- <div class="lab"><select id="fmt" aria-label="Etikettenformat">${FMTS.map((f,k)=>`<option value="${k}"${k===fmtSel?' selected':''}>${f.t}</option>`).join('')}</select>
- <button class="pri" id="pdf">Etiketten als PDF</button><button id="copy">Schnittliste kopieren</button></div>
- <p class="note" id="pnote">Ein Etikett pro Teil (${cuts} Stück). Nummer wie im Plan, z. B. 1-03 = Platte 1, Teil 3.</p></div>`;
- sheets.forEach((sh,i)=>{
-  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
-  h+=`<div class="sheet"><div class="sh"><div class="big">Platte ${i+1} · ${esc(sh.S.n)}</div><span>${fmt(sh.S.l)} × ${fmt(sh.S.b)} mm · ${fmt(u)} % genutzt</span></div>
-  ${sheetSVG(sh,i)}
-  <table class="cl"><thead><tr><th>Teil</th><th class="n">Länge</th><th class="n">Breite</th><th class="n">Stk</th></tr></thead><tbody>
-  ${groupParts(sh.pl).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small style="color:var(--mut)">(${e.rot}× gedreht)</small>`:''}</td><td class="n">${fmt(e.l)}</td><td class="n">${fmt(e.b)}</td><td class="n">${e.q}</td></tr>`).join('')}
-  </tbody></table></div>`;
- });
- o.innerHTML=h;
 }
 const FMTS=[
  {t:'A4 · 70 × 37 mm · 24 pro Blatt (z. B. Zweckform 3474)',w:70,h:37,c:3,r:8,mx:0,my:0.5},
@@ -247,85 +358,205 @@ const FMTS=[
  {t:'Etikettendrucker · 100 × 50 mm · 1 pro Seite',w:100,h:50,c:1,r:1,mx:0,my:0,page:[100,50]},
  {t:'Etikettendrucker · 62 × 29 mm · 1 pro Seite',w:62,h:29,c:1,r:1,mx:0,my:0,page:[62,29]}];
 let fmtSel=0;try{fmtSel=Math.min(+localStorage.getItem(KEY+'f')||0,FMTS.length-1)}catch(e){}
+function drawOut(){
+ res=optimize();
+ const{sheets,un,items}=res,o=$('out');
+ const kl=items.reduce((s,p)=>s+(p.k[0]+p.k[1])*p.fl+(p.k[2]+p.k[3])*p.fb,0)/1000;
+ const cost=sheets.reduce((s,x)=>s+x.S.pr,0)+kl*Math.max(0,num(st.ep));res.cost=cost;
+ const eur=v=>v.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+ $('kCoW').hidden=!(cost>0&&items.length);$('kCo').textContent=eur(cost);
+ const sa=sheets.reduce((s,x)=>s+x.S.l*x.S.b,0),pa=sheets.reduce((s,x)=>s+x.pl.reduce((a,y)=>a+y.w*y.h,0),0);
+ const cuts=sheets.reduce((s,x)=>s+x.pl.length,0);
+ res.kl=kl;res.waste=sa?(1-pa/sa)*100:0;
+ $('kPl').textContent=items.length?sheets.length:'–';$('kWa').textContent=items.length?fmt(res.waste)+' %':'–';
+ $('kTe').textContent=items.length?cuts:'–';$('kKa').textContent=items.length?fmt(kl):'–';
+ if(!items.length){o.innerHTML='<div class="card"><h2>Noch nichts zu schneiden</h2><p class="note">Trag links deine Teile mit Länge, Breite und Stückzahl ein.</p></div>';return}
+ let h='';
+ if(un.length){const g=groupParts(un.map(p=>({p,rot:0,id:''})));
+  h+=`<div class="warn"><b>${un.length} Teil${un.length>1?'e passen':' passt'} nicht</b> – zu groß oder zu wenig Platten auf Lager: ${g.map(e=>`${e.q}× ${esc(e.n)} ${fmt(e.l)}×${fmt(e.b)}`).join(', ')}</div>`}
+ h+=`<div class="card acts-card"><h2>Drucken &amp; Etiketten</h2>
+ <div class="acts"><button class="pri" id="plan">Schnittplan als PDF</button>${standalone?'<button id="prt">Drucken</button>':''}<button id="copy">Schnittliste kopieren</button><button id="csvout">Schnittliste als CSV</button></div>
+ <div class="acts" style="margin-top:10px"><select id="fmt" aria-label="Etikettenformat">${FMTS.map((f,k)=>`<option value="${k}"${k===fmtSel?' selected':''}>${esc(f.t)}</option>`).join('')}</select>
+ <button class="pri" id="pdf">Etiketten als PDF</button></div>
+ <p class="note" id="pnote">Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil (${cuts} Stück) mit QR-Code.</p>
+ <p class="note"><span class="leg"><i></i>Kante</span> · Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)</p></div>`;
+ sheets.forEach((sh,i)=>{
+  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
+  h+=`<div class="card sheet"><div class="sh"><div class="big">Platte ${i+1} von ${sheets.length} · ${esc(sh.S.n)}</div><span>${fmt(sh.S.l)} × ${fmt(sh.S.b)} mm · ${fmt(u)} % genutzt · ${sh.cuts} Schnitte · ${fmt(sh.cl/1000)} m Schnittlänge</span></div>
+  <div class="pw">${toSVG(plan(sh),i)}</div>
+  <table class="cl stack"><thead><tr><th>Teil</th><th class="n">Länge</th><th class="n">Breite</th><th>Kante</th><th class="n">Stk</th><th>Nr.</th></tr></thead><tbody>
+  ${groupParts(sh.pl).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small>(${e.rot}× gedreht)</small>`:''}${e.fl!==e.l||e.fb!==e.b?` <small>fertig ${fmt(e.fl)}×${fmt(e.fb)}</small>`:''}</td><td class="n">${fmt(e.l)}</td><td class="n">${fmt(e.b)}</td><td>${e.k||'–'}</td><td class="n">${e.q}</td><td><small>${e.ids.join(', ')}</small></td></tr>`).join('')}
+  ${sh.rests.map(r=>`<tr class="rest"><td>Reststück</td><td class="n">${fmt(r.w)}</td><td class="n">${fmt(r.h)}</td><td></td><td class="n">1</td><td></td></tr>`).join('')}
+  </tbody></table></div>`;
+ });
+ const nr=sheets.reduce((s,x)=>s+x.rests.length,0);
+ if(nr)h+=`<div class="card"><h2>${nr} Reststück${nr>1?'e':''}</h2><p class="note" style="margin-top:0">Gestrichelt im Plan. Für den nächsten Auftrag ins Lager übernehmen – sie werden dann zuerst geprüft.</p><div class="btns"><button id="r2s">Reste ins Lager übernehmen</button></div></div>`;
+ o.innerHTML=h;
+}
+
+/* ---------- PDF ---------- */
+async function saveData(name,data){
+ const note=t=>{const n=$('pnote');if(n)n.textContent=t;toast(t)};
+ const dl=(window.claude&&claude.use)?await claude.use('downloads').catch(()=>null):null;
+ if(!dl){try{const u=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);note('Heruntergeladen: '+name)}catch(e){note('Download hat nicht geklappt.')}return}
+ try{await dl.save({filename:name,data});note('Gespeichert: '+name)}
+ catch(e){note(e&&e.code==='declined'?'Speichern abgebrochen.':e&&e.code==='host_unavailable'?'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'Speichern hat nicht geklappt, bitte nochmal versuchen.')}
+}
+const saveDoc=(doc,name)=>saveData(name,doc.output('blob'));
+const libsOk=()=>{if(window.jspdf&&window.qrcode)return true;const n=$('pnote');if(n)n.textContent='PDF-Bausteine laden noch – kurz warten und nochmal tippen.';return false};
+const fname=(p,ext='pdf')=>p+'_'+(((st.job||'').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_'))||'Zuschnitt')+'.'+ext;
+function makePlanPDF(){
+ const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'l'}),W=297,H=210,m=12,n=res.sheets.length,d=new Date().toLocaleDateString('de-DE'),job=(st.job||'').trim();
+ let page=0;const foot=()=>{page++;doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor('#6b757a');doc.text(`Seite ${page}`,W-m,H-6,{align:'right'});doc.text(`Verschnitt gesamt ${fmt(res.waste)} % · Kante gesamt ${fmt(res.kl)} lfm`,m,H-6)};
+ res.sheets.forEach((sh,i)=>{
+  if(i)doc.addPage();
+  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
+  doc.setTextColor('#1b2125');doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text(`Schnittplan · Platte ${i+1} von ${n}`,m,m+5);
+  doc.setFontSize(11);doc.text(job||'',W-m,m+5,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor('#4a5459');
+  doc.text(`${sh.S.n} · ${fmt(sh.S.l)} × ${fmt(sh.S.b)} mm · ${fmt(u)} % genutzt · ${sh.cuts} Schnitte · Sägeblatt ${fmt(res.kerf)} mm · Besäumen ${fmt(res.trim)} mm${res.et?` · Kante ${fmt(res.et)} mm abgezogen`:''}`,m,m+11);
+  doc.text(d,W-m,m+11,{align:'right'});
+  doc.setDrawColor(C.edge);doc.setLineWidth(0.6);doc.setLineDashPattern([1.6,1],0);doc.line(W-m-48,m+14.6,W-m-40,m+14.6);doc.setLineDashPattern([],0);
+  doc.setTextColor('#4a5459');doc.text('Kante',W-m-38,m+15.6);doc.setDrawColor(C.main);doc.setLineWidth(0.35);doc.line(W-m-24,m+14.6,W-m-16,m+14.6);doc.text('Gesamt',W-m-14,m+15.6);
+  const pl=plan(sh),aw=W-2*m,ah=122,k=Math.min(aw/pl.bw,ah/pl.bh),y0=m+18;
+  toPDF(doc,pl,m+(aw-pl.bw*k)/2,y0,k);
+  let y=y0+pl.bh*k+7;const cw=aw/3,rh=4.4,cols=[0,13,49,62,75];
+  const rows=sh.pl,head=yy=>{doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor('#5f686e');
+   for(let c=0;c<3;c++){const bx=m+c*cw;['Nr.','Teil','Länge','Breite','Kante'].forEach((t,j)=>doc.text(t,bx+cols[j]+(j===2||j===3?11:0),yy,j===2||j===3?{align:'right'}:undefined))}};
+  let per=Math.floor((H-14-y-rh)/rh)*3,idx=0;
+  if(per<3){foot();doc.addPage();y=m+6;per=Math.floor((H-14-y-rh)/rh)*3}
+  head(y);y+=rh;let ys=y;
+  while(idx<rows.length){
+   if(idx&&idx%per===0){foot();doc.addPage();y=m+6;head(y);y+=rh;ys=y;per=Math.floor((H-14-y)/rh)*3}
+   const r=rows[idx],pos=idx%per,c=Math.floor(pos/(per/3)),rr=pos%(per/3),bx=m+c*cw,yy=ys+rr*rh;
+   doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor('#1b2125');
+   let nm=r.p.n+(r.rot?' (gedr.)':'');while(nm.length>2&&doc.getTextWidth(nm)>34)nm=nm.slice(0,-2)+'…';
+   doc.setFont('helvetica','bold');doc.text(r.id,bx,yy);doc.setFont('helvetica','normal');doc.text(nm,bx+cols[1],yy);
+   doc.text(fmt(r.p.l),bx+cols[2]+11,yy,{align:'right'});doc.text(fmt(r.p.b),bx+cols[3]+11,yy,{align:'right'});doc.text(kTxt(r.p.k)||'–',bx+cols[4],yy);
+   idx++;
+  }
+  foot();
+ });
+ saveDoc(doc,fname('Schnittplan'));
+}
 function labelList(){
  const out=[],job=(st.job||'').trim(),d=new Date().toLocaleDateString('de-DE');
- res.sheets.forEach((sh,i)=>sh.pl.forEach(x=>out.push({id:x.id,n:x.p.n,l:x.p.l,b:x.p.b,mat:sh.S.n,sheet:i+1,ns:res.sheets.length,grain:!x.p.r,rot:x.rot,job,d})));
+ res.sheets.forEach((sh,i)=>sh.pl.forEach(x=>out.push({id:x.id,n:x.p.n,l:x.p.l,b:x.p.b,fl:x.p.fl,fb:x.p.fb,mat:sh.S.n,sheet:i+1,ns:res.sheets.length,grain:!x.p.r,k:kTxt(x.p.k),job,d})));
  return out;
 }
-function qrText(L){
- return[`Teil: ${L.n}`,`Nr: ${L.id}`,`Maß: ${fmt(L.l)} x ${fmt(L.b)} mm`,`Material: ${L.mat}`,`Platte: ${L.sheet} von ${L.ns}`,
-  L.grain?'Maserung: längs':'',L.job?`Auftrag: ${L.job}`:'',`Datum: ${L.d}`].filter(Boolean).join('\n');
-}
+const qrText=L=>[`Teil: ${L.n}`,`Nr: ${L.id}`,`Maß: ${fmt(L.fl)} x ${fmt(L.fb)} mm`,L.fl!==L.l||L.fb!==L.b?`Zuschnitt: ${fmt(L.l)} x ${fmt(L.b)} mm`:'',`Material: ${L.mat}`,`Platte: ${L.sheet} von ${L.ns}`,
+ L.grain?'Maserung: längs':'',`Kante: ${L.k||'keine'}`,L.job?`Auftrag: ${L.job}`:'',`Datum: ${L.d}`].filter(Boolean).join('\n');
 function drawLabel(doc,x,y,F,L){
  const p=Math.min(3,F.h*0.08),k=Math.min(F.h/37,F.w/70);
  const q=qrcode(0,'L');q.addData(qrText(L),'Byte');q.make();
- const n=q.getModuleCount(),qs=Math.min(F.h-2*p,F.w*0.42),m=qs/n;
+ const n=q.getModuleCount(),qs=Math.min(F.h-2*p,F.w*0.42),m=qs/n,qy=y+p+(F.h-2*p-qs)/2;
  doc.setFillColor(0,0,0);
- for(let r=0;r<n;r++){let c=0;while(c<n){if(q.isDark(r,c)){let e=c;while(e<n&&q.isDark(r,e))e++;doc.rect(x+p+c*m,y+p+(F.h-2*p-qs)/2+r*m,(e-c)*m+0.01,m+0.01,'F');c=e}else c++}}
+ for(let r=0;r<n;r++){let c=0;while(c<n){if(q.isDark(r,c)){let e=c;while(e<n&&q.isDark(r,e))e++;doc.rect(x+p+c*m,qy+r*m,(e-c)*m+0.01,m+0.01,'F');c=e}else c++}}
  const tx=x+p+qs+2.5*k,tw=x+F.w-p-tx;let ty=y+p;
+ doc.setTextColor('#000000');
  const line=(txt,size,bold)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);
   let t=String(txt);while(t.length>1&&doc.getTextWidth(t)>tw)t=t.slice(0,-2)+'…';
-  ty+=size*0.3528*1.05;doc.text(t,tx,ty);ty+=size*0.3528*0.28};
+  if(ty+size*0.3528*1.05>y+F.h-p*0.6)return;ty+=size*0.3528*1.05;doc.text(t,tx,ty);ty+=size*0.3528*0.25};
  line(L.n,10*k,true);
- line(`${fmt(L.l)} × ${fmt(L.b)} mm`,12*k,true);
+ line(`${fmt(L.fl)} × ${fmt(L.fb)} mm`,12*k,true);
+ if(L.fl!==L.l||L.fb!==L.b)line(`Zuschnitt ${fmt(L.l)} × ${fmt(L.b)}`,7*k);
+ if(L.k)line('Kante: '+L.k,7*k,true);
  line(L.mat,7*k);
  line(`Nr. ${L.id}  ·  Platte ${L.sheet}/${L.ns}`,7*k);
  if(L.grain)line('Maserung längs',7*k);
  if(L.job)line(L.job,7*k,true);
  line(L.d,6*k);
 }
-async function makePDF(btn){
- const note=$('pnote');
- if(!window.jspdf||!window.qrcode){note.textContent='PDF-Bausteine laden noch nicht – kurz warten und nochmal tippen.';return}
- const dl=(window.claude&&claude.use)?await claude.use('downloads').catch(()=>null):null;
+function makeLabelPDF(){
  qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
  const F=FMTS[fmtSel],labs=labelList();if(!labs.length)return;
- const doc=new jspdf.jsPDF({unit:'mm',format:F.page||'a4',orientation:F.page&&F.page[0]>F.page[1]?'l':'p'});
- const per=F.c*F.r;
- labs.forEach((L,i)=>{const pos=i%per;if(i&&!pos)doc.addPage();
-  drawLabel(doc,F.mx+(pos%F.c)*F.w,F.my+Math.floor(pos/F.c)*F.h,F,L)});
- const name='Etiketten_'+((st.job||'Zuschnitt').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_')||'Zuschnitt')+'.pdf';
- if(!dl){try{doc.save(name);note.textContent=`${labs.length} Etiketten als ${name} heruntergeladen`}catch(e){note.textContent='Download hat nicht geklappt.'}return}
- btn.disabled=true;
- try{await dl.save({filename:name,data:doc.output('blob')});note.textContent=`${labs.length} Etiketten gespeichert: ${name}`}
- catch(e){note.textContent=e&&e.code==='declined'?'Speichern abgebrochen.':e&&e.code==='host_unavailable'?'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'Speichern hat nicht geklappt, bitte nochmal versuchen.'}
- btn.disabled=false;
+ const doc=new jspdf.jsPDF({unit:'mm',format:F.page||'a4',orientation:F.page&&F.page[0]>F.page[1]?'l':'p'}),per=F.c*F.r;
+ labs.forEach((L,i)=>{const pos=i%per;if(i&&!pos)doc.addPage();drawLabel(doc,F.mx+(pos%F.c)*F.w,F.my+Math.floor(pos/F.c)*F.h,F,L)});
+ saveDoc(doc,fname('Etiketten'));
 }
 function cutText(){
- const{sheets,un,kerf,trim}=res;let t=`SCHNITTLISTE  (Sägeblatt ${fmt(kerf)} mm, Besäumen ${fmt(trim)} mm)\n`;
+ const{sheets,un,kerf,trim}=res;let t=`SCHNITTLISTE${st.job?' – '+st.job:''}  (Sägeblatt ${fmt(kerf)} mm, Besäumen ${fmt(trim)} mm)\n`;
  sheets.forEach((sh,i)=>{t+=`\nPlatte ${i+1}: ${sh.S.n} ${fmt(sh.S.l)}x${fmt(sh.S.b)}\n`;
-  for(const e of groupParts(sh.pl))t+=`  ${e.q}x  ${e.n}  ${fmt(e.l)} x ${fmt(e.b)}${e.rot?'  (gedreht)':''}\n`});
+  for(const e of groupParts(sh.pl))t+=`  ${e.q}x  ${e.n}  ${fmt(e.l)} x ${fmt(e.b)}${e.k?'  Kante '+e.k:''}${e.rot?'  (gedreht)':''}\n`});
+ t+=`\nKante gesamt: ${fmt(res.kl)} lfm\n`;
  if(un.length)t+=`\nPASST NICHT: ${un.map(p=>p.n+' '+fmt(p.l)+'x'+fmt(p.b)).join(', ')}\n`;
  return t;
 }
+const csvCell=v=>{v=String(v??'');return/[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+function cutCSV(){
+ const rows=[['Nr','Teil','Zuschnitt Länge','Zuschnitt Breite','Fertig Länge','Fertig Breite','Kante','Material','Platte','gedreht']];
+ res.sheets.forEach((sh,i)=>sh.pl.forEach(x=>rows.push([x.id,x.p.n,fmt(x.p.l),fmt(x.p.b),fmt(x.p.fl),fmt(x.p.fb),kTxt(x.p.k),sh.S.n,i+1,x.rot?'ja':'nein'])));
+ res.sheets.forEach((sh,i)=>sh.rests.forEach(r=>rows.push(['','Reststück',fmt(r.w),fmt(r.h),'','','',sh.S.n,i+1,''])));
+ return'\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n');
+}
+function parseCSV(txt){
+ const lines=txt.replace(/^\ufeff/,'').split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return[];
+ const d=lines[0].includes(';')?';':lines[0].includes('\t')?'\t':',';
+ const M=mats(),out=[];
+ for(const ln of lines){
+  const c=[];let cur='',q=false;for(let i=0;i<ln.length;i++){const ch=ln[i];if(q){if(ch==='"'&&ln[i+1]==='"'){cur+='"';i++}else if(ch==='"')q=false;else cur+=ch}else if(ch==='"')q=true;else if(ch===d){c.push(cur.trim());cur=''}else cur+=ch}c.push(cur.trim());
+  let o=0;if(isFinite(num(c[0]))&&num(c[0])>0&&!/[a-z]/i.test(c[0]))o=-1;
+  const n=o<0?'':c[0],l=num(c[1+o]),b=num(c[2+o]);if(!(l>0&&b>0))continue;
+  const qv=num(c[3+o])||1,rv=(c[4+o]||'').toLowerCase(),mv=(c[5+o]||'').trim(),kv=(c[6+o]||'').toUpperCase();
+  out.push({n,l,b,q:Math.max(1,Math.round(qv)),r:/^(j|ja|y|yes|1|x|true)/.test(rv)?1:0,m:M.includes(mv)?mv:(mv||undefined),k:EN.map(e=>kv.includes(e)?1:0)});
+ }
+ return out;
+}
+const PK=KEY+'-projekte';
+const projs=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return{}}};
+function drawProj(){const P=projs(),ks=Object.keys(P).sort((a,b)=>a.localeCompare(b,'de'));
+ $('proj').innerHTML=`<option value="">${ks.length?'– gespeicherte Projekte ('+ks.length+') –':'– noch keine Projekte gespeichert –'}</option>`+ks.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join('')}
+function loadState(o){if(!o||!Array.isArray(o.parts)||!Array.isArray(o.stock))return false;snap();st=JSON.parse(JSON.stringify(o));fix();drawInputs();refresh();return true}
 function toast(msg,undo){
  $('tmsg').textContent=msg;$('undo').style.display=undo?'':'none';$('toast').style.display='flex';
  clearTimeout(tm);tm=setTimeout(()=>$('toast').style.display='none',4000);
 }
-let deb;const refresh=()=>{save();clearTimeout(deb);deb=setTimeout(drawOut,150)};
+let deb,tmM;const refresh=()=>{save();clearTimeout(deb);deb=setTimeout(drawOut,150)};
 const snap=()=>{last=JSON.stringify(st)};
 
 document.addEventListener('input',e=>{
  const t=e.target,k=t.dataset.k;
- if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):f==='n'?t.value:t.value;refresh()}
+ if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):t.value;refresh();if(k==='stock'&&f==='n'){clearTimeout(tmM);tmM=setTimeout(()=>{$('parts').innerHTML=partsHTML()},600)}}
  else if(t.id==='kerf'||t.id==='trim'){st[t.id]=t.value;refresh()}
  else if(t.id==='job'){st.job=t.value;save()}
+ else if(t.dataset.o){st[t.dataset.o]=t.value;refresh()}
  else if(t.id==='fmt'){fmtSel=+t.value;try{localStorage.setItem(KEY+'f',fmtSel)}catch(e){}}
+});
+document.addEventListener('change',e=>{
+ if(e.target.id!=='pfile')return;const f=e.target.files[0];e.target.value='';if(!f)return;
+ f.text().then(txt=>{
+  if(/\.json$/i.test(f.name)||txt.trim().startsWith('{')){let o;try{o=JSON.parse(txt)}catch(er){}if(loadState(o))toast('Projekt geöffnet: '+f.name,1);else toast('Datei ist kein Projekt')}
+  else{const ps=parseCSV(txt);if(!ps.length){toast('Keine Teile in der Datei erkannt');return}snap();st.parts.push(...ps);drawInputs();refresh();toast(ps.length+' Teile aus '+f.name,1)}
+ });
 });
 document.addEventListener('click',e=>{
  const t=e.target.closest('button');if(!t)return;
- if(t.dataset.del){snap();st[t.dataset.del].splice(+t.dataset.i,1);drawInputs();refresh();toast('Zeile gelöscht',1)}
- else if(t.id==='addP'){const p=st.parts[st.parts.length-1];st.parts.push({n:'',l:'',b:'',q:1,r:p?p.r:1});drawInputs();refresh();
+ if(t.dataset.edge!==undefined){const p=st.parts[+t.dataset.edge],j=+t.dataset.j;p.k[j]=p.k[j]?0:1;t.setAttribute('aria-pressed',p.k[j]?'true':'false');
+  t.parentNode.querySelector('small').textContent=kTxt(p.k)?'Kante':'';refresh()}
+ else if(t.dataset.del){snap();st[t.dataset.del].splice(+t.dataset.i,1);drawInputs();refresh();toast('Zeile gelöscht',1)}
+ else if(t.id==='addP'){const p=st.parts[st.parts.length-1];st.parts.push({n:'',l:'',b:'',q:1,r:p?p.r:1,k:[0,0,0,0]});drawInputs();refresh();
   const ins=$('parts').querySelectorAll('.nm');ins[ins.length-1]?.focus()}
  else if(t.id==='addS'){st.stock.push({n:'',l:2800,b:2070,q:10});drawInputs();refresh()}
  else if(t.id==='clr'){snap();st.parts=[];drawInputs();refresh();toast('Liste geleert',1)}
  else if(t.id==='demo'){snap();st=demo();drawInputs();refresh();toast('Beispiel geladen',1)}
  else if(t.id==='undo'&&last){st=JSON.parse(last);last=null;drawInputs();refresh();$('toast').style.display='none'}
- else if(t.id==='pdf'){makePDF(t)}
+ else if(t.id==='plan'){if(libsOk())makePlanPDF()}
+ else if(t.id==='pdf'){if(libsOk())makeLabelPDF()}
+ else if(t.id==='prt'){try{window.print()}catch(e){}}
+ else if(t.dataset.dup!==undefined){const i=+t.dataset.dup;st.parts.splice(i+1,0,JSON.parse(JSON.stringify(st.parts[i])));drawInputs();refresh();toast('Teil kopiert')}
+ else if(t.id==='rAll'||t.id==='rNone'){snap();st.parts.forEach(p=>p.r=t.id==='rAll'?1:0);drawInputs();refresh();toast(t.id==='rAll'?'Alle Teile dürfen gedreht werden':'Kein Teil wird gedreht',1)}
+ else if(t.id==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV())}
+ else if(t.id==='csvadd'||t.id==='csvrep'){const ps=parseCSV($('csv').value);if(!ps.length){toast('Keine Teile erkannt – Länge und Breite müssen Zahlen sein');return}
+  snap();if(t.id==='csvrep')st.parts=[];st.parts.push(...ps);$('csv').value='';drawInputs();refresh();toast(ps.length+' Teile übernommen',1)}
+ else if(t.id==='psave'){const n=(st.job||'').trim()||('Projekt '+new Date().toLocaleString('de-DE'));const P=projs();P[n]=st;
+  try{localStorage.setItem(PK,JSON.stringify(P));drawProj();$('proj').value=n;toast('Gespeichert: '+n)}catch(e){toast('Speichern im Browser nicht möglich – nutze „Als Datei sichern“')}}
+ else if(t.id==='pload'){const n=$('proj').value;if(!n){toast('Erst ein Projekt auswählen');return}if(loadState(projs()[n]))toast('Geladen: '+n,1)}
+ else if(t.id==='pdel'){const n=$('proj').value;if(!n){toast('Erst ein Projekt auswählen');return}const P=projs();delete P[n];try{localStorage.setItem(PK,JSON.stringify(P))}catch(e){}drawProj();toast('Gelöscht: '+n)}
+ else if(t.id==='pjson'){saveData(fname('Projekt','json'),JSON.stringify(st,null,1))}
+ else if(t.id==='r2s'){snap();let n=0;res.sheets.forEach(sh=>sh.rests.forEach(r=>{st.stock.unshift({n:sh.S.n,l:Math.round(r.w),b:Math.round(r.h),q:1,p:''});n++}));drawInputs();refresh();toast(n+' Reste im Lager – für den neuen Auftrag „Liste leeren“',1)}
  else if(t.id==='copy'){const txt=cutText();
-  navigator.clipboard.writeText(txt).then(()=>toast('Schnittliste kopiert'),()=>{
-   const a=document.createElement('textarea');a.value=txt;a.style.cssText='width:100%;height:220px;margin-bottom:16px;font:14px monospace';
-   t.parentNode.after(a);a.select();toast('Text markiert – jetzt kopieren')})}
+  const fb=()=>{const a=document.createElement('textarea');a.value=txt;a.style.cssText='width:100%;height:220px;margin-top:10px;font:14px monospace';t.closest('.card').appendChild(a);a.select();toast('Text markiert – jetzt kopieren')};
+  try{navigator.clipboard.writeText(txt).then(()=>toast('Schnittliste kopiert'),fb)}catch(er){fb()}}
 });
 drawInputs();drawOut();
 }

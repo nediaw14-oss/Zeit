@@ -173,6 +173,11 @@ textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;paddin
 .opts>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;margin:0}.opts>summary::-webkit-details-marker{display:none}
 .opts>summary h2{margin:0}.opts>summary:after{content:"";width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
 .opts[open]>summary:after{transform:rotate(-135deg);margin-bottom:-4px}
+/* Ausklappbare Karten (Schnittfolge, Teileliste) – beim ersten Blick zu */
+.fold>summary{list-style:none;display:flex;align-items:center;gap:10px;margin:0;min-height:40px}.fold>summary::-webkit-details-marker{display:none}
+.fold>summary h2{margin:0}.fold>summary .fsub{margin-inline-start:auto;color:var(--mut);font-size:14px;font-weight:500}
+.fold>summary:after{content:"";flex:none;width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
+.fold[open]>summary:after{transform:rotate(-135deg);margin-bottom:-4px}.fold[open]>summary{margin-bottom:12px}
 .orow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.orow:last-child{border-bottom:0}
 .ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:17px}.ol small{flex-basis:100%;color:var(--mut);font-size:13px;line-height:1.35}
 .inf{min-height:0;width:22px;height:22px;padding:0;border-radius:50%;font:700 13px Barlow,sans-serif;color:var(--mut);background:var(--field)}
@@ -234,7 +239,7 @@ h3.sq{font-size:17px;margin:18px 0 0}
 .trf .skip{background:transparent;border-color:transparent;color:var(--mut);padding:0 6px;text-decoration:underline;text-underline-offset:3px}
 
 @page{size:A4 landscape;margin:10mm}
-@media print{#app{display:block!important;height:auto!important}.outc{overflow:visible!important}body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.side,.sbt,.sbk,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.outc{padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
+@media print{#app{display:block!important;height:auto!important}.outc{overflow:visible!important}body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.side,.sbt,.sbk,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.outc{padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}.fold>summary:after{display:none}.fold:not([open])>:not(summary){display:block!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
@@ -794,8 +799,10 @@ function tbHTML(){
  ${b('col',ico('pal'),'Farben',!!view.col)}${b('dim',ico('rul'),'Maße',!!view.dim)}${b('num',ico('num'),'Nummern',!!view.num)}${b('tr',ico('rot'),'Ansicht drehen',!!view.tr)}
  <button class="stale" id="stl"${isStale()?'':' hidden'}>⟳ ${esc(T('Schnittplan veraltet'))}</button></div>`;
 }
+const fold={sf:false,tl:false};
 function renderOut(){
  const o=$('out');if(!o)return;
+ if(!o.dataset.fold){o.dataset.fold=1;o.addEventListener('toggle',ev=>{const k=ev.target.dataset&&ev.target.dataset.fold;if(k)fold[k]=ev.target.open},true)}
  if(!res){o.innerHTML=tbHTML()+`<div class="card"><h2>${esc(T('Schnittplan'))}</h2><p class="note">${esc(T('Erst auf ▶ tippen, dann wird der Schnittplan berechnet.'))}</p></div>`;setKPI();updStale();return}
  const{sheets,un,items}=res;
  const klT=new Map();for(const p of items)p.k.forEach((v,j)=>{if(v)klT.set(v,(klT.get(v)||0)+(j<2?p.fl:p.fb)/1000)});
@@ -837,10 +844,10 @@ function renderOut(){
  <table class="kv">${ovTab===0?gesamt.map(([k,v])=>`<tr><td>${esc(T(k))}</td><td>${v}</td></tr>`).join(''):einst.map(([k,v,c])=>`<tr><td>${esc(T(k))}${c}</td><td>${esc(v)}</td></tr>`).join('')}</table>
  ${ovTab===1&&isStale()?`<p class="note">${esc(T('Geändert seit der Berechnung – ▶ tippen.'))}</p>`:''}${res.edited?`<p class="note">${esc(T('Plan bearbeitet'))}</p>`:''}</div>`;
  /* Schnittfolge */
- h+=`<div class="card"><h2>${esc(T('Schnittfolge'))}</h2><div class="gz"><span>${esc(T('Geführter Zuschnitt'))}</span><b>${cuts} ${esc(T('Schnitte'))}</b> · ${sheets.length} ${esc(T('Platten'))}</div>
+ h+=`<details class="card fold" data-fold="sf"${fold.sf?' open':''}><summary><h2>${esc(T('Schnittfolge'))}</h2><span class="fsub">${cuts} ${esc(T('Schnitte'))}</span></summary><div class="gz"><span>${esc(T('Geführter Zuschnitt'))}</span><b>${cuts} ${esc(T('Schnitte'))}</b> · ${sheets.length} ${esc(T('Platten'))}</div>
  <button class="pri wide" id="gstart">▶ ${esc(T('Starten'))}</button>
  ${G.map(g=>`<h3 class="sq">${esc(T('Platte'))} ${gName(g)}${g.cnt>1?` <span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</h3><table class="cl"><thead><tr><th>#</th><th>${esc(T('Teil'))}</th><th>${esc(T('Schnitt'))}</th><th>${esc(T('Ergebnis'))}</th></tr></thead><tbody>
- ${g.sh.seq.map((n,k)=>`<tr><td>${k+1}</td><td>${dimStr(n.R.w,n.R.h)}</td><td>${n.d}=${fmt(n.c)}</td><td>${esc(resTxt(n))}</td></tr>`).join('')}</tbody></table>`).join('')}</div>`;
+ ${g.sh.seq.map((n,k)=>`<tr><td>${k+1}</td><td>${dimStr(n.R.w,n.R.h)}</td><td>${n.d}=${fmt(n.c)}</td><td>${esc(resTxt(n))}</td></tr>`).join('')}</tbody></table>`).join('')}<</details>`;
  /* Drucken */
  const F=FMTS();
  h+=`<div class="card acts-card"><h2>${esc(T('Drucken & Etiketten'))}</h2>
@@ -854,8 +861,8 @@ function renderOut(){
  if(nr)h+=`<div class="card"><h2>${nr} ${esc(T(nr>1?'Reststücke':'Reststück'))}</h2><p class="note" style="margin-top:0">${esc(T('Gestrichelt im Plan. Für den nächsten Auftrag ins Lager übernehmen – sie werden dann zuerst geprüft.'))}</p><div class="btns"><button id="r2s">${esc(T('Reste ins Lager übernehmen'))}</button></div></div>`;
  /* Teileliste + Zuschnittliste */
  const PL=partList(),CL=cutList();
- h+=`<div class="card"><h2>${esc(T('Teileliste'))}</h2><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Material'))}</th><th>${esc(T('Maserung'))}</th><th class="n">${esc(T('platziert'))}</th></tr></thead><tbody>
- ${PL.map(r=>`<tr><td>${esc(r.n)}</td><td class="n">${fmt(r[c1])}</td><td class="n">${fmt(r[c2])}</td><td class="n">${r.q}</td><td>${esc(r.k)||'–'}</td><td>${esc(r.m)}</td><td>${r.g?'↔':'–'}</td><td class="n">${r.ok<r.q?`<b style="color:var(--red)">${r.ok}</b>`:r.ok}</td></tr>`).join('')}</tbody></table></div>
+ h+=`<details class="card fold" data-fold="tl"${fold.tl?' open':''}><summary><h2>${esc(T('Teileliste'))}</h2><span class="fsub">${PL.reduce((n,r)=>n+r.q,0)} ${esc(T('Teile'))}</span></summary><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Material'))}</th><th>${esc(T('Maserung'))}</th><th class="n">${esc(T('platziert'))}</th></tr></thead><tbody>
+ ${PL.map(r=>`<tr><td>${esc(r.n)}</td><td class="n">${fmt(r[c1])}</td><td class="n">${fmt(r[c2])}</td><td class="n">${r.q}</td><td>${esc(r.k)||'–'}</td><td>${esc(r.m)}</td><td>${r.g?'↔':'–'}</td><td class="n">${r.ok<r.q?`<b style="color:var(--red)">${r.ok}</b>`:r.ok}</td></tr>`).join('')}</tbody></table></details>
  <div class="card"><h2>${esc(T('Zuschnittliste'))}</h2><table class="cl stack"><thead><tr><th>${esc(T('Nr.'))}</th><th>${esc(T('Teil'))}</th><th class="n">${esc(T('Zuschnitt'))}</th><th class="n">${esc(T('fertig'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Platte'))}</th></tr></thead><tbody>
  ${CL.map(r=>`<tr><td><small>${esc(r.id)}</small></td><td>${esc(r.n)}${r.rot?` <small>(${esc(T('gedreht'))})</small>`:''}</td><td class="n">${dimStr(r.l,r.b)}</td><td class="n">${dimStr(r.fl,r.fb)}</td><td>${esc(r.k)||'–'}</td><td>${r.sheet} · ${esc(r.mat)}</td></tr>`).join('')}</tbody></table></div>`;
  o.innerHTML=h;updStale();

@@ -9,9 +9,13 @@ Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multip
 - `impressum.html`, `datenschutz.html` – Pflichtseiten (gelb markierte Platzhalter vor dem Veröffentlichen ausfüllen)
 - `fonts.css`, `fonts/` – Schriften Inter und Barlow lokal (kein Google Fonts, wegen DSGVO)
 - `favicon.svg` – Symbol im Browser-Tab
+- `sw.js`, `manifest.webmanifest`, `icon-*.png` – Offline-App (installierbar)
 - `supa.js` – Supabase-Adresse und öffentlicher Schlüssel (Daten sind per Row Level Security geschützt)
 
 ## Funktionen
+- **Offline-App (PWA)**: lässt sich auf Handy/PC installieren („Installieren“ oben oder im Browser-Menü „Zum Startbildschirm“) und läuft auch ohne Internet in der Werkstatt (`sw.js`, `manifest.webmanifest`). Offline wird lokal gespeichert, wieder online geht es in die Cloud.
+- **Etiketten scannen & abhaken**: unter „Fortschritt“ (oder oben „Scannen“) den QR-Code auf dem Etikett mit der Handykamera scannen – das Teil wird abgehakt und im Schnittplan grün markiert. Ohne Kamera: Nr. eintippen oder in der Liste abhaken. Bei gespeicherten Projekten wird der Stand automatisch in die Cloud übernommen, so sieht man ihn auf jedem Gerät.
+- **Korpus-Generator** (oben „Korpus“ oder „+ Korpus“ bei den Teilen): Breite, Höhe, Tiefe eingeben – Seiten, Boden, Deckel/Traversen, Fachböden, Rückwand (eingenutet/aufgesetzt), Türen oder Schubkastenfronten und Sockelblende werden mit Kanten automatisch als Teile angelegt.
 - **Assistent** (öffnet sich nach dem Anmelden, oder oben über „Assistent“): fragt Schritt für Schritt Auftrag, Platten, Bekantung, Teile und Optimierung ab und erzeugt am Ende Schnittplan und Schnittliste (PDF/CSV); mit Auftragsnamen wird das Projekt automatisch gespeichert
 - **▶ Play-Button**: berechnet den Schnittplan; nach Änderungen erscheint „Schnittplan veraltet“
 - **Optionen** wie bei Cut List Optimizer: Schnittfuge, Alles auf eine Platte, Etiketten, Materialien, Kantenanleimung, Maserungsrichtung

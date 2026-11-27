@@ -238,10 +238,28 @@ h3.sq{font-size:17px;margin:18px 0 0}
 .trf{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}.trf .btns{margin:0}
 .trf .skip{background:transparent;border-color:transparent;color:var(--mut);padding:0 6px;text-decoration:underline;text-underline-offset:3px}
 
+.offb{align-self:center;font-size:13px;font-weight:600;color:#fff4dc;background:#8a5a00;border-radius:999px;padding:4px 10px}
+.dnl{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 14px}
+.dnr{min-height:40px;gap:8px;font-size:15px}.dnr b{font-variant-numeric:tabular-nums;min-width:3.2em}.dnr span{color:var(--mut)}.dnr.ok span{text-decoration:line-through}
+.dnc{color:var(--mut);font-weight:400;font-size:14px}
+.scv{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
+.scv video{width:100%;height:100%;object-fit:cover;display:block}
+.scfr{position:absolute;inset:18% 22%;border:3px solid #ffffffd0;border-radius:12px;box-shadow:0 0 0 9999px #0006;pointer-events:none}
+.scfb{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--field);font-size:17px;min-height:52px}
+.scfb.ok{background:light-dark(#e3f4e4,#18301b);border:1px solid #2e7d32}.scfb.ok b{color:#2e7d32}
+.scfb.bad{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red)}
+.scfb.was{background:light-dark(#fff4dc,#3a2c10);border:1px solid #f1c46b}.scfb button{min-height:36px;margin-left:8px}
+.scfb small{color:var(--mut);font-size:14px}
+#scman input{flex:1 1 180px}
 @page{size:A4 landscape;margin:10mm}
 @media print{#app{display:block!important;height:auto!important}.outc{overflow:visible!important}body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.side,.sbt,.sbk,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.outc{padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}.fold>summary:after{display:none}.fold:not([open])>:not(summary){display:block!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<script>if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 </head>
 <body>
 <style id="authhide">#app,.fab{visibility:hidden}</style>
@@ -421,7 +439,7 @@ function shell(){
  document.documentElement.lang=cfg.lang;document.title='SchnittWundeR';
  $('undo').textContent=T('Rückgängig');
  $('app').innerHTML=`<header><div class="hin">
- <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button><button class="gear" id="tourb" title="${esc(T('Kurze Tour'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>${esc(T('Tour'))}</button></div>
+ <div><div class="ht"><h1>SchnittWundeR</h1><button class="gear" id="wiz" title="${esc(T('Assistent'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M12.2 6.2 11 5M3 21l9-9"/></svg>${esc(T('Assistent'))}</button><button class="gear" id="tourb" title="${esc(T('Kurze Tour'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>${esc(T('Tour'))}</button><button class="gear" id="kopen2" title="${esc(T('Korpus-Generator'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M4 12h16M12 12v9"/></svg>${esc(T('Korpus'))}</button><button class="gear" id="scan2" title="${esc(T('Etikett scannen'))}"${res&&res.items.length?'':' hidden'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"/></svg>${esc(T('Scannen'))}</button><button class="gear" id="inst" title="${esc(T('App installieren'))}"${instEv?'':' hidden'}>⤓ ${esc(T('Installieren'))}</button><span class="offb" id="offb"${navigator.onLine?' hidden':''}>${esc(T('Offline'))}</span></div>
  <p>${esc(T('Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.'))}</p>
  <span class="credit">coded by <b>Nedi</b> / <b>Claude</b></span><div class="who" id="who"></div></div>
  <div class="kpi" aria-live="polite">
@@ -443,7 +461,7 @@ function shell(){
    <div class="btns"><button class="pri" id="csvadd">${esc(T('Teile hinzufügen'))}</button><button id="csvrep">${esc(T('Liste ersetzen'))}</button></div>
   </details></div>
  <div class="card"><h2>${esc(T('Teile'))}</h2><div id="parts"></div>
-  <div class="btns"><button class="pri" id="addP">${esc(T('+ Teil'))}</button><button id="clr">${esc(T('Liste leeren'))}</button><button id="demo">${esc(T('Beispiel'))}</button><button id="rAll">${esc(T('Alle drehen'))}</button><button id="rNone">${esc(T('Keine drehen'))}</button></div>
+  <div class="btns"><button class="pri" id="addP">${esc(T('+ Teil'))}</button><button id="kopen">${esc(T('+ Korpus'))}</button><button id="clr">${esc(T('Liste leeren'))}</button><button id="demo">${esc(T('Beispiel'))}</button><button id="rAll">${esc(T('Alle drehen'))}</button><button id="rNone">${esc(T('Keine drehen'))}</button></div>
   <details><summary>${esc(T('Für alle Teile'))}</summary><div class="bulk">
    <select id="bE" aria-label="${esc(T('Kanten'))}"><option value="">${esc(T('Kanten'))} …</option>${opt('all','',T('Alle Seiten'))}${opt('long','',T('Längsseiten'))}${opt('short','',T('Breitseiten'))}${opt('none','',T('Keine Seiten'))}</select>
    <select id="bN" aria-label="${esc(T('Bezeichnung'))}"><option value="">${esc(T('Bezeichnung'))} …</option>${opt('dim','',T('Maße als Bezeichnung'))}${opt('num','',T('Nummeriert'))}${opt('clr','',T('Leeren'))}</select>
@@ -697,6 +715,7 @@ function plan(g,V=PV()){
   const idS=gId(g,x),is=Math.min(ts*0.72*vf,x.h*0.2,x.w*0.9/(idS.length*0.56));
   if(V.num&&is>=M*0.0055)P.push({t:'t',x:x.x+e+M*0.006,y:x.y+e+M*0.004+is,s:is,str:idS,a:'s',rot:0,c:C.idT});
   if(V.sel===pi)P.push({t:'r',x:x.x,y:x.y,w:x.w,h:x.h,f:'rgba(46,125,50,.18)',s:'#2e7d32',sw:M*0.006});
+  if(V.dn&&V.dn.has(x.pos)){const cc=Math.min(x.w*0.3,x.h*0.3,ts*1.5*vf);P.push({t:'r',x:x.x,y:x.y,w:x.w,h:x.h,f:'rgba(46,125,50,.30)',s:'#2e7d32',sw:M*0.0035});P.push({t:'t',x:x.x+x.w-e-cc*0.55,y:x.y+e+cc*0.95,s:cc,str:'✓',a:'m',rot:0,b:1,c:'#1b5e20'})}
   P.push({t:'/g'});
  }
  for(const r of sh.rests||[]){
@@ -778,7 +797,7 @@ const ICO={lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 1
  rul:'<rect x="2" y="8" width="20" height="8" rx="1.5"/><path d="M6 8v3M10 8v4M14 8v3M18 8v4"/>',num:'<path d="M10 6h11M10 12h11M10 18h11M4 4.5l1.5-1V9M3.5 15h3l-3 4h3"/>',
  rot:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/>'};
 const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
-const srcSig=()=>{const{job,oLab,...r}=st;return JSON.stringify(r)};
+const srcSig=()=>{const{job,oLab,done,...r}=st;return JSON.stringify(r)};
 const setSnap=()=>({kerf:num(st.kerf),trim:num(st.trim),ts:st.ts.join(''),minT:num(st.minT),first:st.first,goal:st.goal,oOne:+!!st.oOne,oMat:+!!st.oMat,oEdge:+!!st.oEdge,oGrain:+!!st.oGrain});
 const isStale=()=>res?srcSig()!==res.src:true;
 function updStale(){const s=isStale(),b=$('stl');if(b)b.hidden=!s;$('run')?.classList.toggle('st',s);const d=$('sdot');if(d)d.hidden=!s}
@@ -821,7 +840,7 @@ function renderOut(){
  G.forEach((g,i)=>{const sh=g.sh;
   const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100,sel=res.sel&&res.sel.g===i?res.sel.i:undefined;
   h+=`<div class="card sheet"><div class="sh"><div class="big">${esc(T('Platte'))} ${gName(g)} ${esc(T('von'))} ${sheets.length} · ${esc(sh.S.n)}${g.cnt>1?`<span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</div><span>${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${esc(T('genutzt'))} · ${sh.cuts} ${esc(T('Schnitte'))} · ${pct(sh.cl/1000)} ${esc(T('m Schnittlänge'))}</span></div>
-  <div class="pw${view.edit?' ed':''}" style="--z:${view.z}">${toSVG(plan(g,{...view,lab:st.oLab,sel}),i,`data-g="${i}"`)}</div>
+  <div class="pw${view.edit?' ed':''}" style="--z:${view.z}">${toSVG(plan(g,{...view,lab:st.oLab,sel,dn:doneOf(g)}),i,`data-g="${i}"`)}</div>
   ${sh.bad?`<div class="warn" style="margin:10px 0 0">${esc(T('Nicht mit durchgehenden Schnitten machbar – Teile anders anordnen.'))}</div>`:''}
   ${view.edit?`<div class="edb"><p class="note">${esc(T('Bearbeiten: Teil ziehen zum Verschieben, antippen zum Auswählen. ▶ rechnet neu und verwirft Änderungen.'))}</p>${sel!==undefined?`<div class="btns"><button data-ea="rot" data-g="${i}">${esc(T('Drehen'))}</button><button data-ea="del" data-g="${i}">${esc(T('Entfernen'))}</button><button data-ea="none">${esc(T('Abwählen'))}</button></div>`:''}</div>`:''}
   <table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th>${esc(T('Kante'))}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Nr.'))}</th></tr></thead><tbody>
@@ -847,7 +866,8 @@ function renderOut(){
  h+=`<details class="card fold" data-fold="sf"${fold.sf?' open':''}><summary><h2>${esc(T('Schnittfolge'))}</h2><span class="fsub">${cuts} ${esc(T('Schnitte'))}</span></summary><div class="gz"><span>${esc(T('Geführter Zuschnitt'))}</span><b>${cuts} ${esc(T('Schnitte'))}</b> · ${sheets.length} ${esc(T('Platten'))}</div>
  <button class="pri wide" id="gstart">▶ ${esc(T('Starten'))}</button>
  ${G.map(g=>`<h3 class="sq">${esc(T('Platte'))} ${gName(g)}${g.cnt>1?` <span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</h3><table class="cl"><thead><tr><th>#</th><th>${esc(T('Teil'))}</th><th>${esc(T('Schnitt'))}</th><th>${esc(T('Ergebnis'))}</th></tr></thead><tbody>
- ${g.sh.seq.map((n,k)=>`<tr><td>${k+1}</td><td>${dimStr(n.R.w,n.R.h)}</td><td>${n.d}=${fmt(n.c)}</td><td>${esc(resTxt(n))}</td></tr>`).join('')}</tbody></table>`).join('')}<</details>`;
+ ${g.sh.seq.map((n,k)=>`<tr><td>${k+1}</td><td>${dimStr(n.R.w,n.R.h)}</td><td>${n.d}=${fmt(n.c)}</td><td>${esc(resTxt(n))}</td></tr>`).join('')}</tbody></table>`).join('')}</details>`;
+ h+=progHTML();
  /* Drucken */
  const F=FMTS();
  h+=`<div class="card acts-card"><h2>${esc(T('Drucken & Etiketten'))}</h2>
@@ -1469,15 +1489,200 @@ document.addEventListener('keydown',e=>{if(!TR)return;if(e.key==='Escape')tourCl
 /* Nach Registrierung: wer „Schritt für Schritt“ gewählt hat, bekommt einmal die Tour */
 const tourWanted=()=>{const m=(user&&user.user_metadata)||{};let done=false,ask=null;try{done=!!localStorage.getItem(TRDONE);ask=localStorage.getItem('sw-erfahrung')}catch(e){}
  return!done&&!m.tour_done&&(m.erfahrung||ask)==='neu'};
+/* ================= Offline / App installieren ================= */
+let instEv=null,offMode=0;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;const b=$('inst');if(b)b.hidden=false});
+addEventListener('appinstalled',()=>{instEv=null;const b=$('inst');if(b)b.hidden=true;toast(T('App installiert – sie läuft jetzt auch offline.'))});
+const netUI=()=>{const b=$('offb');if(b)b.hidden=navigator.onLine};
+addEventListener('offline',()=>{netUI();toast(T('Offline – du kannst weiterarbeiten. Speichern geht vorerst nur auf diesem Gerät.'))});
+addEventListener('online',()=>{netUI();if(user&&window.sb){if(offMode){offMode=0;sb.auth.getSession().then(r=>{if(r.data.session)user=r.data.session.user;drawUser();loadCloud()}).catch(()=>{})}else if(!cloud)loadCloud()}toast(T('Wieder online'))});
+function offUser(){try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^sb-.+-auth-token$/.test(k)){const o=JSON.parse(localStorage.getItem(k));const u=o&&(o.user||(o.currentSession&&o.currentSession.user));if(u&&u.email)return u}}}catch(e){}return null}
+function urlActs(){const q=new URLSearchParams(location.search);let did=0;
+ if(q.has('korpus')){kOpen();did=1}else if(q.has('scan')&&res&&res.items.length){scOpen();did=1}
+ if(did)try{history.replaceState(null,'',location.pathname+(q.has('demo')?'?demo=1':''))}catch(e){}
+ return did}
+
+/* ================= Abhaken: welche Teile sind gesägt ================= */
+const hsh=s=>{let h=5381;for(let i=0;i<s.length;i++)h=(h*33^s.charCodeAt(i))>>>0;return h.toString(36)};
+const planSig=()=>res&&res.sheets.length?hsh(res.sheets.map(s=>s.sig).join('#')):'';
+const doneSet=()=>{const d=st.done,s=planSig();return new Set(d&&s&&d.sig===s&&Array.isArray(d.ids)?d.ids:[])};
+function doneOf(g){const D=doneSet();if(!D.size)return null;const o=new Set();
+ for(const x of g.sh.pl)if(g.list.every(s=>D.has(`${s.n}-${x.pos}`)))o.add(x.pos);return o}
+let tmC;
+function autoCloud(){const n=(st.job||'').trim();if(!n||!cloud||!(n in cloud)||!window.sb||!navigator.onLine)return;
+ clearTimeout(tmC);tmC=setTimeout(()=>{const data=JSON.parse(JSON.stringify(st));sb.from('projects').upsert({name:n,data,updated_at:new Date().toISOString()},{onConflict:'user_id,name'}).then(({error})=>{if(!error)cloud[n]=data}).catch(()=>{})},1500)}
+function setDone(id,on){const sig=planSig();if(!sig)return;if(!st.done||st.done.sig!==sig)st.done={sig,ids:[]};
+ const i=st.done.ids.indexOf(id);if(on&&i<0)st.done.ids.push(id);if(!on&&i>=0)st.done.ids.splice(i,1);save();autoCloud()}
+function progHTML(){const CL=cutList(),D=doneSet(),nd=CL.filter(r=>D.has(r.id)).length,N=CL.length;if(!N)return'';
+ const by=new Map();CL.forEach(r=>{if(!by.has(r.sheet))by.set(r.sheet,[]);by.get(r.sheet).push(r)});
+ return`<div class="card" id="prog"><h2>${esc(T('Fortschritt'))}</h2>
+ <div class="gz"><span>${esc(T('Gesägte Teile abhaken'))}</span><b>${nd} / ${N}</b> ${esc(T('Teile gesägt'))}${nd===N?' ✓':''}</div>
+ <div class="gprog" style="margin:0 0 12px"><i style="width:${N?nd/N*100:0}%"></i></div>
+ <div class="btns" style="margin-top:0"><button class="pri" id="scan">📷 ${esc(T('Etikett scannen'))}</button>${nd?`<button id="dnclr">${esc(T('Zurücksetzen'))}</button>`:''}</div>
+ <p class="note">${esc(T('QR-Code auf dem Etikett mit der Handykamera scannen – das Teil wird abgehakt und im Plan grün markiert. Ohne Kamera: unten von Hand abhaken.'))}</p>
+ <details${nd&&nd<N?' open':''}><summary>${esc(T('Teile abhaken'))}</summary>
+ ${[...by.entries()].map(([sn,rs])=>`<h3 class="sq">${esc(T('Platte'))} ${sn} <small class="dnc">${rs.filter(r=>D.has(r.id)).length}/${rs.length}</small></h3><div class="dnl">${rs.map(r=>`<label class="chk dnr${D.has(r.id)?' ok':''}"><input type="checkbox" data-dn="${esc(r.id)}"${D.has(r.id)?' checked':''}><b>${esc(r.id)}</b><span>${esc(r.n)} · ${dimStr(r.l,r.b)}</span></label>`).join('')}</div>`).join('')}
+ </details></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.dn!==undefined){setDone(t.dataset.dn,t.checked);renderOut()}});
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.id==='scan'||t.id==='scan2'){if(!res||!res.items.length){toast(T('Erst auf ▶ tippen, dann wird der Schnittplan berechnet.'));return}scOpen()}
+ else if(t.id==='dnclr'){snap();st.done=null;save();autoCloud();renderOut();toast(T('Abhaken zurückgesetzt'),1)}
+ else if(t.id==='inst'&&instEv){instEv.prompt();instEv.userChoice.finally(()=>{instEv=null;t.hidden=true})}
+ else if(t.id==='kopen'||t.id==='kopen2')kOpen()});
+
+/* ================= Etikett scannen (QR) ================= */
+let SC=null;
+const loadJsQR=()=>window.jsQR?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+function parseLabel(txt){txt=String(txt||'');const m=txt.match(/(?:^|\n)\s*(?:Nr|No|Br)\.?:\s*(\d+-\d+)/i)||txt.match(/^\s*(\d+-\d{2,})\s*$/);
+ const j=txt.match(/(?:^|\n)\s*(?:Auftrag|Job|Nalog):\s*(.+)/i);return m?{id:m[1],job:j?j[1].trim():null}:null}
+function scMark(raw){const L=parseLabel(raw),fb=$('scfb');if(!fb)return;
+ const say=(cls,h)=>{fb.className='scfb '+cls;fb.innerHTML=h};
+ if(!L){say('bad',esc(T('Kein SchnittWundeR-Etikett erkannt.')));return}
+ const job=(st.job||'').trim();
+ if(L.job&&job&&L.job!==job){say('bad',`${esc(T('Etikett gehört zu einem anderen Auftrag'))}: <b>${esc(L.job)}</b>`);return}
+ const r=cutList().find(x=>x.id===L.id);
+ if(!r){say('bad',`${esc(L.id)}: ${esc(T('Dieses Teil gibt es im aktuellen Plan nicht.'))}`);return}
+ const D=doneSet();
+ if(D.has(r.id)){say('was',`<b>${esc(r.id)}</b> ${esc(r.n)} – ${esc(T('schon abgehakt'))} <button id="scun" data-id="${esc(r.id)}">${esc(T('Rückgängig'))}</button>`);return}
+ setDone(r.id,true);const n=doneSet().size,N=cutList().length;
+ try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}
+ say('ok',`✓ <b>${esc(r.id)}</b> ${esc(r.n)} · ${dimStr(r.l,r.b)}<br><small>${n} / ${N} ${esc(T('Teile gesägt'))}</small>`);renderOut()}
+async function scOpen(){scClose();
+ const ov=document.createElement('div');ov.id='scov';ov.className='ovl';
+ ov.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-label="${esc(T('Etikett scannen'))}"><div class="dh"><h2>${esc(T('Etikett scannen'))}</h2><button id="scx" aria-label="${esc(T('Schließen'))}">×</button></div>
+ <div class="gb"><div class="scv"><video id="scvid" playsinline muted></video><i class="scfr"></i></div>
+ <div class="scfb" id="scfb">${esc(T('QR-Code des Etiketts in den Rahmen halten.'))}</div>
+ <form id="scman" class="acts" style="margin-top:12px"><input type="text" id="scin" placeholder="${esc(T('oder Nr. eingeben, z. B. 1-03'))}" autocomplete="off"><button class="pri">${esc(T('Abhaken'))}</button></form></div>
+ <div class="df"><button class="pri" id="scok">${esc(T('Fertig'))}</button></div></div>`;
+ document.body.appendChild(ov);SC={stop:false,lastT:'',lastAt:0};
+ const vid=$('scvid'),fb=$('scfb');
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){fb.textContent=T('Kamera nicht verfügbar – Nr. von Hand eingeben.');return}
+ let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false})}
+ catch(e){fb.className='scfb bad';fb.textContent=T('Kein Zugriff auf die Kamera – im Browser erlauben oder Nr. von Hand eingeben.');return}
+ if(!SC||SC.stop){stream.getTracks().forEach(t=>t.stop());return}
+ SC.stream=stream;vid.srcObject=stream;try{await vid.play()}catch(e){}
+ let det=null;try{if('BarcodeDetector'in window&&(await BarcodeDetector.getSupportedFormats()).includes('qr_code'))det=new BarcodeDetector({formats:['qr_code']})}catch(e){}
+ if(!det)try{await loadJsQR()}catch(e){fb.textContent=T('Scanner konnte nicht geladen werden – Nr. von Hand eingeben.');return}
+ const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+ const tick=async()=>{if(!SC||SC.stop)return;let txt=null;
+  try{if(vid.readyState>=2){if(det){const r=await det.detect(vid);if(r[0])txt=r[0].rawValue}
+   else{const w=vid.videoWidth,h=vid.videoHeight,k=Math.min(1,640/Math.max(w,h));cv.width=w*k|0;cv.height=h*k|0;cx.drawImage(vid,0,0,cv.width,cv.height);const r=jsQR(cx.getImageData(0,0,cv.width,cv.height).data,cv.width,cv.height,{inversionAttempts:'dontInvert'});if(r)txt=r.data}}}catch(e){}
+  const now=Date.now();if(txt&&txt===SC.lastT)SC.lastAt=now;else if(txt){SC.lastT=txt;SC.lastAt=now;scMark(txt)}
+  setTimeout(tick,det?120:200)};
+ tick()}
+function scClose(){if(SC){SC.stop=true;SC.stream&&SC.stream.getTracks().forEach(t=>t.stop());SC=null}$('scov')?.remove()}
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.id==='scov'||t.closest('#scx')||t.closest('#scok')){scClose();return}
+ const u=t.closest('#scun');if(u){if(SC)SC.lastT='';setDone(u.dataset.id,false);renderOut();const fb=$('scfb');if(fb){fb.className='scfb';fb.textContent=u.dataset.id+' '+T('nicht mehr abgehakt')}}});
+document.addEventListener('submit',e=>{if(e.target.id!=='scman')return;e.preventDefault();const i=$('scin'),v=i.value.trim();if(!v)return;scMark(/^\d+-\d+$/.test(v)?'Nr: '+v:v);i.value='';i.focus()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('scov'))scClose()});
+
+/* ================= Korpus-Generator ================= */
+const KDEF={n:'Unterschrank',q:1,B:600,H:720,T:560,m:'',s:'',bau:'seiten',top:'deckel',fb:1,fbz:20,rw:'nut',rwS:8,rwN:10,rwM:'',fr:'1',frN:3,fu:3,frM:'',so:0,eV:1,eF:2,grain:1};
+let K=null;
+function kLoad(){let o={};try{o=JSON.parse(localStorage.getItem('sw-korpus'))||{}}catch(e){}K={...KDEF,...o};const M=mats();
+ for(const f of['m','rwM','frM'])if(!M.includes(K[f]))K[f]=f==='rwM'?(M.find(x=>/hdf|rückw|ruckw|3\s*mm|8\s*mm/i.test(x))||M[0]):M[0]}
+const kSave=()=>{try{localStorage.setItem('sw-korpus',JSON.stringify(K))}catch(e){}};
+const kS=()=>num(K.s)>0?num(K.s):matThick(K.m,19);
+const r1=v=>Math.round(v*10)/10;
+function kParts(){const B=num(K.B),H=num(K.H),D=num(K.T),s=kS(),q=Math.max(1,Math.floor(num(K.q))),pre=(K.n||'Korpus').trim(),o=[];
+ if(!(B>2*s&&H>2*s&&D>0))return o;
+ const eV=st.oEdge?+K.eV||0:0,eF=st.oEdge?+K.eF||0:0,rg=K.grain?0:1;
+ const add=(n,l,b,c,k,m,r=rg)=>{l=r1(l);b=r1(b);if(l>0&&b>0&&c>0)o.push({n:pre+': '+T(n),l,b,q:c*q,r,k,m})};
+ const sd=K.bau==='seiten',iw=B-2*s;let ih;
+ if(sd){add('Seite',H,D,2,[eV,0,0,0],K.m);add('Boden',iw,D,1,[eV,0,0,0],K.m);
+  if(K.top==='deckel')add('Deckel',iw,D,1,[eV,0,0,0],K.m);else if(K.top==='trav')add('Traverse',iw,100,2,[eV,0,0,0],K.m,1);
+  ih=H-s-(K.top==='deckel'?s:0)}
+ else{const nt=K.top==='deckel'?2:1;add('Boden',B,D,1,[eV,0,eV,eV],K.m);if(nt===2)add('Deckel',B,D,1,[eV,0,eV,eV],K.m);
+  add('Seite',H-nt*s,D,2,[eV,0,0,0],K.m);ih=H-nt*s}
+ const rwS=num(K.rwS),rwN=num(K.rwN),back=K.rw==='nut'?rwN+rwS:K.rw==='auf'?0:0;
+ if(+K.fb>0)add('Fachboden',iw-2,D-back-num(K.fbz),+K.fb,[eV,0,0,0],K.m);
+ if(K.rw==='auf')add('Rückwand',H-2,B-2,1,[0,0,0,0],K.rwM,1);
+ else if(K.rw==='nut'){const nd=Math.min(10,s/2);add('Rückwand',ih+2*(nd-1),iw+2*(nd-1),1,[0,0,0,0],K.rwM,1)}
+ const f=num(K.fu),FE=[eF,eF,eF,eF];
+ if(K.fr==='1')add('Tür',H-f,B-f,1,FE,K.frM,K.grain?0:1);
+ else if(K.fr==='2')add('Tür',H-f,(B-2*f)/2,2,FE,K.frM,K.grain?0:1);
+ else if(K.fr==='sk'){const n=Math.max(1,Math.floor(num(K.frN)));add('Schubkastenfront',B-f,(H-n*f)/n,n,FE,K.frM,K.grain?0:1)}
+ if(num(K.so)>0)add('Sockelblende',B,num(K.so),1,[eV,0,0,0],K.m,1);
+ return o}
+function kOpen(){kLoad();let ov=$('kov');if(!ov){ov=document.createElement('div');ov.id='kov';ov.className='ovl wz';document.body.appendChild(ov)}kDraw()}
+function kDraw(){const ov=$('kov');if(!ov)return;const M=mats(),U=ul();
+ const nf=(f,lab,u=1,ex='')=>`<label class="f"><span>${esc(T(lab))}${u?' '+U:''}</span><input type="number" inputmode="decimal" step="any" min="0" data-kf="${f}"${u?' data-ku="1"':''} value="${esc(u?inU(K[f]):K[f])}"${ex}></label>`;
+ const sel=(f,lab,ops)=>`<label class="f"><span>${esc(T(lab))}</span><select data-kf="${f}">${ops.map(([v,l])=>opt(v,K[f],T(l))).join('')}</select></label>`;
+ const ms=f=>M.map(m=>[m,m]);
+ const ets=[['0','keine'],...ET().map((e,i)=>[String(i+1),e.n||(T('Kante')+' '+(i+1))])];
+ ov.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-label="${esc(T('Korpus-Generator'))}"><div class="dh"><h2>${esc(T('Korpus-Generator'))}</h2><button id="kx" aria-label="${esc(T('Schließen'))}">×</button></div>
+ <div class="wzb" id="kbody">
+ <p class="lead">${esc(T('Außenmaße eingeben – die Teileliste für den Schrank entsteht automatisch.'))}</p>
+ <div class="set"><label class="f w2"><span>${esc(T('Bezeichnung'))}</span><input type="text" data-kf="n" value="${esc(K.n)}"></label>
+ ${nf('B','Breite')}${nf('H','Höhe')}${nf('T','Tiefe')}${nf('q','Anzahl',0,' step="1" min="1"')}</div>
+ <h3>${esc(T('Korpus'))}</h3><div class="set">${sel('m','Material',ms())}${nf('s','Plattenstärke',1,` placeholder="${esc(String(matThick(K.m,19)))}"`)}
+ ${sel('bau','Bauart',[['seiten','Seiten durchgehend'],['boden','Boden & Deckel durchgehend']])}
+ ${sel('top','Oben',K.bau==='seiten'?[['deckel','Deckel'],['trav','2 Traversen (Küche)'],['none','offen']]:[['deckel','Deckel'],['none','offen']])}
+ ${nf('fb','Fachböden',0,' step="1"')}${nf('fbz','Fachboden vorne zurück')}</div>
+ <h3>${esc(T('Rückwand'))}</h3><div class="set">${sel('rw','Rückwand',[['nut','eingenutet'],['auf','aufgesetzt'],['none','keine']])}
+ ${K.rw!=='none'?sel('rwM','Material',ms())+nf('rwS','Stärke')+(K.rw==='nut'?nf('rwN','Nut von hinten'):''):''}</div>
+ <h3>${esc(T('Fronten'))}</h3><div class="set">${sel('fr','Fronten',[['0','keine'],['1','1 Tür'],['2','2 Türen'],['sk','Schubkästen']])}
+ ${K.fr==='sk'?nf('frN','Anzahl Schubkästen',0,' step="1" min="1"'):''}${K.fr!=='0'?sel('frM','Material',ms())+nf('fu','Fuge'):''}
+ ${nf('so','Sockelblende Höhe (0 = keine)')}</div>
+ ${st.oEdge?`<h3>${esc(T('Kanten'))}</h3><div class="set">${sel('eV','Vorderkanten Korpus',ets)}${K.fr!=='0'?sel('eF','Fronten rundum',ets):''}</div>`:''}
+ <label class="chk"><input type="checkbox" data-kf="grain"${K.grain?' checked':''}>${esc(T('Maserung beachten'))}</label>
+ <div id="kprev"></div></div>
+ <div class="wzf"><button id="kxx">${esc(T('Abbrechen'))}</button><div class="btns"><button class="pri" id="kadd">${esc(T('Teile hinzufügen'))}</button></div></div></div>`;
+ kPrev()}
+function kPrev(){const P=kParts(),el=$('kprev');if(!el)return;const[c1,c2]=colsLB(),hd={l:T('Länge'),b:T('Breite')};
+ el.innerHTML=P.length?`<h3>${esc(T('Teileliste'))} · ${P.reduce((a,p)=>a+p.q,0)} ${esc(T('Teile'))}</h3><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th></tr></thead><tbody>
+ ${P.map(p=>`<tr><td>${esc(p.n.replace(/^[^:]*:\s*/,''))}${mats().length>1?` <small>${esc(p.m)}</small>`:''}</td><td class="n">${fmt(p[c1])}</td><td class="n">${fmt(p[c2])}</td><td class="n">${p.q}</td><td>${esc(kShort(p.k))||'–'}</td></tr>`).join('')}</tbody></table>
+ ${K.rw!=='none'&&K.rwM===K.m?`<p class="note">${esc(T('Tipp: Lege für die Rückwand ein eigenes Material im Lager an (z. B. „HDF 8 weiß“), sonst wird sie aus der Korpusplatte geschnitten.'))}</p>`:''}
+ <p class="note">${esc(T('Plattenstärke'))}: ${fmt(kS())} ${ul()} · ${esc(T('Fachböden mit 1 mm Luft je Seite. Kantendicke wird beim Berechnen abgezogen, wenn eingeschaltet.'))}</p>`
+ :`<p class="wze">${esc(T('Breite, Höhe und Tiefe eingeben.'))}</p>`}
+const kClose=()=>{$('kov')?.remove()};
+document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#kov')||!t.dataset.kf)return;const f=t.dataset.kf;
+ K[f]=t.type==='checkbox'?(t.checked?1:0):t.dataset.ku?(t.value===''?'':num(t.value)*uf()):t.value;kSave();
+ if(t.tagName==='SELECT'){if(f==='bau'&&K.bau!=='seiten'&&K.top==='trav')K.top='deckel';const sc=$('kbody')?.scrollTop;kDraw();const b=$('kbody');if(b&&sc)b.scrollTop=sc;const n=document.querySelector(`#kov [data-kf="${f}"]`);n&&n.focus()}else kPrev()});
+document.addEventListener('click',e=>{const t=e.target;if(t.id==='kov'||t.closest('#kx')||t.closest('#kxx')){kClose();return}
+ if(t.closest('#kadd')){const P=kParts();if(!P.length){toast(T('Breite, Höhe und Tiefe eingeben.'));return}snap();
+  const plain=st.parts.length===0||(st.parts.length&&st.parts.every(p=>!num(p.l)&&!num(p.b)));if(plain)st.parts=[];
+  st.parts.push(...P);kClose();drawInputs();refresh();
+  toast(T('{n} Teile übernommen',{n:P.length})+' – '+T('▶ tippen zum Berechnen'),1)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('kov'))kClose()});
+
+[['Korpus','Carcass','Korpus'],['+ Korpus','+ Carcass','+ Korpus'],['Korpus-Generator','Carcass generator','Generator korpusa'],['Scannen','Scan','Skeniraj'],['Etikett scannen','Scan label','Skeniraj etiketu'],
+ ['App installieren','Install app','Instaliraj aplikaciju'],['Installieren','Install','Instaliraj'],['Offline','Offline','Offline'],['Wieder online','Back online','Ponovo online'],
+ ['App installiert – sie läuft jetzt auch offline.','App installed – it now also works offline.','Aplikacija instalirana – radi i offline.'],
+ ['Offline – du kannst weiterarbeiten. Speichern geht vorerst nur auf diesem Gerät.','Offline – you can keep working. Saving only works on this device for now.','Offline – možeš nastaviti raditi. Spremanje za sada samo na ovom uređaju.'],
+ ['Offline – Projekte werden auf diesem Gerät gespeichert.','Offline – projects are saved on this device.','Offline – projekti se spremaju na ovom uređaju.'],
+ ['Fortschritt','Progress','Napredak'],['Gesägte Teile abhaken','Tick off cut parts','Označi izrezane dijelove'],['Teile gesägt','parts cut','dijelova izrezano'],['Zurücksetzen','Reset','Resetuj'],['Teile abhaken','Tick off parts','Označi dijelove'],
+ ['QR-Code auf dem Etikett mit der Handykamera scannen – das Teil wird abgehakt und im Plan grün markiert. Ohne Kamera: unten von Hand abhaken.','Scan the QR code on the label with your phone camera – the part is ticked off and marked green in the plan. No camera: tick off by hand below.','Skeniraj QR kod na etiketi kamerom telefona – dio se označi i u planu postane zelen. Bez kamere: označi ručno ispod.'],
+ ['Abhaken zurückgesetzt','Ticks reset','Oznake resetovane'],['Kein SchnittWundeR-Etikett erkannt.','No SchnittWundeR label recognised.','Nije prepoznata SchnittWundeR etiketa.'],
+ ['Etikett gehört zu einem anderen Auftrag','Label belongs to another job','Etiketa pripada drugom nalogu'],['Dieses Teil gibt es im aktuellen Plan nicht.','This part is not in the current plan.','Ovaj dio nije u trenutnom planu.'],
+ ['schon abgehakt','already ticked','već označeno'],['nicht mehr abgehakt','no longer ticked','više nije označeno'],['QR-Code des Etiketts in den Rahmen halten.','Hold the label QR code inside the frame.','Drži QR kod etikete u okviru.'],
+ ['oder Nr. eingeben, z. B. 1-03','or enter no., e.g. 1-03','ili unesi br., npr. 1-03'],['Abhaken','Tick off','Označi'],['Fertig','Done','Gotovo'],
+ ['Kamera nicht verfügbar – Nr. von Hand eingeben.','Camera not available – enter the number by hand.','Kamera nije dostupna – unesi broj ručno.'],
+ ['Kein Zugriff auf die Kamera – im Browser erlauben oder Nr. von Hand eingeben.','No camera access – allow it in the browser or enter the number by hand.','Nema pristupa kameri – dozvoli u pregledniku ili unesi broj ručno.'],
+ ['Scanner konnte nicht geladen werden – Nr. von Hand eingeben.','Scanner could not be loaded – enter the number by hand.','Skener se nije mogao učitati – unesi broj ručno.'],
+ ['Außenmaße eingeben – die Teileliste für den Schrank entsteht automatisch.','Enter the outside dimensions – the parts list for the cabinet is created automatically.','Unesi vanjske mjere – lista dijelova za ormar nastaje automatski.'],
+ ['Höhe','Height','Visina'],['Tiefe','Depth','Dubina'],['Anzahl','Quantity','Količina'],['Plattenstärke','Board thickness','Debljina ploče'],['Bauart','Construction','Konstrukcija'],
+ ['Seiten durchgehend','Sides full height','Stranice cijelom visinom'],['Boden & Deckel durchgehend','Bottom & top full width','Dno i poklopac cijelom širinom'],['Oben','Top','Gore'],['Deckel','Top panel','Poklopac'],
+ ['2 Traversen (Küche)','2 rails (kitchen)','2 traverze (kuhinja)'],['offen','open','otvoreno'],['Fachböden','Shelves','Police'],['Fachboden vorne zurück','Shelf set back at front','Polica uvučena naprijed'],
+ ['Rückwand','Back panel','Leđa'],['eingenutet','grooved in','u utoru'],['aufgesetzt','nailed on','nabijena'],['Stärke','Thickness','Debljina'],['Nut von hinten','Groove from back','Utor od pozadi'],
+ ['Fronten','Fronts','Fronte'],['1 Tür','1 door','1 vrata'],['2 Türen','2 doors','2 vrata'],['Schubkästen','Drawers','Ladice'],['Anzahl Schubkästen','Number of drawers','Broj ladica'],['Fuge','Gap','Fuga'],
+ ['Sockelblende Höhe (0 = keine)','Plinth height (0 = none)','Visina sokla (0 = nema)'],['Kanten','Edges','Kantovi'],['Vorderkanten Korpus','Carcass front edges','Prednji kantovi korpusa'],['Fronten rundum','Fronts all round','Fronte okolo'],
+ ['Seite','Side','Stranica'],['Boden','Bottom','Dno'],['Traverse','Rail','Traverza'],['Fachboden','Shelf','Polica'],['Tür','Door','Vrata'],['Schubkastenfront','Drawer front','Fronta ladice'],['Sockelblende','Plinth','Sokl'],
+ ['Fachböden mit 1 mm Luft je Seite. Kantendicke wird beim Berechnen abgezogen, wenn eingeschaltet.','Shelves with 1 mm clearance per side. Edge thickness is subtracted on calculation if enabled.','Police s 1 mm zazora po strani. Debljina kanta se oduzima pri izračunu ako je uključeno.'],
+ ['Breite, Höhe und Tiefe eingeben.','Enter width, height and depth.','Unesi širinu, visinu i dubinu.'],['Tipp: Lege für die Rückwand ein eigenes Material im Lager an (z. B. „HDF 8 weiß“), sonst wird sie aus der Korpusplatte geschnitten.','Tip: add a separate back-panel material to stock (e.g. “HDF 8 white”), otherwise it is cut from the carcass board.','Savjet: dodaj poseban materijal za leđa na stanje (npr. „HDF 8 bijela“), inače se reže iz ploče korpusa.'],['▶ tippen zum Berechnen','tap ▶ to calculate','dodirni ▶ za izračun']
+].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
 compute(true);renderAll();importHash();
 (async()=>{
  const show=()=>document.getElementById('authhide')?.remove();
  if(!window.sb){show();return}
- let s=null;try{s=(await sb.auth.getSession()).data.session}catch(e){show();return}
+ let s=null,se=0;try{s=(await sb.auth.getSession()).data.session}catch(e){se=1}
+ if(!s&&(!navigator.onLine||se)){const ou=offUser();if(ou){user=ou;offMode=1;show();drawUser();toast(T('Offline – Projekte werden auf diesem Gerät gespeichert.'));urlActs();return}}
+ if(se){show();urlActs();return}
  if(!s){let demo=new URLSearchParams(location.search).has('demo');try{if(demo)sessionStorage.setItem('sw-demo','1');else demo=!!sessionStorage.getItem('sw-demo')}catch(e){}
   if(!demo){location.replace('login.html');return}
-  show();drawUser();toast(T('Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.'));return}
- user=s.user;show();drawUser();loadCloud();
+  show();drawUser();toast(T('Demo: Projekte bleiben nur in diesem Browser. Mit Konto speicherst du in der Cloud.'));urlActs();return}
+ user=s.user;show();drawUser();loadCloud();if(urlActs())return;
  if(tourWanted()){try{sessionStorage.setItem('sw-wiz','1')}catch(e){}tourOpen()}
  else try{if(wAuto()&&!sessionStorage.getItem('sw-wiz')){sessionStorage.setItem('sw-wiz','1');wizOpen()}}catch(e){}
  sb.auth.onAuthStateChange((ev,ss)=>{if(ev==='SIGNED_OUT')location.replace('login.html')});

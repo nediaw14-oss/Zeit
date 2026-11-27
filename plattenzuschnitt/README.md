@@ -1,4 +1,4 @@
-# Plattenzuschnitt Optimierer
+# Schnitt-Wunder – Plattenzuschnitt Optimierer
 
 Kostenloser Zuschnitt-Optimierer für Plattenwerkstoffe (Spanplatte, MDF, Multiplex …) als einzelne HTML-Datei – ohne Server, ohne Anmeldung, ohne Limit.
 

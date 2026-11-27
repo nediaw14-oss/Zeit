@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Plattenzuschnitt Optimierer – Schnittpläne kostenlos</title>
-<meta name="description" content="Kostenloser Zuschnitt-Optimierer für Spanplatte, MDF und Multiplex: Schnittplan mit Maßketten, Schnittfolge, Kanten, Maserung und Etiketten mit QR-Code.">
+<title>Schnitt-Wunder – Plattenzuschnitt kostenlos optimieren</title>
+<meta name="description" content="Schnitt-Wunder: kostenloser Zuschnitt-Optimierer für Spanplatte, MDF und Multiplex: Schnittplan mit Maßketten, Schnittfolge, Kanten, Maserung und Etiketten mit QR-Code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -65,26 +65,52 @@ section{padding:72px 0}
 .list li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff1a}
 .list li:before{content:"";flex:none;width:18px;height:3px;margin-top:12px;background:repeating-linear-gradient(90deg,var(--wood) 0 5px,transparent 5px 8px)}
 .end{text-align:center}.end h2{font-size:clamp(36px,5vw,58px)}.end p{color:var(--mut);margin:12px auto 26px;max-width:46ch}
-footer{background:var(--slate2);color:#9fabb1;font-size:14px;padding:24px 0}
+footer{background:var(--slate2);color:#9fabb1;font-size:14px;padding:24px 0 96px}
 footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}footer b{color:var(--wood);font-weight:600}
+.logo{white-space:nowrap}.logo em{font-style:normal;color:var(--wood)}
+/* 3D-Bühne */
+.hero{position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(55% 70% at 78% 48%,#3a4a52 0,transparent 70%);pointer-events:none}
+.hero .w{position:relative}
+.stage{position:relative;aspect-ratio:1.1;margin:-40px -5vw -50px -20px}
+@media(max-width:900px){.stage{margin:-10px -4vw 0;aspect-ratio:1.15}}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:grab;opacity:0;transition:opacity .8s}
+.stage canvas:active{cursor:grabbing}
+.stage.gl canvas{opacity:1}
+.stage .sheet{position:absolute;left:20px;right:5vw;top:50%;translate:0 -50%}
+.stage.gl .sheet{opacity:0;visibility:hidden}
+.hud,.hint{display:none}
+.stage.gl .hud{display:flex;position:absolute;left:24px;bottom:40px;flex-direction:column;gap:2px;background:#151c20cc;border:1px solid #ffffff1f;border-radius:10px;padding:8px 14px;font-size:14px;color:#b9c2c6;backdrop-filter:blur(6px)}
+.hud b{font:700 18px "Barlow Condensed",Barlow,sans-serif;color:#fff}
+.hud span{font-variant-numeric:tabular-nums}
+.stage.gl .hint{display:block;position:absolute;right:6vw;bottom:48px;font-size:13px;color:#8c989e}
+@media(max-width:900px){.stage.gl .hud{left:4vw;bottom:14px}.stage.gl .hint{right:4vw;bottom:30px}}
+@media(max-width:520px){.stage.gl .hint{display:none}}
+/* WhatsApp-Kontakt */
+.wa{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:50;display:flex;align-items:center;gap:10px;height:56px;padding:0 20px 0 16px;border-radius:28px;background:#25d366;color:#fff;font:600 16px Barlow,system-ui,sans-serif;text-decoration:none;box-shadow:0 8px 24px #0005;transition:transform .15s,box-shadow .15s}
+.wa:hover{transform:translateY(-2px);box-shadow:0 12px 28px #0006}
+.wa:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.wa svg{width:28px;height:28px;flex:none}
+@media(max-width:600px){.wa{width:58px;height:58px;padding:0;justify-content:center}.wa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 </style>
 </head>
 <body>
 <header class="top"><div class="w">
- <a class="logo" href="./"><i></i>Plattenzuschnitt</a>
+ <a class="logo" href="./"><i></i><span>Schnitt<em>-Wunder</em></span></a>
  <nav><a class="btn gh hide" href="login.html">Anmelden</a><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a></nav>
 </div></header>
 
 <main>
 <div class="hero"><div class="w">
  <div>
-  <span class="tag">Zuschnitt-Optimierer für Plattenwerkstoffe</span>
+  <span class="tag">Schnitt-Wunder · Zuschnitt-Optimierer für Plattenwerkstoffe</span>
   <h1>Der Schnittplan für die Säge. <em>Kostenlos.</em></h1>
   <p>Teile eintragen, ▶ drücken – fertig ist der Plan mit Maßketten, Schnittfolge und Etiketten. Nur durchgehende Schnitte, so wie an der Formatkreissäge.</p>
   <div class="cta"><a class="btn pri" href="login.html?neu=1">Kostenlos starten</a><a class="btn gh" href="login.html">Ich habe schon ein Konto</a></div>
   <div class="facts"><div><b>0 €</b><span>kein Abo, kein Limit</span></div><div><b>3</b><span>Sprachen: DE · EN · BS</span></div><div><b>☁</b><span>Projekte auf Handy und PC</span></div></div>
  </div>
- <div class="sheet" aria-label="Beispiel eines Schnittplans">
+ <div class="stage" id="stage" role="img" aria-label="Schnittplan: Eine Spanplatte wird Schnitt für Schnitt zugeschnitten, danach heben sich die fertigen Teile ab">
+  <div class="sheet">
   <div class="cap"><b>Platte 1 von 2 · Spanplatte 19 weiß</b><span>85 % genutzt · 12 Schnitte</span></div>
   <svg viewBox="-60 -60 2920 2190" font-family="Barlow,sans-serif" role="img" aria-label="Schnittplan mit Teilen, Kanten und Reststück">
    <defs><pattern id="h" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="40" height="40" fill="#e9ecee"/><rect width="11" height="40" fill="#d2d8db"/></pattern></defs>
@@ -115,6 +141,9 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
    <text x="2204" y="1815" font-size="56" fill="#56636a" text-anchor="middle">Rest 1172 × 522</text>
    <path d="M0 2105H2800" stroke="#d6402b" stroke-width="5"/><text x="1400" y="2160" font-size="58" font-weight="700" fill="#d6402b" text-anchor="middle">2.800</text>
   </svg>
+ </div>
+  <div class="hud" aria-hidden="true"><b>Platte 1 von 2 · Spanplatte 19 weiß</b><span id="hud">18 Schnitte geplant</span></div>
+  <span class="hint" aria-hidden="true">↔ Ziehen zum Drehen</span>
  </div>
 </div></div>
 
@@ -150,12 +179,321 @@ footer .w{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-betwee
 </div></section>
 
 <section class="end"><div class="w">
- <h2>Probier’s mit deinem nächsten Auftrag.</h2>
+ <h2>Probier Schnitt-Wunder mit deinem nächsten Auftrag.</h2>
  <p>Konto in einer Minute angelegt. Deine lokalen Projekte werden beim ersten Anmelden automatisch übernommen.</p>
  <a class="btn pri" href="login.html?neu=1">Kostenlos starten</a>
 </div></section>
 </main>
 
-<footer><div class="w"><span>Plattenzuschnitt Optimierer</span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
+<footer><div class="w"><span>Schnitt-Wunder · Plattenzuschnitt Optimierer</span><span>coded by <b>Nedi</b> / <b>Claude</b></span></div></footer>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+/* Schnitt-Wunder – 3D-Szene im Kopf: Platte wird zugeschnitten, Teile heben sich ab */
+import * as THREE from 'three';
+
+const stage = document.getElementById('stage');
+const hud = document.getElementById('hud');
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const S = 1 / 1000, T = 0.04, TOP = 0.05, BASE = 0.049;
+const X = x => (x - 1400) * S, Z = y => (y - 1035) * S;
+
+// Teile aus dem Beispielplan: x, y, Länge, Breite, Farbe, Name, Kanten (t/b/l/r), Kantenfarbe
+const B = '#1f6feb', R = '#e11d48';
+const PARTS = [
+  [10, 10, 762, 560, '#c6dcf7', 'Boden', 't', B], [776, 10, 762, 560, '#c6dcf7', 'Boden', 't', B],
+  [1542, 10, 760, 540, '#f9cccc', 'Fachboden', 't', B], [10, 574, 762, 560, '#c6dcf7', 'Boden', 't', B],
+  [776, 574, 760, 540, '#f9cccc', 'Fachboden', 't', B], [1542, 574, 760, 540, '#f9cccc', 'Fachboden', 't', B],
+  [10, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R], [730, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R],
+  [1450, 1138, 716, 396, '#fbefb3', 'Front', 'tblr', R], [10, 1538, 800, 100, '#e0d2f5', 'Blende', 't', B],
+  [814, 1538, 800, 100, '#e0d2f5', 'Blende', 't', B], [10, 1642, 762, 100, '#fdd9b8', 'Leiste', '', B],
+  [2306, 10, 100, 800, '#e0d2f5', 'Lisene', 'l', B], [2410, 10, 100, 800, '#e0d2f5', 'Lisene', 'l', B],
+];
+const REST = [1618, 1538, 1172, 522];
+// Schnittfolge (Guillotine): [x1,y1,x2,y2] in mm
+const CUTS = [
+  [0, 1136, 2800, 1136], [0, 1536, 2800, 1536], [2304, 0, 2304, 1136], [0, 572, 2304, 572],
+  [774, 0, 774, 572], [1540, 0, 1540, 572], [774, 572, 774, 1136], [1540, 572, 1540, 1136],
+  [2304, 812, 2800, 812], [2408, 0, 2408, 812], [728, 1136, 728, 1536], [1448, 1136, 1448, 1536],
+  [2168, 1136, 2168, 1536], [1616, 1536, 1616, 2070], [0, 1640, 1616, 1640], [0, 1744, 1616, 1744],
+  [812, 1536, 812, 1640], [774, 1640, 774, 1744],
+];
+
+// ohne WebGL wirft das hier, dann bleibt der SVG-Plan stehen
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+renderer.domElement.setAttribute('aria-hidden', 'true');
+
+try { await Promise.race([document.fonts.load('700 40px "Barlow Condensed"'), new Promise(r => setTimeout(r, 1500))]); } catch (e) {}
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 30);
+const ANISO = renderer.capabilities.getMaxAnisotropy();
+const tex = c => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = ANISO; return t; };
+const cnv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+
+// Spanplatten-Kern für die Schnittkanten
+const chip = (() => {
+  const [c, g] = cnv(256, 64); g.fillStyle = '#d6bf94'; g.fillRect(0, 0, 256, 64);
+  for (let i = 0; i < 900; i++) { g.fillStyle = Math.random() < .5 ? '#b89c6c' : '#ead6ae'; g.fillRect(Math.random() * 256, Math.random() * 64, 1 + Math.random() * 3, 1 + Math.random() * 2); }
+  const t = tex(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+})();
+const sideMat = new THREE.MeshStandardMaterial({ map: chip, roughness: .9 });
+
+function partTex(w, h, fill, label) {
+  const k = .7, cw = Math.round(w * k), ch = Math.round(h * k), [c, g] = cnv(cw, ch);
+  g.fillStyle = fill; g.fillRect(0, 0, cw, ch);
+  g.strokeStyle = '#7d878d'; g.lineWidth = 4; g.strokeRect(2, 2, cw - 4, ch - 4);
+  g.fillStyle = '#22292d'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const vert = h > w * 2, L = vert ? ch : cw, sh = vert ? w : h, dims = `${w} × ${h}`;
+  g.save(); g.translate(cw / 2, ch / 2); if (vert) g.rotate(-Math.PI / 2);
+  if (sh >= 300) {
+    g.font = `700 ${64 * k}px "Barlow Condensed",Barlow,sans-serif`; g.fillText(label, 0, -22 * k);
+    g.font = `500 ${48 * k}px Barlow,sans-serif`; g.fillText(dims, 0, 36 * k);
+  } else {
+    g.font = `600 ${Math.min(46, sh * .46) * k}px Barlow,sans-serif`; g.fillText(`${label} · ${dims}`, 0, 2, L - 20);
+  }
+  g.restore(); return tex(c);
+}
+
+const group = new THREE.Group(); scene.add(group);
+
+// Grundplatte: zeigt nach dem Abheben die Umrisse der Teile
+const k0 = .5, [bc, bg] = cnv(1400, 1035), [hc, hg] = cnv(1400, 1035);
+bg.fillStyle = '#f3f4f2'; bg.fillRect(0, 0, 1400, 1035);
+hg.save(); hg.fillStyle = '#d2d8db';
+for (let i = -1400; i < 2800; i += 22) { hg.beginPath(); hg.moveTo(i, 0); hg.lineTo(i + 1035, 1035); hg.lineTo(i + 1041, 1035); hg.lineTo(i + 6, 0); hg.fill(); }
+hg.globalCompositeOperation = 'destination-out';
+for (const [x, y, w, h] of [...PARTS, REST]) {
+  hg.fillRect(x * k0, y * k0, w * k0, h * k0);
+  bg.fillStyle = '#e2e6e7'; bg.fillRect(x * k0, y * k0, w * k0, h * k0);
+  bg.setLineDash([10, 7]); bg.strokeStyle = '#9aa4a9'; bg.lineWidth = 2; bg.strokeRect(x * k0 + 2, y * k0 + 2, w * k0 - 4, h * k0 - 4);
+}
+hg.restore();
+const base = new THREE.Mesh(new THREE.BoxGeometry(2.8, BASE, 2.07),
+  [sideMat, sideMat, new THREE.MeshStandardMaterial({ map: tex(bc), roughness: .75 }), sideMat, sideMat, sideMat]);
+base.position.y = BASE / 2; base.castShadow = base.receiveShadow = true; group.add(base);
+const hatchMat = new THREE.MeshBasicMaterial({ map: tex(hc), transparent: true, opacity: 0, depthWrite: false });
+const hatch = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.07), hatchMat);
+hatch.rotation.x = -Math.PI / 2; hatch.position.y = BASE + .0004; group.add(hatch);
+
+// Teile
+const plane = new THREE.PlaneGeometry(1, 1);
+const pieces = [];
+function addPiece(x, y, w, h, topTex, edges, ecol, rest, i) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w * S, T, h * S),
+    [sideMat, sideMat, new THREE.MeshStandardMaterial({ map: topTex, roughness: .55 }), sideMat, sideMat, sideMat]);
+  m.castShadow = m.receiveShadow = true;
+  const home = new THREE.Vector3(X(x + w / 2), TOP - T / 2, Z(y + h / 2));
+  m.position.copy(home);
+  // weiße Deckschicht = unbearbeitete Platte, verschwindet beim Abheben
+  const cover = new THREE.Mesh(plane, new THREE.MeshStandardMaterial({ color: '#f3f4f2', roughness: .6, transparent: true }));
+  cover.scale.set(w * S, h * S, 1); cover.rotation.x = -Math.PI / 2; cover.position.y = T / 2 + .0006; m.add(cover);
+  const em = new THREE.MeshStandardMaterial({ color: ecol, roughness: .4 });
+  for (const e of edges) {
+    const hor = e === 't' || e === 'b', s = new THREE.Mesh(new THREE.BoxGeometry(hor ? w * S : .005, T - .004, hor ? .005 : h * S), em);
+    s.position.set(e === 'l' ? -(w * S / 2 + .0025) : e === 'r' ? w * S / 2 + .0025 : 0, -.002, e === 't' ? -(h * S / 2 + .0025) : e === 'b' ? h * S / 2 + .0025 : 0);
+    m.add(s);
+  }
+  const d = new THREE.Vector2(home.x, home.z * 1.3); d.length() > .01 && d.normalize();
+  pieces.push({ m, cover, home, rest, dir: d, lift: rest ? .05 : .15 + Math.random() * .11,
+    rx: (Math.random() - .5) * .14, rz: (Math.random() - .5) * .14, ry: (Math.random() - .5) * .25, delay: (i ?? 0) * .055, ph: Math.random() * 6 });
+  group.add(m);
+}
+PARTS.forEach(([x, y, w, h, f, l, ed, ec], i) => addPiece(x, y, w, h, partTex(w, h, f, l), ed, ec, false, i));
+{
+  const [x, y, w, h] = REST, k = .5, [c, g] = cnv(w * k, h * k);
+  g.fillStyle = '#e6e9ea'; g.fillRect(0, 0, c.width, c.height);
+  g.setLineDash([14, 9]); g.strokeStyle = '#7d8a91'; g.lineWidth = 4; g.strokeRect(3, 3, c.width - 6, c.height - 6);
+  g.fillStyle = '#56636a'; g.font = '500 30px Barlow,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(`Rest ${w} × ${h}`, c.width / 2, c.height / 2);
+  addPiece(x, y, w, h, tex(c), '', B, true, 14);
+}
+
+// Schnittlinien
+const cuts = []; let tt = .9;
+const lineMat = () => new THREE.MeshBasicMaterial({ color: '#ff5233', transparent: true, depthWrite: false });
+for (const [x1, y1, x2, y2] of CUTS) {
+  const a = new THREE.Vector3(X(x1), TOP + .0012, Z(y1)), b = new THREE.Vector3(X(x2), TOP + .0012, Z(y2));
+  const len = a.distanceTo(b), alongX = y1 === y2;
+  const core = new THREE.Mesh(new THREE.BoxGeometry(1, .001, 1), lineMat());
+  const glow = new THREE.Mesh(new THREE.BoxGeometry(1, .0008, 1), lineMat()); glow.material.opacity = .28; glow.material.blending = THREE.AdditiveBlending;
+  group.add(core, glow);
+  const c = { a, b, len, alongX, core, glow, s: tt, d: len / 5.2 }; tt += c.d + .15; cuts.push(c);
+}
+const CUT_END = tt, L0 = CUT_END + .35, LD = 1.5, SET = L0 + LD + 3.6, SD = 1.3, LOOP = SET + SD + .9;
+
+// Sägeblatt
+const blade = new THREE.Group(), spin = new THREE.Group(); blade.add(spin); group.add(blade);
+{
+  const sh = new THREE.Shape(), n = 30, ro = .13, ri = .117;
+  for (let i = 0; i < n; i++) {
+    const a0 = i / n * Math.PI * 2, a1 = (i + .55) / n * Math.PI * 2, a2 = (i + 1) / n * Math.PI * 2;
+    const p = (r, a) => [Math.cos(a) * r, Math.sin(a) * r];
+    i ? sh.lineTo(...p(ri, a0)) : sh.moveTo(...p(ri, a0)); sh.lineTo(...p(ro, a1)); sh.lineTo(...p(ri + .004, a2));
+  }
+  const hole = new THREE.Path(); hole.absarc(0, 0, .012, 0, Math.PI * 2, true); sh.holes.push(hole);
+  const g = new THREE.ExtrudeGeometry(sh, { depth: .004, bevelEnabled: false }); g.translate(0, 0, -.002);
+  const disc = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: '#cfd5d9', metalness: .55, roughness: .28 }));
+  disc.castShadow = true; spin.add(disc);
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(.042, .042, .007, 32), new THREE.MeshStandardMaterial({ color: '#d6402b', roughness: .4 }));
+  hub.rotation.x = Math.PI / 2; spin.add(hub);
+  for (let i = 0; i < 3; i++) { // Schlitze im Blatt
+    const sl = new THREE.Mesh(new THREE.BoxGeometry(.03, .004, .0045), new THREE.MeshBasicMaterial({ color: '#7c858a' }));
+    const a = i / 3 * Math.PI * 2; sl.position.set(Math.cos(a) * .08, Math.sin(a) * .08, 0); sl.rotation.z = a; spin.add(sl);
+  }
+}
+const BR = .13 * 1.45, BY = TOP + BR * .45;
+
+// Sägespäne
+const NP = 420, pPos = new Float32Array(NP * 3).fill(-9), pVel = new Float32Array(NP * 3), pLife = new Float32Array(NP);
+const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const dust = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: '#e9c98f', size: .011, transparent: true, opacity: .9, depthWrite: false }));
+dust.frustumCulled = false; group.add(dust);
+let pNext = 0;
+function emit(p, dir, n) {
+  for (let k = 0; k < n; k++) {
+    const i = pNext++ % NP;
+    pPos[i * 3] = p.x; pPos[i * 3 + 1] = TOP + .005; pPos[i * 3 + 2] = p.z;
+    pVel[i * 3] = -dir.x * (.4 + Math.random() * .7) + (Math.random() - .5) * .5;
+    pVel[i * 3 + 1] = .4 + Math.random() * .9;
+    pVel[i * 3 + 2] = -dir.z * (.4 + Math.random() * .7) + (Math.random() - .5) * .5;
+    pLife[i] = .5 + Math.random() * .5;
+  }
+}
+function stepDust(dt) {
+  for (let i = 0; i < NP; i++) {
+    if (pLife[i] <= 0) continue;
+    pLife[i] -= dt;
+    if (pLife[i] <= 0) { pPos[i * 3 + 1] = -9; continue; }
+    pVel[i * 3 + 1] -= 3.2 * dt;
+    pPos[i * 3] += pVel[i * 3] * dt; pPos[i * 3 + 1] = Math.max(TOP + .002, pPos[i * 3 + 1] + pVel[i * 3 + 1] * dt); pPos[i * 3 + 2] += pVel[i * 3 + 2] * dt;
+  }
+  pGeo.attributes.position.needsUpdate = true;
+}
+
+// Licht und Schatten
+scene.add(new THREE.HemisphereLight('#ffffff', '#3b464c', 1.5));
+const sun = new THREE.DirectionalLight('#fff4e2', 2.1); sun.position.set(-1.6, 3.6, 1.8);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -2.4, right: 2.4, top: 2.4, bottom: -2.4, near: .5, far: 9 });
+sun.shadow.bias = -.0004; sun.shadow.normalBias = .01; scene.add(sun);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(9, 9), new THREE.ShadowMaterial({ opacity: .38 }));
+floor.rotation.x = -Math.PI / 2; floor.position.y = -.001; floor.receiveShadow = true; group.add(floor);
+
+// Kamera passend zur Bühnengröße
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  const vf = THREE.MathUtils.degToRad(camera.fov), hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
+  const dist = Math.max(1.72 / Math.tan(hf / 2), 1.42 / Math.tan(vf / 2));
+  const dir = new THREE.Vector3(0, 1.05, 1).normalize();
+  camera.position.copy(dir.multiplyScalar(dist)); camera.lookAt(-.05, .04, .1); camera.updateProjectionMatrix();
+  if (RM) draw(0);
+}
+new ResizeObserver(resize).observe(stage);
+
+// Drehen per Ziehen, leichte Mausparallaxe
+let yawT = 0, pitchT = 0, yaw = 0, pitch = 0, drag = null, hx = 0, hy = 0;
+const cv = renderer.domElement;
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => {
+  const r = cv.getBoundingClientRect(); hx = (e.clientX - r.left) / r.width - .5; hy = (e.clientY - r.top) / r.height - .5;
+  if (!drag) return;
+  yawT += (e.clientX - drag.x) * .007; pitchT = THREE.MathUtils.clamp(pitchT + (e.clientY - drag.y) * .004, -.35, .3);
+  drag = { x: e.clientX, y: e.clientY }; if (RM) draw(0);
+});
+const end = () => drag = null; cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+cv.addEventListener('pointerleave', () => { hx = hy = 0; });
+
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const ease = v => v < .5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2;
+let hudTxt = '';
+const setHud = s => { if (s !== hudTxt) hud.textContent = hudTxt = s; };
+
+let t = RM ? L0 + LD + .5 : 0, clock = 0;
+function frame(dt) {
+  clock += dt;
+  if (!RM) { t += dt; if (t > LOOP) t = 0; }
+  const scrollK = clamp01(scrollY / (stage.offsetTop + stage.offsetHeight || 1)) * .35;
+
+  // Schnitte
+  let done = 0;
+  for (const c of cuts) {
+    const p = clamp01((t - c.s) / c.d); if (t >= c.s + c.d) done++;
+    const L = Math.max(.0001, c.len * p), mid = c.a.clone().lerp(c.b, p / 2);
+    for (const [m, wd] of [[c.core, .007], [c.glow, .03]]) {
+      m.visible = p > 0; m.position.copy(mid); m.position.y += m === c.glow ? -.0003 : 0;
+      m.scale.set(c.alongX ? L : wd, 1, c.alongX ? wd : L);
+    }
+    const fade = t < L0 ? 1 : 1 - clamp01((t - L0) / .7);
+    c.core.material.opacity = fade; c.glow.material.opacity = .28 * fade;
+  }
+  hatchMat.opacity = t < SET ? done / cuts.length * .9 : .9 * (1 - clamp01((t - SET) / SD));
+
+  // Sägeblatt-Weg
+  let pos = null, ang = 0, low = 0, cutting = null;
+  if (t < cuts[0].s) { pos = cuts[0].a; ang = cuts[0].alongX ? 0 : Math.PI / 2; low = clamp01(t / cuts[0].s); }
+  else if (t < CUT_END) {
+    for (let i = 0; i < cuts.length; i++) {
+      const c = cuts[i], nx = cuts[i + 1];
+      if (t <= c.s + c.d) { const p = clamp01((t - c.s) / c.d); pos = c.a.clone().lerp(c.b, p); ang = c.alongX ? 0 : Math.PI / 2; low = 1; cutting = c; break; }
+      if (nx && t < nx.s) {
+        const g = ease(clamp01((t - c.s - c.d) / (nx.s - c.s - c.d)));
+        pos = c.b.clone().lerp(nx.a, g); ang = THREE.MathUtils.lerp(c.alongX ? 0 : Math.PI / 2, nx.alongX ? 0 : Math.PI / 2, g); low = 1 - Math.sin(g * Math.PI) * .9; break;
+      }
+    }
+  }
+  const out = t >= CUT_END && t < CUT_END + .6 ? clamp01((t - CUT_END) / .6) : t >= CUT_END ? 1 : 0;
+  if (t >= CUT_END) { const c = cuts[cuts.length - 1]; pos = c.b.clone(); pos.y += out * .5; pos.x += out * .4; ang = c.alongX ? 0 : Math.PI / 2; low = 1 - out; }
+  blade.visible = !RM && !!pos && out < 1;
+  if (blade.visible) {
+    blade.position.set(pos.x, BY + (1 - low) * .09 + (t >= CUT_END ? out * .3 : 0), pos.z);
+    blade.rotation.y = ang; const sc = t < cuts[0].s ? ease(clamp01(t / .5)) : 1 - out; blade.scale.setScalar(Math.max(.001, sc) * 1.45);
+    spin.rotation.z -= dt * (cutting ? 38 : 22);
+    if (cutting) emit(pos, new THREE.Vector3(cutting.b.x - cutting.a.x, 0, cutting.b.z - cutting.a.z).normalize(), 5);
+  }
+  stepDust(dt);
+
+  // Teile abheben
+  for (const p of pieces) {
+    let e = 0;
+    if (t >= L0 && t < SET) e = ease(clamp01((t - L0 - p.delay) / LD));
+    else if (t >= SET) e = 1 - ease(clamp01((t - SET - p.delay * .5) / SD));
+    const E = Math.min(1.25, e + scrollK * (e > 0 ? 1 : 0));
+    const bob = Math.sin(clock * 1.4 + p.ph) * .007 * e;
+    p.m.position.set(p.home.x + p.dir.x * .09 * E, p.home.y + p.lift * E + bob, p.home.z + p.dir.y * .07 * E);
+    p.m.rotation.set(p.rx * E, p.ry * E * .4, p.rz * E);
+    p.cover.material.opacity = 1 - clamp01(e / .3); p.cover.visible = p.cover.material.opacity > .01;
+  }
+
+  // HUD
+  if (t < cuts[0].s) setHud(`${cuts.length} Schnitte geplant`);
+  else if (t < CUT_END) setHud(`Schnitt ${Math.min(cuts.length, done + 1)} von ${cuts.length}`);
+  else if (t < SET) setHud('Fertig · 85 % genutzt · 1 Rest');
+  else setHud('Nächste Platte …');
+
+  // Kamera / Gruppe
+  yaw += (yawT + hx * .12 - yaw) * .07; pitch += (pitchT + hy * .06 - pitch) * .07;
+  group.rotation.set(pitch + scrollK * .25, -.16 + yaw + (RM ? 0 : Math.sin(clock * .17) * .06), 0);
+}
+function draw(dt) { frame(dt); renderer.render(scene, camera); }
+
+resize(); draw(0);
+stage.classList.add('gl');
+if (!RM) {
+  let last = performance.now(), visible = true, raf = 0;
+  const loop = now => { const dt = Math.min(.05, (now - last) / 1000); last = now; draw(dt); raf = requestAnimationFrame(loop); };
+  new IntersectionObserver(([en]) => {
+    if (en.isIntersecting && !visible) { visible = true; last = performance.now(); raf = requestAnimationFrame(loop); }
+    else if (!en.isIntersecting && visible) { visible = false; cancelAnimationFrame(raf); }
+  }).observe(stage);
+  raf = requestAnimationFrame(loop);
+}
+</script>
+<a class="wa" href="https://wa.me/4917671337129?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20Schnitt-Wunder." target="_blank" rel="noopener" aria-label="Kontakt per WhatsApp: +49 176 71337129"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M16 3C9 3 3.3 8.6 3.3 15.6c0 2.4.7 4.7 1.9 6.7L3 29l6.9-2.2c1.9 1 4 1.6 6.1 1.6 7 0 12.7-5.7 12.7-12.7S23 3 16 3zm0 23.1c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.3 1.3-4-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.7C5.4 9.8 10.1 5.2 16 5.2s10.6 4.7 10.6 10.5S21.8 26.1 16 26.1z"/><path fill="#fff" d="M21.9 18.6c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8 0 1.6 1.2 3.2 1.3 3.4.2.2 2.3 3.5 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.7-.4z"/></svg><span>WhatsApp</span></a>
 </body>
 </html>

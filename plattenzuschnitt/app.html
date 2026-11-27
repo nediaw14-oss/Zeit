@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plattenzuschnitt Optimierer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ruhig, präzise, werkstatttauglich – wie ein guter Ausdruck aus dem Büro
+   IDEA: der Schnittplan auf Papier, der an der Formatkreissäge hängt, mit Maßketten
+   PICTURE: weiße Planblätter mit Birkenteilen, schraffiertem Rest und Magenta-Kanten
+   COLOUR and TYPE: Schiefer-Kopf, Birke, Sägeblatt-Rot, Kanten-Magenta; Barlow Condensed + Barlow
+   LAYOUT: Eingabe links, Pläne rechts, Kennzahlen im Kopf; auf dem Handy untereinander */
+:root{color-scheme:light dark;
+--bg:light-dark(#eef0ef,#101416);--card:light-dark(#ffffff,#1a2023);--ink:light-dark(#1b2125,#ecebe6);--mut:light-dark(#5f686e,#9aa4aa);
+--line:light-dark(#e1e5e6,#2b3438);--field:light-dark(#f4f6f6,#232b2f);--sh:light-dark(0 1px 2px #0000000d,0 1px 3px #0006);
+--slate:#1f282d;--wood:#e9c98f;--red:#d6402b;--edge:#e6007e}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.big{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
+h1{font-size:clamp(32px,4.6vw,48px);text-wrap:balance}
+h2{font-size:22px;margin-bottom:12px}
+header{background:var(--slate);color:#f2efe8;padding:22px max(4vw,16px) 22px;border-bottom:6px solid var(--wood);box-shadow:inset 0 -6px 0 #c9a362}
+.hin{max-width:1500px;margin:auto;display:flex;flex-wrap:wrap;gap:18px 40px;align-items:flex-end;justify-content:space-between}
+.ht{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+header p{margin:6px 0 0;color:#b9c2c6;max-width:56ch}
+.gear{display:inline-flex;align-items:center;gap:8px;background:#ffffff14;border-color:#ffffff30;color:#fff}
+.gear:hover{background:#ffffff24;border-color:#ffffff60}
+.gear svg{width:20px;height:20px}
+.who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:#c9d1d5}.who button{min-height:34px;padding:0 12px;font-size:14px;background:#ffffff14;border-color:#ffffff30;color:#fff}.who a{color:var(--wood)}
+.credit{display:inline-block;margin-top:8px;font-size:13px;color:#9fabb1;letter-spacing:.01em}.credit b{color:var(--wood);font-weight:600}
+.nav{position:sticky;top:0;z-index:15;background:#151c20;border-bottom:1px solid #ffffff1f;box-shadow:0 2px 10px #0003}
+.nin{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;overflow-x:auto;padding:8px max(4vw,16px) 10px;max-width:1500px;margin:auto;scrollbar-width:thin}
+.ni{flex:none;display:flex;flex-direction:column;gap:2px}
+.ni>span{font-size:11px;color:#9fabb1;white-space:nowrap}
+.nav select,.nav input[type=number]{width:auto;min-height:38px;padding:4px 8px;font-size:15px;background:#232d33;color:#f2efe8;border-color:#ffffff26;border-radius:7px}
+.nav input[type=number]{width:72px}
+@media(max-width:700px){.nin{flex-wrap:nowrap}.nav{position:static}}
+.nav .row{display:flex;gap:6px;align-items:center;color:#9fabb1;font-size:13px}
+.nav .kw{width:70px;height:40px}.nav .kw.tr:before{inset:7px 9px;background:#3a454b}
+.nav .kw .t,.nav .kw .b{height:13px}.nav .kw .l,.nav .kw .r{top:10px;bottom:10px;width:18px}
+.nav .kw .t:after{left:9px;right:9px;top:5px;height:3px}.nav .kw .b:after{left:9px;right:9px;bottom:5px;height:3px}
+.nav .kw .l:after{top:-3px;bottom:-3px;left:8px;width:3px}.nav .kw .r:after{top:-3px;bottom:-3px;right:8px;width:3px}
+.nav .kw button:after{background:#56636a}.nav .kw small{display:none}
+.kpi{display:flex;flex-wrap:wrap;gap:10px 28px}
+.kpi div{display:flex;flex-direction:column}
+.kpi .big{font-size:clamp(28px,3.6vw,40px);font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff}
+.kpi span{font-size:13px;color:#9fabb1}
+.kpi .wa .big{color:var(--wood)}
+.wrap{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:22px;padding:22px max(4vw,16px) 56px;max-width:1500px;margin:auto}
+@media(max-width:960px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:var(--sh);border:1px solid light-dark(transparent,var(--line))}
+.prt{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:light-dark(#fcfcfb,#1e2528)}
+.r1{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;margin-bottom:8px}
+.r1.p{grid-template-columns:30px minmax(0,1fr) 40px 52px 40px;align-items:center}.r1 .on{width:22px;height:22px;accent-color:var(--red);margin:0 auto}.prt.off{opacity:.5}.swp{padding:0;font-size:18px;color:var(--mut);background:transparent}
+.bulk{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px 52px 96px;gap:8px;align-items:end}
+.r2.s{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px 76px}
+.r3{margin-top:8px}
+@media(max-width:600px){.r2.s{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px}.r2.s .f:last-child{grid-column:1/3}.r2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 60px}.r2 .rot{grid-column:1}.r2 .kw{grid-column:2/4;justify-self:start}}
+.f span{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+input[type=number],input[type=text],select{width:100%;font:16px Barlow,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);min-height:44px}
+input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+.nm{font-weight:600}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.rot{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--mut);cursor:pointer;min-height:56px}
+.rot input{width:22px;height:22px;margin:0 0 3px;accent-color:var(--red)}
+.kw{position:relative;width:96px;height:56px;flex:none}
+.kw:before{content:"";position:absolute;inset:9px 12px;background:var(--wood);border-radius:2px;opacity:.9}
+.kw.tr:before{background:light-dark(#d5dbde,#3a454b)}
+.kw button{position:absolute;padding:0;border:0;background:transparent;min-height:0;border-radius:4px}
+.kw button:after{content:"";position:absolute;background:light-dark(#c8ced1,#4a555b)}
+.kw .t,.kw .b{left:0;right:0;height:18px}.kw .t{top:0}.kw .b{bottom:0}
+.kw .l,.kw .r{top:14px;bottom:14px;width:24px}.kw .l{left:0}.kw .r{right:0}
+.kw .t:after{left:12px;right:12px;top:7px;height:3px}.kw .b:after{left:12px;right:12px;bottom:7px;height:3px}
+.kw .l:after{top:-5px;bottom:-5px;left:10px;width:3px}.kw .r:after{top:-5px;bottom:-5px;right:10px;width:3px}
+.kw button[aria-pressed=true]:after{background:repeating-linear-gradient(90deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
+.kw .l[aria-pressed=true]:after,.kw .r[aria-pressed=true]:after{background:repeating-linear-gradient(180deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
+.r2.e{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+input[type=color]{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--field);padding:4px;cursor:pointer}
+.chk{display:flex;gap:10px;align-items:center;font-size:15px;min-height:44px;cursor:pointer}.chk input{width:22px;height:22px;accent-color:var(--red)}
+.legs{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px}
+.kw.tr button[aria-pressed=true]:after{background:var(--red)}
+.kw small{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:#5a4320;pointer-events:none;font-weight:600}
+.kw.tr small{color:var(--mut);display:grid;margin:0;font-size:11px}
+button{font:600 15px Barlow,sans-serif;border-radius:8px;border:1px solid var(--line);background:var(--field);color:var(--ink);min-height:44px;padding:0 16px;cursor:pointer}
+button:hover{border-color:var(--mut)}
+.del,.dup{padding:0;color:var(--mut);background:transparent}.del{font-size:22px}.dup{font-size:13px}
+.del:hover{color:var(--red)}
+.pri{background:var(--red);border-color:var(--red);color:#fff}
+.pri:hover{filter:brightness(1.08);border-color:var(--red)}
+.fbtn{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:8px;background:var(--field);font-weight:600;font-size:15px;cursor:pointer}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.set{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.set .w2{grid-column:1/-1}
+.note{font-size:14px;color:var(--mut);margin:10px 0 0}
+details{margin-top:12px}summary{cursor:pointer;font-weight:600;min-height:32px}
+textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink)}
+.leg{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
+.leg i{display:inline-block;width:26px;height:3px;background:repeating-linear-gradient(90deg,var(--ec,var(--edge)) 0 6px,transparent 6px 10px)}
+.warn{background:light-dark(#fde8e4,#3a1d18);border:1px solid var(--red);border-radius:12px;padding:12px 14px;margin-bottom:18px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acts select{width:auto;flex:1 1 220px}
+.sheet .sh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin-bottom:12px}
+.sheet .sh .big{font-size:26px}.sheet .sh span{color:var(--mut);font-size:14px}.sheet .sh .stk{color:#fff;font-size:15px}
+.stk{display:inline-block;background:var(--red);color:#fff;border-radius:6px;padding:1px 8px;font-size:15px;font-family:Barlow,sans-serif;vertical-align:middle;margin-left:6px}
+.pw{overflow-x:auto;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 1px light-dark(#e6e9ea,#000)}
+.pw svg{display:block;width:100%;height:auto}
+@media(max-width:600px){.pw svg{min-width:620px}}
+.cl{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+.cl td,.cl th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cl th{font-weight:600;color:var(--mut);font-size:13px}
+.cl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cl small,.rest td{color:var(--mut)}
+.ovl{position:fixed;inset:0;background:#0009;display:grid;place-items:center;z-index:20;padding:16px}
+.dlg{background:var(--card);color:var(--ink);border-radius:16px;width:min(580px,100%);max-height:calc(100dvh - 32px);overflow:auto;box-shadow:0 20px 60px #0006}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:1}
+.dh h2{margin:0;font-size:28px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 16px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line)}
+.srow b{font-weight:600;font-size:16px}.srow small{display:block;color:var(--mut);font-size:13px;line-height:1.35;margin-top:2px}
+.srow .ctl{display:flex;gap:10px;align-items:center}
+@media(max-width:480px){.srow{grid-template-columns:minmax(0,1fr)}}
+.df{display:flex;justify-content:flex-end;padding:14px 20px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--slate);color:#fff;padding:10px 16px;border-radius:10px;display:none;gap:12px;align-items:center;z-index:30;box-shadow:0 6px 20px #0004;max-width:calc(100vw - 24px)}
+.toast button{min-height:36px;background:transparent;color:var(--wood);border-color:#56636a}
+@media(prefers-reduced-motion:no-preference){.sheet{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(6px)}}}
+@media(max-width:600px){.cl{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:2px 0;padding-inline-start:6.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6em;margin-inline-start:-6.5em;color:var(--mut)}.stack td:empty{display:none}}
+/* Optionen, Werkzeugleiste, Play-Button */
+.opts>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;margin:0}.opts>summary::-webkit-details-marker{display:none}
+.opts>summary h2{margin:0}.opts>summary:after{content:"";width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
+.opts[open]>summary:after{transform:rotate(-135deg);margin-bottom:-4px}
+.orow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.orow:last-child{border-bottom:0}
+.ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:17px}.ol small{flex-basis:100%;color:var(--mut);font-size:13px;line-height:1.35}
+.inf{min-height:0;width:22px;height:22px;padding:0;border-radius:50%;font:700 13px Barlow,sans-serif;color:var(--mut);background:var(--field)}
+.orow .row{display:flex;gap:6px;align-items:center;color:var(--mut)}.orow input[type=number]{width:96px}
+.sw{position:relative;width:54px;height:32px;flex:none;cursor:pointer}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.sw span{position:absolute;inset:0;border-radius:16px;background:light-dark(#cfd5d8,#3a454b);transition:background .2s;pointer-events:none}
+.sw span:before{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0004;transition:transform .2s}
+.sw input:checked+span{background:var(--red)}.sw input:checked+span:before{transform:translateX(22px)}
+.sw input:focus-visible+span{outline:2px solid var(--red);outline-offset:2px}
+.tb{position:sticky;top:var(--navh,0px);z-index:12;display:flex;gap:2px;align-items:center;background:var(--card);border-radius:12px;padding:6px;box-shadow:var(--sh);border:1px solid var(--line);margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.tb>button{flex:none;min-height:42px;min-width:42px;padding:0 6px;display:grid;place-items:center;background:transparent;border-color:transparent;color:var(--ink)}
+.tb>button b{font:700 16px "Barlow Condensed",Barlow,sans-serif}
+.tb>button[aria-pressed=true]{background:light-dark(#fde8e4,#3a1d18);color:var(--red)}
+.tb>button:disabled{opacity:.3;cursor:default}
+.tb svg{width:24px;height:24px}
+.tb .sep{flex:none;width:1px;height:28px;background:var(--line);margin:0 3px}
+.tb>button.stale{margin-left:auto;display:inline-flex;gap:6px;padding:0 12px;min-height:36px;border-radius:999px;background:#fff4dc;color:#8a5a00;border:1px solid #f1c46b;white-space:nowrap}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));width:64px;height:64px;border-radius:50%;background:#2e7d32;border:0;color:#fff;box-shadow:0 6px 18px #0005;display:grid;place-items:center;z-index:25;padding:0}
+.fab:hover{filter:brightness(1.1)}.fab svg{width:30px;height:30px;margin-left:4px}
+.fab.st:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid #f1a73a;pointer-events:none}
+@media(prefers-reduced-motion:no-preference){.fab.st:after{animation:pl 1.5s ease-out infinite}@keyframes pl{from{opacity:1;transform:scale(.92)}to{opacity:0;transform:scale(1.3)}}}
+.pw svg{width:calc(var(--z,1)*100%)}
+@media(max-width:600px){.pw svg{min-width:calc(620px*var(--z,1))}}
+.ed svg{touch-action:none}.ed g[data-pi]{cursor:grab}
+.edb{background:light-dark(#eef7ee,#18261a);border:1px solid #2e7d32;border-radius:10px;padding:8px 12px;margin-top:10px}.edb .note{margin:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--field);border-radius:10px;padding:4px;gap:4px;margin-bottom:10px}
+.tabs button{border:0;background:transparent;min-height:40px;color:var(--mut)}.tabs button[aria-selected=true]{background:var(--card);color:var(--ink);box-shadow:var(--sh)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f1a73a;margin-left:6px;vertical-align:middle}
+.kv{width:100%;border-collapse:collapse;font-size:16px}.kv td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}.kv tr:nth-child(odd) td{background:light-dark(#f6f7f7,#1e2528)}
+.kv td:first-child{color:var(--mut);width:44%}.kv td:last-child{font-variant-numeric:tabular-nums}.kv small{color:var(--mut)}
+.gz{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:10px}.gz span{color:var(--red);font-weight:600;flex-basis:100%}.gz b{font-size:22px;font-family:"Barlow Condensed",Barlow,sans-serif}
+button.wide{width:100%;font-size:18px}
+h3.sq{font-size:17px;margin:18px 0 0}
+.dlg.wide{width:min(920px,100%)}.gb{padding:14px 20px}.dlg .pw svg{min-width:0}
+.gst{font-weight:600;color:var(--mut)}.gcut{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:6px 0 12px;font-size:18px}.gcut b{font:700 30px "Barlow Condensed",Barlow,sans-serif;color:var(--red)}
+.gprog{height:6px;border-radius:3px;background:var(--field);margin-top:12px;overflow:hidden}.gprog i{display:block;height:100%;background:#2e7d32}
+.df{gap:8px}
+@page{size:A4 landscape;margin:10mm}
+@media print{body{background:#fff;color:#000}header{padding:8px 0;background:#fff;color:#000;border:0;box-shadow:none}header p,.credit,.nav,.inp,.acts-card,.toast,.tb,.fab,.opts,.edb,.ovl{display:none!important}.kpi .big,.kpi .wa .big{color:#000}.kpi span{color:#444}.wrap{display:block;padding:0}.card{box-shadow:none;border:0;padding:0}.sheet{break-after:page;animation:none}.pw svg{min-width:0}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<style id="authhide">#app,.fab{visibility:hidden}</style>
+<div id="app"></div>
+<div class="toast" id="toast"><span id="tmsg"></span><button id="undo"></button></div>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supa.js"></script>
+<script>
+{
+const KEY='zuschnitt-v1';
+/* ---------- Sprachen ---------- */
+const D={
+en:{'Gleiche Platten stapeln':'Stack identical sheets','Kantenarten':'Edge types','+ Kantenart':'+ Edge type','Kantendicke vom Zuschnitt abziehen':'Subtract edge thickness from cut size','Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …':'Tap a side of a part repeatedly: no edge → 1st type → 2nd type → …','Kantenart löschen':'Delete edge type','Dicke':'Thickness','Farbe':'Colour','Kantendicke abgezogen':'edge thickness subtracted','Plattenzuschnitt Optimierer':'Panel Cut Optimizer','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Enter parts, the plan updates instantly. Guillotine cuts only, like a panel saw, with kerf, trimming and edge banding.',
+'Platten':'Sheets','Verschnitt':'Waste','Teile':'Parts','Kante lfm':'Edge band m','Kosten':'Cost','Einstellungen':'Settings','Projekt':'Project','Laden':'Load','Löschen':'Delete','Speichern':'Save','Als Datei sichern':'Save as file','Datei öffnen':'Open file',
+'Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).':'Saves under the name in “Job / customer”. “Open file” accepts project files (.json) and Excel lists (.csv).',
+'Teile aus Excel einfügen':'Paste parts from Excel','Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.':'Columns: name; length; width; qty; rotate (yes/no); material; edge (e.g. L1 L2). Copy from Excel and paste here.',
+'Teile hinzufügen':'Add parts','Liste ersetzen':'Replace list','+ Teil':'+ Part','Liste leeren':'Clear list','Beispiel':'Example','Alle drehen':'Rotate all','Keine drehen':'Rotate none',
+'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Length = grain direction. “rotate” off = grain must match. Edge: tap the sides of the small part – top/bottom = length edges L1/L2, left/right = width edges B1/B2.',
+'Platten auf Lager':'Stock sheets','+ Platte':'+ Sheet','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Leave qty empty = unlimited. Same material name = same material (e.g. full sheet and offcut). Price optional for costing.',
+'Auftrag & Optionen':'Job & options','Auftrag / Kunde (steht auf Plan und Etiketten)':'Job / customer (shown on plan and labels)','z. B. Küche Huber':'e.g. Kitchen Smith','Sägeblatt':'Saw kerf','Kantendicke abziehen':'Subtract edge thickness','Kante Preis (€/lfm)':'Edge price (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Keep offcuts from (shorter side, 0 = off)',
+'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.':'Saw kerf, cut direction, trimming and more are in the bar at the top.',
+'Bezeichnung':'Name','Länge':'Length','Breite':'Width','Stk':'Qty','drehen':'rotate','Kante':'Edge','Kopie':'Copy','€/Platte':'€/sheet','Noch keine Teile. Tippe auf „+ Teil“.':'No parts yet. Tap “+ Part”.',
+'Noch nichts zu schneiden':'Nothing to cut yet','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Enter your parts with length, width and quantity.','Drucken & Etiketten':'Print & labels','Schnittplan als PDF':'Cutting plan PDF','Drucken':'Print','Schnittliste kopieren':'Copy cut list','Schnittliste als CSV':'Cut list CSV','Etiketten als PDF':'Labels PDF',
+'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: one A4 landscape page per sheet with dimension chains and part list. Labels: one per part ({n}) with QR code.',
+'Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)':'Number in plan = number on label (1-03 = sheet 1, part 3)','Platte':'Sheet','von':'of','genutzt':'used','Schnitte':'cuts','m Schnittlänge':'m cut length','{n}× schneiden':'cut {n}×',
+'Teil':'Part','Nr.':'No.','gedreht':'rotated','fertig':'finished','Reststück':'Offcut','Reststücke':'Offcuts','Gestrichelt im Plan. Für den nächsten Auftrag ins Lager übernehmen – sie werden dann zuerst geprüft.':'Dashed in the plan. Move them to stock for the next job – they are checked first.','Reste ins Lager übernehmen':'Move offcuts to stock','Rest':'Offcut',
+'{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:':'{n} part(s) do not fit – too large or not enough stock:','Schnittplan':'Cutting plan','Besäumen':'Trim','Kante {x} abgezogen':'edge {x} subtracted','Gesamt':'Total','Seite {n}':'Page {n}','Verschnitt gesamt':'Total waste','Kante gesamt':'Total edge',
+'Zuschnitt':'Cut','Maserung längs':'Grain lengthwise','keine':'none','Datum':'Date','Maß':'Size','Auftrag':'Job','Material':'Material','Nr':'No',
+'Zeile gelöscht':'Row deleted','Liste geleert':'List cleared','Beispiel geladen':'Example loaded','Rückgängig':'Undo','Teil kopiert':'Part copied','Alle Teile dürfen gedreht werden':'All parts may be rotated','Kein Teil wird gedreht':'No part will be rotated','Schnittliste kopiert':'Cut list copied','Text markiert – jetzt kopieren':'Text selected – copy now',
+'Keine Teile erkannt':'No parts recognised','{n} Teile übernommen':'{n} parts added','Gespeichert':'Saved','Geladen':'Loaded','Gelöscht':'Deleted','Erst ein Projekt auswählen':'Select a project first','Speichern im Browser nicht möglich':'Saving in the browser is not possible','Projekt geöffnet':'Project opened','Datei ist kein Projekt':'File is not a project',
+'{n} Reste im Lager – für den neuen Auftrag „Liste leeren“':'{n} offcuts in stock – for the new job tap “Clear list”','– gespeicherte Projekte ({n}) –':'– saved projects ({n}) –','– noch keine Projekte gespeichert –':'– no saved projects yet –','Heruntergeladen':'Downloaded','Download hat nicht geklappt.':'Download failed.','Speichern abgebrochen.':'Saving cancelled.',
+'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'This app cannot save files – open the page in a browser.','Speichern hat nicht geklappt, bitte nochmal versuchen.':'Saving failed, please try again.','PDF-Bausteine laden noch – kurz warten und nochmal tippen.':'PDF tools are still loading – wait a moment and tap again.',
+'Sprache':'Language','Einheiten':'Units','Reihenfolge der Maße':'Dimension order','Länge × Breite':'Length × Width','Breite × Länge':'Width × Length','Nachkommastellen':'Decimal places','Platten mit gleichem Schnittplan stapeln':'Stack sheets with identical plan','Ja':'Yes','Nein':'No','Optimierungspriorität':'Optimization priority','Geringster Verschnitt':'Least waste','Wenigste Schnitte':'Fewest cuts',
+'Schnittrichtung':'Cut direction','Optimal':'Optimal','Längs':'Lengthwise','Quer':'Crosswise','Minimales Besäummaß':'Minimum trim strip','Randbeschnitt':'Edge trim','Gleiche Platten werden einmal gezeigt, mit „n× schneiden“.':'Identical sheets are shown once, with “cut n×”.',
+'Wenigste Schnitte spart Zeit an der Säge, kann aber etwas mehr Verschnitt geben.':'Fewest cuts saves time at the saw but may give slightly more waste.','Längs = zuerst durchgehende Streifen über die Plattenlänge, quer = über die Breite.':'Lengthwise = first rip strips along the sheet length, crosswise = across the width.',
+'Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).':'Smallest strip the saw can still cut cleanly. Narrower offcuts are avoided (0 = off).','Wie viel an jeder Plattenkante abgeschnitten wird. Tippe auf die Seiten, die besäumt werden.':'How much is cut off each sheet edge. Tap the sides to be trimmed.',
+'Millimeter (mm)':'Millimetres (mm)','Zentimeter (cm)':'Centimetres (cm)','Zoll (in)':'Inches (in)','pro Blatt':'per sheet','Etikettendrucker':'Label printer','1 pro Seite':'1 per page','z. B.':'e.g.','Etikettenformat':'Label format','Kanten':'Edges','Teil löschen':'Delete part','Platte löschen':'Delete sheet','Teil kopieren':'Copy part',
+'Länge oben':'length top','Länge unten':'length bottom','Breite links':'width left','Breite rechts':'width right','oben':'top','unten':'bottom','links':'left','rechts':'right','Schließen':'Close','SCHNITTLISTE':'CUT LIST','PASST NICHT':'DOES NOT FIT','Zuschnitt Länge':'Cut length','Zuschnitt Breite':'Cut width','Fertig Länge':'Finished length','Fertig Breite':'Finished width','ja':'yes','nein':'no','gedr.':'rot.'},
+bs:{'Gleiche Platten stapeln':'Grupiši iste ploče','Kantenarten':'Vrste kanta','+ Kantenart':'+ Vrsta kanta','Kantendicke vom Zuschnitt abziehen':'Oduzmi debljinu kanta od rezne mjere','Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …':'Dodiruj stranu dijela više puta: bez kanta → 1. vrsta → 2. vrsta → …','Kantenart löschen':'Obriši vrstu kanta','Dicke':'Debljina','Farbe':'Boja','Kantendicke abgezogen':'debljina kanta oduzeta','Plattenzuschnitt Optimierer':'Optimizator rezanja ploča','Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.':'Unesi dijelove, plan se odmah računa. Samo prolazni rezovi kao na formatnoj pili, s listom pile, obrezivanjem i kantovanjem.',
+'Platten':'Ploče','Verschnitt':'Otpad','Teile':'Dijelovi','Kante lfm':'Kant m','Kosten':'Trošak','Einstellungen':'Postavke','Projekt':'Projekt','Laden':'Učitaj','Löschen':'Obriši','Speichern':'Spremi','Als Datei sichern':'Spremi kao datoteku','Datei öffnen':'Otvori datoteku',
+'Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).':'Sprema pod imenom iz „Nalog / kupac“. „Otvori datoteku“ prima projektne datoteke (.json) i Excel liste (.csv).',
+'Teile aus Excel einfügen':'Zalijepi dijelove iz Excela','Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.':'Kolone: naziv; dužina; širina; kom; okretanje (da/ne); materijal; kant (npr. L1 L2). Kopiraj iz Excela i zalijepi ovdje.',
+'Teile hinzufügen':'Dodaj dijelove','Liste ersetzen':'Zamijeni listu','+ Teil':'+ Dio','Liste leeren':'Isprazni listu','Beispiel':'Primjer','Alle drehen':'Okreni sve','Keine drehen':'Ne okreći',
+'Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.':'Dužina = smjer godova. „okreni“ isključeno = godovi moraju odgovarati. Kant: dodirni strane malog dijela – gore/dolje = dužni kantovi L1/L2, lijevo/desno = širinski kantovi B1/B2.',
+'Platten auf Lager':'Ploče na stanju','+ Platte':'+ Ploča','Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.':'Prazna količina = neograničeno. Isti naziv = isti materijal (npr. cijela ploča i ostatak). Cijena je opcionalna za obračun.',
+'Auftrag & Optionen':'Nalog i opcije','Auftrag / Kunde (steht auf Plan und Etiketten)':'Nalog / kupac (piše na planu i etiketama)','z. B. Küche Huber':'npr. Kuhinja Hodžić','Sägeblatt':'List pile','Kantendicke abziehen':'Oduzmi debljinu kanta','Kante Preis (€/lfm)':'Cijena kanta (€/m)','Reststücke merken ab (kürzere Seite, 0 = aus)':'Pamti ostatke od (kraća strana, 0 = isključeno)',
+'Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.':'List pile, smjer reza, obrezivanje i više su u traci na vrhu.',
+'Bezeichnung':'Naziv','Länge':'Dužina','Breite':'Širina','Stk':'Kom','drehen':'okreni','Kante':'Kant','Kopie':'Kopija','€/Platte':'€/ploča','Noch keine Teile. Tippe auf „+ Teil“.':'Još nema dijelova. Dodirni „+ Dio“.',
+'Noch nichts zu schneiden':'Još nema ništa za rezati','Trag links deine Teile mit Länge, Breite und Stückzahl ein.':'Unesi dijelove s dužinom, širinom i količinom.','Drucken & Etiketten':'Štampa i etikete','Schnittplan als PDF':'Plan rezanja PDF','Drucken':'Štampaj','Schnittliste kopieren':'Kopiraj listu rezova','Schnittliste als CSV':'Lista rezova CSV','Etiketten als PDF':'Etikete PDF',
+'Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.':'Plan: jedna A4 stranica po ploči, s kotama i listom dijelova. Etikete: jedna po dijelu ({n} kom) s QR kodom.',
+'Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)':'Broj u planu = broj na etiketi (1-03 = ploča 1, dio 3)','Platte':'Ploča','von':'od','genutzt':'iskorišteno','Schnitte':'rezova','m Schnittlänge':'m dužina rezova','{n}× schneiden':'reži {n}×',
+'Teil':'Dio','Nr.':'Br.','gedreht':'okrenut','fertig':'gotovo','Reststück':'Ostatak','Reststücke':'Ostaci','Gestrichelt im Plan. Für den nächsten Auftrag ins Lager übernehmen – sie werden dann zuerst geprüft.':'Isprekidano u planu. Prebaci ih na stanje za sljedeći nalog – tada se prvo provjeravaju.','Reste ins Lager übernehmen':'Prebaci ostatke na stanje','Rest':'Ostatak',
+'{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:':'{n} dio(va) ne stane – prevelik ili premalo ploča na stanju:','Schnittplan':'Plan rezanja','Besäumen':'Obrezivanje','Kante {x} abgezogen':'kant {x} oduzet','Gesamt':'Ukupno','Seite {n}':'Stranica {n}','Verschnitt gesamt':'Ukupni otpad','Kante gesamt':'Ukupno kant',
+'Zuschnitt':'Rez','Maserung längs':'Godovi uzdužno','keine':'nema','Datum':'Datum','Maß':'Mjera','Auftrag':'Nalog','Material':'Materijal','Nr':'Br',
+'Zeile gelöscht':'Red obrisan','Liste geleert':'Lista ispražnjena','Beispiel geladen':'Primjer učitan','Rückgängig':'Poništi','Teil kopiert':'Dio kopiran','Alle Teile dürfen gedreht werden':'Svi dijelovi se smiju okretati','Kein Teil wird gedreht':'Nijedan dio se ne okreće','Schnittliste kopiert':'Lista rezova kopirana','Text markiert – jetzt kopieren':'Tekst označen – sad kopiraj',
+'Keine Teile erkannt':'Nisu prepoznati dijelovi','{n} Teile übernommen':'{n} dijelova dodano','Gespeichert':'Spremljeno','Geladen':'Učitano','Gelöscht':'Obrisano','Erst ein Projekt auswählen':'Prvo odaberi projekt','Speichern im Browser nicht möglich':'Spremanje u pregledniku nije moguće','Projekt geöffnet':'Projekt otvoren','Datei ist kein Projekt':'Datoteka nije projekt',
+'{n} Reste im Lager – für den neuen Auftrag „Liste leeren“':'{n} ostataka na stanju – za novi nalog „Isprazni listu“','– gespeicherte Projekte ({n}) –':'– spremljeni projekti ({n}) –','– noch keine Projekte gespeichert –':'– još nema spremljenih projekata –','Heruntergeladen':'Preuzeto','Download hat nicht geklappt.':'Preuzimanje nije uspjelo.','Speichern abgebrochen.':'Spremanje otkazano.',
+'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'Ova aplikacija ne može spremati datoteke – otvori stranicu u pregledniku.','Speichern hat nicht geklappt, bitte nochmal versuchen.':'Spremanje nije uspjelo, pokušaj ponovo.','PDF-Bausteine laden noch – kurz warten und nochmal tippen.':'PDF alati se još učitavaju – sačekaj i dodirni ponovo.',
+'Sprache':'Jezik','Einheiten':'Jedinice','Reihenfolge der Maße':'Redoslijed mjera','Länge × Breite':'Dužina × Širina','Breite × Länge':'Širina × Dužina','Nachkommastellen':'Decimale','Platten mit gleichem Schnittplan stapeln':'Grupiši ploče s istim planom','Ja':'Da','Nein':'Ne','Optimierungspriorität':'Prioritet optimizacije','Geringster Verschnitt':'Najmanje otpada','Wenigste Schnitte':'Najmanje rezova',
+'Schnittrichtung':'Smjer reza','Optimal':'Optimalno','Längs':'Uzdužno','Quer':'Poprečno','Minimales Besäummaß':'Minimalna traka','Randbeschnitt':'Obrezivanje rubova','Gleiche Platten werden einmal gezeigt, mit „n× schneiden“.':'Iste ploče se prikazuju jednom, s „reži n×“.',
+'Wenigste Schnitte spart Zeit an der Säge, kann aber etwas mehr Verschnitt geben.':'Najmanje rezova štedi vrijeme na pili, ali može dati malo više otpada.','Längs = zuerst durchgehende Streifen über die Plattenlänge, quer = über die Breite.':'Uzdužno = prvo prolazne trake po dužini ploče, poprečno = po širini.',
+'Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).':'Najuža traka koju pila još čisto reže. Uži ostaci se izbjegavaju (0 = isključeno).','Wie viel an jeder Plattenkante abgeschnitten wird. Tippe auf die Seiten, die besäumt werden.':'Koliko se reže sa svakog ruba ploče. Dodirni strane koje se obrezuju.',
+'Millimeter (mm)':'Milimetri (mm)','Zentimeter (cm)':'Centimetri (cm)','Zoll (in)':'Inči (in)','pro Blatt':'po listu','Etikettendrucker':'Štampač etiketa','1 pro Seite':'1 po stranici','z. B.':'npr.','Etikettenformat':'Format etiketa','Kanten':'Kantovi','Teil löschen':'Obriši dio','Platte löschen':'Obriši ploču','Teil kopieren':'Kopiraj dio',
+'Länge oben':'dužina gore','Länge unten':'dužina dolje','Breite links':'širina lijevo','Breite rechts':'širina desno','oben':'gore','unten':'dolje','links':'lijevo','rechts':'desno','Schließen':'Zatvori','SCHNITTLISTE':'LISTA REZOVA','PASST NICHT':'NE STANE','Zuschnitt Länge':'Rezna dužina','Zuschnitt Breite':'Rezna širina','Fertig Länge':'Gotova dužina','Fertig Breite':'Gotova širina','ja':'da','nein':'ne','gedr.':'okr.'}};
+[['Optionen','Options','Opcije'],['Schnittfuge (Schnittbreite)','Kerf (cut width)','Širina reza'],['Alles auf eine Platte','Everything on one sheet','Sve na jednu ploču'],['Etiketten','Labels','Etikete'],['Materialien','Materials','Materijali'],['Kantenanleimung','Edge banding','Kantovanje'],['Maserungsrichtung','Grain direction','Smjer godova'],
+ ['Breite des Sägeschnitts (= Sägeblatt).','Width of the saw cut (= blade).','Širina reza pile (= list pile).'],['Nur eine Platte verwenden – was nicht passt, wird als „passt nicht“ angezeigt.','Use only one sheet – what does not fit is listed as “does not fit”.','Koristi samo jednu ploču – što ne stane, prikazuje se kao „ne stane“.'],
+ ['Bezeichnungen der Teile im Plan anzeigen.','Show part names in the plan.','Prikaži nazive dijelova u planu.'],['Teile nur auf Platten aus ihrem Material legen. Aus = jede Platte nehmen.','Place parts only on sheets of their material. Off = use any sheet.','Dijelove stavljaj samo na ploče njihovog materijala. Isključeno = bilo koja ploča.'],
+ ['Kanten berücksichtigen (Anzeige, Abzug, lfm). Aus = Kanten ignorieren.','Use edge banding (display, subtraction, metres). Off = ignore edges.','Uzmi u obzir kantove (prikaz, oduzimanje, m). Isključeno = zanemari kantove.'],
+ ['Maserung beachten: Teile ohne „drehen“ werden nicht gedreht. Aus = alle Teile dürfen gedreht werden.','Respect grain: parts without “rotate” are not rotated. Off = all parts may rotate.','Poštuj godove: dijelovi bez „okreni“ se ne okreću. Isključeno = svi se smiju okretati.'],
+ ['Schnittplan veraltet','Cutting plan outdated','Plan rezanja zastario'],['Schnittplan berechnen','Calculate cutting plan','Izračunaj plan rezanja'],['Schnittplan berechnet','Cutting plan calculated','Plan rezanja izračunat'],['Bearbeiten','Edit','Uredi'],['Zoom zurücksetzen','Reset zoom','Poništi zum'],['Vergrößern','Zoom in','Uvećaj'],['Verkleinern','Zoom out','Umanji'],
+ ['Schrift größer','Larger text','Veći tekst'],['Schrift kleiner','Smaller text','Manji tekst'],['Farben','Colours','Boje'],['Maße','Dimensions','Mjere'],['Nummern','Numbers','Brojevi'],['Ansicht drehen','Rotate view','Okreni prikaz'],['Übersicht','Overview','Pregled'],['Verwendete Platten','Sheets used','Korištene ploče'],
+ ['Teilefläche','Parts area','Površina dijelova'],['Restfläche','Remaining area','Preostala površina'],['Schnittlänge','Cut length','Dužina rezova'],['Schnittfolge','Cut sequence','Redoslijed rezova'],['Geführter Zuschnitt','Guided cutting','Vođeno rezanje'],['Starten','Start','Pokreni'],['Schnitt','Cut','Rez'],['Ergebnis','Result','Rezultat'],
+ ['Zurück','Back','Nazad'],['Weiter','Next','Dalje'],['Schnitt {k} von {n}','Cut {k} of {n}','Rez {k} od {n}'],['Drehen','Rotate','Okreni'],['Entfernen','Remove','Ukloni'],['Abwählen','Deselect','Poništi odabir'],['Einsetzen','Place','Postavi'],['Passt da nicht','Does not fit there','Ne stane tu'],
+ ['Teil verschoben','Part moved','Dio pomjeren'],['Teil gedreht','Part rotated','Dio okrenut'],['Teil entfernt','Part removed','Dio uklonjen'],['Teil eingesetzt','Part placed','Dio postavljen'],['Kein freier Platz','No free space','Nema slobodnog mjesta'],['Maserung – Drehen nicht erlaubt','Grain – rotating not allowed','Godovi – okretanje nije dozvoljeno'],
+ ['Bearbeiten: Teil ziehen zum Verschieben, antippen zum Auswählen. ▶ rechnet neu und verwirft Änderungen.','Edit: drag a part to move it, tap to select. ▶ recalculates and discards changes.','Uređivanje: povuci dio za pomjeranje, dodirni za odabir. ▶ ponovo računa i briše izmjene.'],
+ ['Nicht mit durchgehenden Schnitten machbar – Teile anders anordnen.','Not possible with through cuts – rearrange parts.','Nije izvodivo prolaznim rezovima – rasporedi drugačije.'],['Erst auf ▶ tippen, dann wird der Schnittplan berechnet.','Tap ▶ to calculate the cutting plan.','Dodirni ▶ da se izračuna plan rezanja.'],
+ ['Geändert seit der Berechnung – ▶ tippen.','Changed since calculation – tap ▶.','Promijenjeno od izračuna – dodirni ▶.'],['Fertig!','Done!','Gotovo!'],['Alle Schnitte erledigt.','All cuts done.','Svi rezovi gotovi.'],['an','on','uklj.'],['aus','off','isklj.'],['Plan bearbeitet','Plan edited','Plan uređen'],
+ ['Tipp: Randbeschnitt und Sägeblatt verkleinern die nutzbare Platte. Mehr Platten ins Lager oder „Alles auf eine Platte“ ausschalten.','Tip: edge trim and kerf reduce the usable sheet. Add stock or turn off “Everything on one sheet”.','Savjet: obrezivanje i list pile smanjuju korisnu ploču. Dodaj ploče ili isključi „Sve na jednu ploču“.'],
+ ['Listen als PDF','Lists PDF','Liste PDF'],['Teileliste','Parts list','Lista dijelova'],['Zuschnittliste','Cutting list','Lista rezanja'],['Maserung','Grain','Godovi'],['platziert','placed','postavljeno'],['Teil aktiv','Part active','Dio aktivan'],
+ ['Länge und Breite tauschen','Swap length and width','Zamijeni dužinu i širinu'],['Für alle Teile','For all parts','Za sve dijelove'],['Alle Seiten','All sides','Sve strane'],['Längsseiten','Long sides','Duže strane'],['Breitseiten','Short sides','Kraće strane'],['Keine Seiten','No sides','Bez strana'],
+ ['Maße als Bezeichnung','Dimensions as name','Mjere kao naziv'],['Nummeriert','Numbered','Numerisano'],['Leeren','Clear','Obriši'],['Abfall','Waste','Otpad'],['Abmelden','Sign out','Odjava'],['Anmelden','Sign in','Prijava'],['Cloud nicht erreichbar','Cloud not reachable','Oblak nije dostupan'],['{n} lokale Projekte in die Cloud übernommen','{n} local projects moved to the cloud','{n} lokalnih projekata prebačeno u oblak'],['Alle an','All on','Sve uklj.'],['Alle aus','All off','Sve isklj.']
+].forEach(([de,en,bs])=>{D.en[de]=en;D.bs[de]=bs});
+let cfg={lang:'de',unit:'mm',ord:'lb',dec:1,stack:'yes'};
+let view={z:1,f:1,col:1,dim:1,num:1,tr:0};
+try{Object.assign(view,JSON.parse(localStorage.getItem('zuschnitt-v1-view'))||{})}catch(e){}
+view.edit=0;
+const saveView=()=>{try{const{edit,...v}=view;localStorage.setItem('zuschnitt-v1-view',JSON.stringify(v))}catch(e){}};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem(KEY+'-cfg'))||{})}catch(e){}
+const saveCfg=()=>{try{localStorage.setItem(KEY+'-cfg',JSON.stringify(cfg))}catch(e){}};
+const T=(s,v)=>{let o=(D[cfg.lang]&&D[cfg.lang][s])||s;if(v)for(const k in v)o=o.split('{'+k+'}').join(v[k]);return o};
+const LOC={de:'de-DE',en:'en-GB',bs:'de-DE'},UF={mm:1,cm:10,in:25.4};
+const loc=()=>LOC[cfg.lang]||'de-DE',uf=()=>UF[cfg.unit]||1,ul=()=>cfg.unit;
+const num=v=>{const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:0};
+const fmt=mm=>(mm/uf()).toLocaleString(loc(),{maximumFractionDigits:+cfg.dec});
+const inU=v=>v===''||v==null?'':String(+(num(v)/uf()).toFixed(4));
+const dimStr=(l,b)=>cfg.ord==='lb'?`${fmt(l)} × ${fmt(b)}`:`${fmt(b)} × ${fmt(l)}`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+const EN=['L1','L2','B1','B2'],ENL=['Länge oben','Länge unten','Breite links','Breite rechts'];
+const ET=()=>st.etypes||[];
+const etName=t=>(ET()[t-1]&&ET()[t-1].n)||(T('Kante')+' '+t);
+const etCol=t=>(ET()[t-1]&&ET()[t-1].c)||'#e6007e';
+const etThick=t=>t>0&&ET()[t-1]?Math.max(0,num(ET()[t-1].d)):0;
+const kUsed=k=>{const m=new Map();(k||[]).forEach((v,j)=>{if(v){if(!m.has(v))m.set(v,[]);m.get(v).push(EN[j])}});return[...m.entries()].sort((a,b)=>a[0]-b[0])};
+const kTxt=k=>kUsed(k).map(([t,a])=>(ET().length>1?etName(t)+': ':'')+a.join(' ')).join(' · ');
+const kShort=k=>kUsed(k).map(([t,a])=>(ET().length>1?t+':':'')+a.join(' ')).join(' ');
+const standalone=(()=>{try{return window.top===window.self}catch(e){return false}})();
+
+/* ---------- Zustand ---------- */
+const DEF={first:'auto',goal:'waste',rest:150,minT:0,ts:[1,1,1,1],sub:1,oOne:0,oLab:1,oMat:1,oEdge:1,oGrain:1,etypes:[{n:'ABS 0,8 mm',d:0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]};
+const demo=()=>({kerf:4,trim:10,job:'Korpus Beispiel',...JSON.parse(JSON.stringify(DEF)),
+ stock:[{n:'Spanplatte 19 weiß',l:2800,b:2070,q:10,p:''}],
+ parts:[{n:'Seite',l:720,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Boden/Deckel',l:762,b:560,q:4,r:0,k:[1,0,0,0]},{n:'Fachboden',l:760,b:540,q:6,r:1,k:[1,0,0,0]},
+ {n:'Front',l:716,b:396,q:4,r:0,k:[2,2,2,2]},{n:'Sockel',l:800,b:100,q:4,r:1,k:[1,0,0,0]},{n:'Traverse',l:762,b:100,q:4,r:1,k:[0,0,0,0]}]});
+let user=null,cloud=null;
+let st=demo(),last=null,tm,res=null,setOpen=false;
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.parts)&&Array.isArray(s.stock))st=s}catch(e){}
+const fix=()=>{if(!Array.isArray(st.etypes)){st.sub=num(st.et)>0?1:0;st.etypes=[{n:'ABS 0,8 mm',d:num(st.et)>0?num(st.et):0.8,c:'#1f6feb'},{n:'ABS 2 mm',d:2,c:'#e11d48'}]}
+ for(const k in DEF)if(st[k]===undefined)st[k]=JSON.parse(JSON.stringify(DEF[k]));st.parts.forEach(p=>{if(!Array.isArray(p.k))p.k=[0,0,0,0]})};fix();
+const mats=()=>[...new Set(st.stock.map(s=>(s.n||'Platte').trim()||'Platte'))];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+
+/* ---------- Oberfläche ---------- */
+const opt=(v,cur,label)=>`<option value="${esc(v)}"${String(v)===String(cur)?' selected':''}>${esc(label)}</option>`;
+function navHTML(){
+ const tsb=['t','b','l','r'].map((c,j)=>`<button class="${c}" data-ts="${j}" aria-pressed="${st.ts[j]?'true':'false'}" aria-label="${esc(T('Randbeschnitt')+' '+T(['oben','unten','links','rechts'][j]))}"></button>`).join('');
+ const it=(lab,help,ctl)=>`<label class="ni"${help?` title="${esc(T(help))}"`:''}><span>${esc(T(lab))}</span>${ctl}</label>`;
+ return`<nav class="nav" aria-label="${esc(T('Einstellungen'))}"><div class="nin">
+ ${it('Sprache','',`<select data-c="lang">${opt('de',cfg.lang,'DE · Deutsch')}${opt('en',cfg.lang,'EN · English')}${opt('bs',cfg.lang,'BS · Bosanski')}</select>`)}
+ ${it('Einheiten','',`<select data-c="unit">${opt('mm',cfg.unit,'mm')}${opt('cm',cfg.unit,'cm')}${opt('in',cfg.unit,T('Zoll (in)'))}</select>`)}
+ ${it('Reihenfolge der Maße','',`<select data-c="ord">${opt('lb',cfg.ord,T('Länge × Breite'))}${opt('bl',cfg.ord,T('Breite × Länge'))}</select>`)}
+ ${it('Nachkommastellen','',`<select data-c="dec">${[0,1,2,3].map(n=>opt(n,cfg.dec,n)).join('')}</select>`)}
+ ${it('Gleiche Platten stapeln','Gleiche Platten werden einmal gezeigt, mit „n× schneiden“.',`<select data-c="stack">${opt('yes',cfg.stack,T('Ja'))}${opt('no',cfg.stack,T('Nein'))}</select>`)}
+ ${it('Optimierungspriorität','Wenigste Schnitte spart Zeit an der Säge, kann aber etwas mehr Verschnitt geben.',`<select data-o="goal">${opt('waste',st.goal,T('Geringster Verschnitt'))}${opt('cuts',st.goal,T('Wenigste Schnitte'))}</select>`)}
+ ${it('Schnittrichtung','Längs = zuerst durchgehende Streifen über die Plattenlänge, quer = über die Breite.',`<select data-o="first">${opt('auto',st.first,T('Optimal'))}${opt('laengs',st.first,T('Längs'))}${opt('quer',st.first,T('Quer'))}</select>`)}
+ ${it('Sägeblatt','',`<span class="row"><input type="number" id="kerf" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.kerf))}">${ul()}</span>`)}
+ ${it('Minimales Besäummaß','Kleinster Streifen, den die Säge noch sauber abschneidet. Schmalere Reste werden vermieden (0 = aus).',`<span class="row"><input type="number" step="any" min="0" inputmode="decimal" data-o="minT" data-u="1" value="${esc(inU(st.minT))}">${ul()}</span>`)}
+ <div class="ni" title="${esc(T('Wie viel an jeder Plattenkante abgeschnitten wird. Tippe auf die Seiten, die besäumt werden.'))}"><span>${esc(T('Randbeschnitt'))}</span><span class="row"><input type="number" step="any" min="0" inputmode="decimal" id="trim" data-u="1" value="${esc(inU(st.trim))}" aria-label="${esc(T('Randbeschnitt'))}">${ul()}<span class="kw tr" role="group" aria-label="${esc(T('Randbeschnitt'))}">${tsb}</span></span></div>
+ </div></nav>`;
+}
+function shell(){
+ document.documentElement.lang=cfg.lang;document.title=T('Plattenzuschnitt Optimierer');
+ $('undo').textContent=T('Rückgängig');
+ $('app').innerHTML=navHTML()+`<header><div class="hin">
+ <div><div class="ht"><h1>${esc(T('Plattenzuschnitt Optimierer'))}</h1></div>
+ <p>${esc(T('Teile eintragen, der Plan rechnet sofort. Nur durchgehende Schnitte wie an der Formatkreissäge, mit Sägeblatt, Besäumen und Kanten.'))}</p>
+ <span class="credit">coded by <b>Nedi</b> / <b>Claude</b></span><div class="who" id="who"></div></div>
+ <div class="kpi" aria-live="polite">
+  <div><b class="big" id="kPl">–</b><span>${esc(T('Platten'))}</span></div>
+  <div class="wa"><b class="big" id="kWa">–</b><span>${esc(T('Verschnitt'))}</span></div>
+  <div><b class="big" id="kTe">–</b><span>${esc(T('Teile'))}</span></div>
+  <div><b class="big" id="kKa">–</b><span>${esc(T('Kante lfm'))}</span></div>
+  <div id="kCoW" hidden><b class="big" id="kCo">–</b><span>${esc(T('Kosten'))}</span></div>
+ </div></div></header>
+<div class="wrap"><div class="inp">
+ <div class="card"><h2>${esc(T('Projekt'))}</h2>
+  <div class="acts"><select id="proj" aria-label="${esc(T('Projekt'))}"></select><button id="pload">${esc(T('Laden'))}</button><button id="pdel">${esc(T('Löschen'))}</button></div>
+  <div class="btns"><button class="pri" id="psave">${esc(T('Speichern'))}</button><button id="pjson">${esc(T('Als Datei sichern'))}</button><label class="fbtn">${esc(T('Datei öffnen'))}<input type="file" id="pfile" accept=".json,.csv,.txt" hidden></label></div>
+  <p class="note">${esc(T('Speichert unter dem Namen aus „Auftrag / Kunde“. „Datei öffnen“ nimmt Projekt-Dateien (.json) und Excel-Listen (.csv).'))}</p>
+  <details><summary>${esc(T('Teile aus Excel einfügen'))}</summary>
+   <p class="note">${esc(T('Spalten: Bezeichnung; Länge; Breite; Stück; Drehen (ja/nein); Material; Kante (z. B. L1 L2). Einfach aus Excel kopieren und hier einfügen.'))}</p>
+   <textarea id="csv" placeholder="Seite;720;560;2;nein;Spanplatte 19 weiß;L1"></textarea>
+   <div class="btns"><button class="pri" id="csvadd">${esc(T('Teile hinzufügen'))}</button><button id="csvrep">${esc(T('Liste ersetzen'))}</button></div>
+  </details></div>
+ <div class="card"><h2>${esc(T('Teile'))}</h2><div id="parts"></div>
+  <div class="btns"><button class="pri" id="addP">${esc(T('+ Teil'))}</button><button id="clr">${esc(T('Liste leeren'))}</button><button id="demo">${esc(T('Beispiel'))}</button><button id="rAll">${esc(T('Alle drehen'))}</button><button id="rNone">${esc(T('Keine drehen'))}</button></div>
+  <details><summary>${esc(T('Für alle Teile'))}</summary><div class="bulk">
+   <select id="bE" aria-label="${esc(T('Kanten'))}"><option value="">${esc(T('Kanten'))} …</option>${opt('all','',T('Alle Seiten'))}${opt('long','',T('Längsseiten'))}${opt('short','',T('Breitseiten'))}${opt('none','',T('Keine Seiten'))}</select>
+   <select id="bN" aria-label="${esc(T('Bezeichnung'))}"><option value="">${esc(T('Bezeichnung'))} …</option>${opt('dim','',T('Maße als Bezeichnung'))}${opt('num','',T('Nummeriert'))}${opt('clr','',T('Leeren'))}</select>
+   <select id="bM" aria-label="${esc(T('Material'))}"><option value="">${esc(T('Material'))} …</option>${mats().map(m=>opt(m,'',m)).join('')}</select>
+   <button id="onAll">${esc(T('Alle an'))}</button><button id="offAll">${esc(T('Alle aus'))}</button></div></details>
+  <p class="note">${esc(T('Länge = Maserungsrichtung. „drehen“ aus = Maserung muss stimmen. Kante: auf die Seiten des kleinen Teils tippen – oben/unten = Längskanten L1/L2, links/rechts = Breitenkanten B1/B2.'))}</p></div>
+ <div class="card" id="ecard"${st.oEdge?'':' hidden'}><h2>${esc(T('Kantenarten'))}</h2><div id="etypes"></div>
+  <div class="btns"><button id="addE">${esc(T('+ Kantenart'))}</button></div>
+  <label class="chk" style="margin-top:8px"><input type="checkbox" id="sub"${st.sub?' checked':''}>${esc(T('Kantendicke vom Zuschnitt abziehen'))}</label>
+  <p class="note">${esc(T('Tippe bei einem Teil mehrmals auf eine Seite: keine Kante → 1. Kantenart → 2. Kantenart → …'))}</p></div>
+ <div class="card"><h2>${esc(T('Platten auf Lager'))}</h2><div id="stock"></div>
+  <div class="btns"><button id="addS">${esc(T('+ Platte'))}</button></div>
+  <p class="note">${esc(T('Stk leer lassen = unbegrenzt. Gleicher Materialname = gleiches Material (z. B. ganze Platte und Reststück). Preis optional für die Kostenrechnung.'))}</p></div>
+ <div class="card"><h2>${esc(T('Auftrag & Optionen'))}</h2>
+  <label class="f" style="display:block;margin-bottom:10px"><span>${esc(T('Auftrag / Kunde (steht auf Plan und Etiketten)'))}</span><input type="text" id="job" placeholder="${esc(T('z. B. Küche Huber'))}" value="${esc(st.job||'')}"></label>
+  <div class="set">
+   <label class="f"><span>${esc(T('Reststücke merken ab (kürzere Seite, 0 = aus)'))} (${ul()})</span><input type="number" data-o="rest" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.rest))}"></label>
+  </div>
+  <p class="note">${esc(T('Sägeblatt, Schnittrichtung, Besäumen und mehr stehen oben in der Leiste.'))}</p></div>
+</div><div class="outc"><div id="optc">${optHTML()}</div><div id="out"></div></div></div>
+<button class="fab" id="run" aria-label="${esc(T('Schnittplan berechnen'))}" title="${esc(T('Schnittplan berechnen'))}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l15 8-15 8z"/></svg></button>`;
+}
+function optHTML(){
+ const lab=(l,h)=>`<span class="ol">${esc(T(l))}<button class="inf" data-inf aria-label="Info">i</button><small hidden>${esc(T(h))}</small></span>`;
+ const row=(k,l,h)=>`<div class="orow">${lab(l,h)}<label class="sw"><input type="checkbox" data-opt="${k}"${st[k]?' checked':''} aria-label="${esc(T(l))}"><span></span></label></div>`;
+ return`<details class="card opts" open><summary><h2>${esc(T('Optionen'))}</h2></summary>
+ <div class="orow">${lab('Schnittfuge (Schnittbreite)','Breite des Sägeschnitts (= Sägeblatt).')}<span class="row"><input type="number" id="kerf2" data-u="1" inputmode="decimal" min="0" step="any" value="${esc(inU(st.kerf))}" aria-label="${esc(T('Schnittfuge (Schnittbreite)'))}">${ul()}</span></div>
+ ${row('oOne','Alles auf eine Platte','Nur eine Platte verwenden – was nicht passt, wird als „passt nicht“ angezeigt.')}
+ ${row('oLab','Etiketten','Bezeichnungen der Teile im Plan anzeigen.')}
+ ${row('oMat','Materialien','Teile nur auf Platten aus ihrem Material legen. Aus = jede Platte nehmen.')}
+ ${row('oEdge','Kantenanleimung','Kanten berücksichtigen (Anzeige, Abzug, lfm). Aus = Kanten ignorieren.')}
+ ${row('oGrain','Maserungsrichtung','Maserung beachten: Teile ohne „drehen“ werden nicht gedreht. Aus = alle Teile dürfen gedreht werden.')}
+ </details>`;
+}
+const dimFields=(k,i,o)=>{const L=`<label class="f"><span>${esc(T('Länge'))} ${ul()}</span><input type="number" step="any" inputmode="decimal" data-k="${k}" data-i="${i}" data-f="l" data-u="1" value="${esc(inU(o.l))}"></label>`,
+ B=`<label class="f"><span>${esc(T('Breite'))} ${ul()}</span><input type="number" step="any" inputmode="decimal" data-k="${k}" data-i="${i}" data-f="b" data-u="1" value="${esc(inU(o.b))}"></label>`;return cfg.ord==='lb'?L+B:B+L};
+function partsHTML(){
+ if(!st.parts.length)return`<p class="note">${esc(T('Noch keine Teile. Tippe auf „+ Teil“.'))}</p>`;
+ const M=mats();
+ return st.parts.map((o,i)=>`<div class="prt${o.off?' off':''}">
+ <div class="r1 p"><input type="checkbox" class="on" data-on="${i}"${o.off?'':' checked'} aria-label="${esc(T('Teil aktiv'))}" title="${esc(T('Teil aktiv'))}"><input class="nm" type="text" data-k="parts" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${esc(T('Bezeichnung'))}" aria-label="${esc(T('Bezeichnung'))}">
+ <button class="swp" data-swp="${i}" aria-label="${esc(T('Länge und Breite tauschen'))}" title="${esc(T('Länge und Breite tauschen'))}">⇄</button>
+ <button class="dup" data-dup="${i}" aria-label="${esc(T('Teil kopieren'))}">${esc(T('Kopie'))}</button>
+ <button class="del" data-del="parts" data-i="${i}" aria-label="${esc(T('Teil löschen'))}">×</button></div>
+ <div class="r2">${dimFields('parts',i,o)}
+  <label class="f"><span>${esc(T('Stk'))}</span><input type="number" inputmode="numeric" data-k="parts" data-i="${i}" data-f="q" value="${esc(o.q)}"></label>
+  ${st.oGrain?`<label class="rot"><input type="checkbox" data-k="parts" data-i="${i}" data-f="r" ${o.r?'checked':''}>${esc(T('drehen'))}</label>`:'<span></span>'}
+  ${st.oEdge?`<div class="kw" role="group" aria-label="${esc(T('Kanten'))}">${['t','b','l','r'].map((c,j)=>`<button class="${c}" data-edge="${i}" data-j="${j}" aria-pressed="${o.k[j]?'true':'false'}" style="--ec:${esc(etCol(o.k[j]))}" aria-label="${esc(T('Kante')+' '+T(ENL[j]))}" title="${EN[j]}${o.k[j]?': '+esc(etName(o.k[j])):''}"></button>`).join('')}<small>${o.k.some(v=>v)?esc(T('Kante')):''}</small></div>`:'<span></span>'}
+ </div>${M.length>1&&st.oMat?`<div class="r3"><select data-k="parts" data-i="${i}" data-f="m" aria-label="${esc(T('Material'))}">${M.map(n=>`<option${n===(M.includes(o.m)?o.m:M[0])?' selected':''}>${esc(n)}</option>`).join('')}</select></div>`:''}</div>`).join('');
+}
+function stockHTML(){
+ return st.stock.map((o,i)=>`<div class="prt">
+ <div class="r1"><input class="nm" type="text" data-k="stock" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${esc(T('Material'))}" aria-label="${esc(T('Material'))}">
+ <button class="del" data-del="stock" data-i="${i}" aria-label="${esc(T('Platte löschen'))}">×</button></div>
+ <div class="r2 s">${dimFields('stock',i,o)}
+  <label class="f"><span>${esc(T('Stk'))}</span><input type="number" inputmode="numeric" data-k="stock" data-i="${i}" data-f="q" value="${esc(o.q)}" placeholder="∞"></label>
+  <label class="f"><span>${esc(T('€/Platte'))}</span><input type="number" inputmode="decimal" step="0.01" data-k="stock" data-i="${i}" data-f="p" value="${esc(o.p)}"></label>
+ </div></div>`).join('');
+}
+function etypesHTML(){
+ return ET().map((o,i)=>`<div class="prt">
+ <div class="r1"><input class="nm" type="text" data-k="etypes" data-i="${i}" data-f="n" value="${esc(o.n)}" placeholder="${esc(T('Bezeichnung'))}" aria-label="${esc(T('Bezeichnung'))}">
+ <button class="del" data-dele="${i}" aria-label="${esc(T('Kantenart löschen'))}">×</button></div>
+ <div class="r2 e">
+  <label class="f"><span>${esc(T('Dicke'))} ${ul()}</span><input type="number" step="any" min="0" inputmode="decimal" data-k="etypes" data-i="${i}" data-f="d" data-u="1" value="${esc(inU(o.d))}"></label>
+  <label class="f"><span>${esc(T('Farbe'))} (${i+1})</span><input type="color" data-k="etypes" data-i="${i}" data-f="c" value="${esc(o.c||'#e6007e')}"></label>
+ </div></div>`).join('');
+}
+function drawInputs(){$('parts').innerHTML=partsHTML();$('etypes').innerHTML=etypesHTML();$('stock').innerHTML=stockHTML();drawProj()}
+function renderAll(){shell();drawInputs();renderOut();setNavH();drawUser()}
+const setNavH=()=>{const n=document.querySelector('.nav');document.documentElement.style.setProperty('--navh',(n&&getComputedStyle(n).position==='sticky'?n.offsetHeight:0)+'px')};
+addEventListener('resize',setNavH);
+
+/* ---------- Optimierer (Guillotine) ---------- */
+function pack(items,stock,kerf,tr,minT,split,fit,small,one){
+ const sheets=[],avail=stock.map(s=>s.q),un=[];
+ const order=stock.map((_,i)=>i);if(small)order.sort((a,b)=>stock[a].l*stock[a].b-stock[b].l*stock[b].b);
+ const okStrip=d=>minT<=0||d<=kerf||d-kerf>=minT;
+ const fits=(F,w,h)=>w<=F.w&&h<=F.h&&okStrip(F.w-w)&&okStrip(F.h-h);
+ const score=(F,w,h)=>fit?F.w*F.h-w*h:Math.min(F.w-w,F.h-h);
+ const place=(sh,ri,p,w,h,rot)=>{
+  const F=sh.free.splice(ri,1)[0];
+  sh.pl.push({x:F.x,y:F.y,w,h,p,rot});
+  const rw=F.w-w-kerf,bh=F.h-h-kerf;
+  let s=split;if(s===2)s=rw<bh?0:1;
+  const cw=F.w-w>0,ch=F.h-h>0;
+  if(s===0){if(ch){sh.cuts++;sh.cl+=F.w}if(cw){sh.cuts++;sh.cl+=h}}else{if(cw){sh.cuts++;sh.cl+=F.h}if(ch){sh.cuts++;sh.cl+=w}}
+  const A=s===0?[{x:F.x+w+kerf,y:F.y,w:rw,h},{x:F.x,y:F.y+h+kerf,w:F.w,h:bh}]
+              :[{x:F.x+w+kerf,y:F.y,w:rw,h:F.h},{x:F.x,y:F.y+h+kerf,w,h:bh}];
+  for(const r of A)if(r.w>0&&r.h>0)sh.free.push(r);
+ };
+ const orient=(F,p)=>{const o=[];if(fits(F,p.l,p.b))o.push([p.l,p.b,0]);if(p.r&&p.l!==p.b&&fits(F,p.b,p.l))o.push([p.b,p.l,1]);return o};
+ for(const p of items){
+  let best=null;
+  for(const sh of sheets)sh.free.forEach((F,ri)=>{for(const[w,h,rot]of orient(F,p)){const sc=score(F,w,h);if(!best||sc<best.sc)best={sh,ri,w,h,rot,sc}}});
+  if(best){place(best.sh,best.ri,p,best.w,best.h,best.rot);continue}
+  let opened=false;
+  if(!(one&&sheets.length))for(const si of order){
+   if(avail[si]<=0)continue;const S=stock[si],F={x:tr[2],y:tr[0],w:S.l-tr[2]-tr[3],h:S.b-tr[0]-tr[1]};
+   if(F.w<=0||F.h<=0)continue;const o=orient(F,p);if(!o.length)continue;
+   const n=tr.filter(v=>v>0).length;
+   const sh={si,S,free:[F],pl:[],cuts:n,cl:(tr[0]>0)*S.l+(tr[1]>0)*S.l+(tr[2]>0)*S.b+(tr[3]>0)*S.b};sheets.push(sh);avail[si]--;
+   place(sh,0,p,o[0][0],o[0][1],o[0][2]);opened=true;break;
+  }
+  if(!opened)un.push(p);
+ }
+ return{sheets,un};
+}
+function optimize(){
+ const kerf=Math.max(0,num(st.kerf)),trim=Math.max(0,num(st.trim)),sub=!!st.sub&&!!st.oEdge,minT=Math.max(0,num(st.minT)),M=st.oMat?mats():['*'];
+ const tr=[0,1,2,3].map(j=>st.ts[j]?trim:0);
+ const stock=st.stock.map(s=>({n:(s.n||'Platte').trim()||'Platte',l:num(s.l),b:num(s.b),q:String(s.q??'').trim()===''?9999:Math.max(0,Math.floor(num(s.q))),pr:Math.max(0,num(s.p))})).filter(s=>s.l>0&&s.b>0&&s.q>0);
+ const items=[];
+ st.parts.forEach((p,i)=>{if(p.off)return;const fl=num(p.l),fb=num(p.b),q=Math.floor(num(p.q)),k=st.oEdge?p.k.slice():[0,0,0,0];
+  const th=j=>sub?etThick(k[j]):0,l=fl-th(2)-th(3),b=fb-th(0)-th(1),m=st.oMat?(M.includes(p.m)?p.m:M[0]):'*';
+  const mn=st.oMat?m:(p.m||mats()[0]);
+  for(let j=0;j<q&&j<2000;j++)if(l>0&&b>0)items.push({n:p.n||(T('Teil')+' '+(i+1)),l,b,fl,fb,r:st.oGrain?!!p.r:true,c:i,k,m,mn})});
+ const orders=[(a,b)=>b.l*b.b-a.l*a.b,(a,b)=>Math.max(b.l,b.b)-Math.max(a.l,a.b),(a,b)=>b.l-a.l||b.b-a.b,(a,b)=>b.b-a.b||b.l-a.l,(a,b)=>(b.l+b.b)-(a.l+a.b)];
+ const splits=st.first==='laengs'?[0]:st.first==='quer'?[1]:[0,1,2],cutsGoal=st.goal==='cuts';
+ const better=(a,b)=>{if(a.un.length!==b.un.length)return a.un.length<b.un.length;if(Math.abs(a.area-b.area)>1)return a.area<b.area;
+  if(cutsGoal)return a.cuts!==b.cuts?a.cuts<b.cuts:a.q>b.q;return Math.abs(a.q-b.q)>1e-9?a.q>b.q:a.cuts<b.cuts};
+ const all={sheets:[],un:[]};
+ for(const mat of M){
+  const its=items.filter(x=>x.m===mat),stk=st.oMat?stock.filter(s=>s.n===mat):stock;if(!its.length)continue;
+  if(!stk.length){all.un.push(...its);continue}
+  let best=null;
+  for(const o of orders){const it=its.slice().sort(o);
+   for(const sp of splits)for(let f=0;f<2;f++)for(let sm=0;sm<(stk.length>1?2:1);sm++){
+    const r=pack(it,stk,kerf,tr,minT,sp,f,sm,!!st.oOne);
+    r.q=r.sheets.reduce((s,sh)=>{const u=sh.pl.reduce((a,x)=>a+x.w*x.h,0)/(sh.S.l*sh.S.b);return s+u*u},0);
+    r.area=r.sheets.reduce((s,sh)=>s+sh.S.l*sh.S.b,0);r.cuts=r.sheets.reduce((s,sh)=>s+sh.cuts,0);
+    if(!best||better(r,best))best=r;
+   }}
+  const sig=sh=>[sh.S.n,sh.S.l,sh.S.b,...sh.pl.slice().sort((a,b)=>a.y-b.y||a.x-b.x).map(x=>[x.x,x.y,x.w,x.h,x.p.c,x.p.l,x.p.b].join(','))].join('|');
+  const g=new Map();for(const sh of best.sheets){const s=sig(sh);if(!g.has(s))g.set(s,[]);g.get(s).push(sh)}
+  for(const a of g.values())all.sheets.push(...a);
+  all.un.push(...best.un);
+ }
+ Object.assign(all,{items,kerf,trim,et:sub&&items.some(x=>x.fl!==x.l||x.fb!==x.b),tr,first:st.first,restMin:Math.max(0,num(st.rest))});
+ return all;
+}
+/* ---------- Schnittfolge aus dem Plan ableiten (auch nach Bearbeiten) ---------- */
+const EPS=0.5;
+const usable=sh=>{const t=res.tr,S=sh.S;return{x:t[2],y:t[0],w:S.l-t[2]-t[3],h:S.b-t[0]-t[1]}};
+function cutTree(R,parts,pref,X){
+ if(!parts.length){if(R.w>EPS&&R.h>EPS)X.leaves.push(R);return{t:'rest',R}}
+ if(parts.length===1){const p=parts[0];if(Math.abs(p.x-R.x)<EPS&&Math.abs(p.y-R.y)<EPS&&Math.abs(p.w-R.w)<EPS&&Math.abs(p.h-R.h)<EPS)return{t:'part',R,p}}
+ for(const d of pref==='y'?['y','x']:['x','y']){
+  const s=d==='x'?'w':'h',k=X.kerf;
+  const cs=[...new Set(parts.flatMap(p=>[p[d]+p[s]-R[d],p[d]-k-R[d]]))].filter(c=>c>EPS&&c<R[s]-EPS).sort((u,v)=>u-v);
+  for(const c of cs){const lo=R[d]+c,hi=lo+k;
+   if(!parts.every(p=>p[d]+p[s]<=lo+EPS||p[d]>=hi-EPS))continue;
+   const A=d==='x'?{x:R.x,y:R.y,w:c,h:R.h}:{x:R.x,y:R.y,w:R.w,h:c};
+   const B=d==='x'?{x:hi,y:R.y,w:R.x+R.w-hi,h:R.h}:{x:R.x,y:hi,w:R.w,h:R.y+R.h-hi};
+   const n={t:'cut',d,c,R,len:d==='x'?R.h:R.w};X.seq.push(n);
+   n.a=cutTree(A,parts.filter(p=>p[d]<lo),d==='x'?'y':'x',X);
+   n.b=B.w>EPS&&B.h>EPS?cutTree(B,parts.filter(p=>p[d]>=lo),d,X):null;
+   return n;
+  }
+ }
+ X.bad++;return{t:'bad',R};
+}
+function derive(){
+ const kerf=res.kerf;
+ res.sheets.forEach((sh,i)=>{
+  sh.n=i+1;sh.pl.sort((a,b)=>a.y-b.y||a.x-b.x);sh.pl.forEach((x,j)=>{x.pos=String(j+1).padStart(2,'0');x.id=`${i+1}-${x.pos}`});
+  const S=sh.S,t=res.tr,pre=[];let cur={x:0,y:0,w:S.l,h:S.b};
+  const tc=(d,c)=>pre.push({t:'cut',trim:1,d,c,R:{...cur},len:d==='x'?cur.h:cur.w});
+  if(t[0]>0){tc('y',Math.max(0,t[0]-kerf));cur={...cur,y:t[0],h:cur.h-t[0]}}
+  if(t[1]>0){tc('y',cur.h-t[1]);cur={...cur,h:cur.h-t[1]}}
+  if(t[2]>0){tc('x',Math.max(0,t[2]-kerf));cur={...cur,x:t[2],w:cur.w-t[2]}}
+  if(t[3]>0){tc('x',cur.w-t[3]);cur={...cur,w:cur.w-t[3]}}
+  const run=p=>{const X={seq:[],leaves:[],bad:0,kerf};cutTree(cur,sh.pl,p,X);return X};
+  const X=res.first==='laengs'?run('y'):res.first==='quer'?run('x'):[run('y'),run('x')].sort((a,b)=>a.bad-b.bad||a.seq.length-b.seq.length)[0];
+  sh.seq=[...pre,...X.seq];sh.cuts=sh.seq.length;sh.cl=sh.seq.reduce((s,n)=>s+n.len,0);sh.bad=X.bad;sh.leaves=X.leaves;
+  sh.rests=res.restMin>0?X.leaves.filter(r=>Math.min(r.w,r.h)>=res.restMin).sort((a,b)=>b.w*b.h-a.w*a.h):[];
+  sh.sig=[S.n,S.l,S.b,...sh.pl.map(x=>[x.x,x.y,x.w,x.h,x.p.c,x.p.l,x.p.b].join(','))].join('|');
+ });
+}
+const pieceTxt=c=>!c?T('Abfall'):c.t==='part'?dimStr(c.R.w,c.R.h):c.t==='rest'?T('Rest')+' '+dimStr(c.R.w,c.R.h):c.t==='bad'?'?':'–';
+const resTxt=n=>n.trim?T('Besäumen'):pieceTxt(n.a)+' \\ '+pieceTxt(n.b);
+/* ---------- Bearbeiten ---------- */
+function valid(sh,skip,x,y,w,h){
+ const U=usable(sh),k=res.kerf;
+ if(x<U.x-EPS||y<U.y-EPS||x+w>U.x+U.w+EPS||y+h>U.y+U.h+EPS)return false;
+ return sh.pl.every((q,i)=>i===skip||x+w+k<=q.x+EPS||q.x+q.w+k<=x+EPS||y+h+k<=q.y+EPS||q.y+q.h+k<=y+EPS);
+}
+function findSpot(sh,skip,w,h){
+ const U=usable(sh),k=res.kerf,o=sh.pl.filter((_,i)=>i!==skip);
+ const xs=[U.x,...o.map(q=>q.x+q.w+k)].sort((a,b)=>a-b),ys=[U.y,...o.map(q=>q.y+q.h+k)].sort((a,b)=>a-b);
+ for(const y of ys)for(const x of xs)if(valid(sh,skip,x,y,w,h))return[x,y];
+ return null;
+}
+function snapMove(sh,pi,nx,ny){
+ const x=sh.pl[pi],U=usable(sh),k=res.kerf,thr=Math.max(sh.S.l,sh.S.b)*0.03,o=sh.pl.filter((_,i)=>i!==pi);
+ const sn=(v,c)=>{let b=v,bd=thr;for(const a of c){const d=Math.abs(a-v);if(d<bd){bd=d;b=a}}return b};
+ const sx=sn(nx,[U.x,U.x+U.w-x.w,...o.flatMap(q=>[q.x+q.w+k,q.x-k-x.w,q.x,q.x+q.w-x.w])]);
+ const sy=sn(ny,[U.y,U.y+U.h-x.h,...o.flatMap(q=>[q.y+q.h+k,q.y-k-x.h,q.y,q.y+q.h-x.h])]);
+ for(const[a,b]of[[sx,sy],[sx,ny],[nx,sy],[nx,ny]])if(valid(sh,pi,a,b,x.w,x.h))return[a,b];
+ return null;
+}
+function afterEdit(msg){res.edited=1;res.sel=null;derive();renderOut();toast(T(msg))}
+function groups(){
+ const out=[];for(const sh of res.sheets){const g=out[out.length-1];
+  if(cfg.stack==='yes'&&g&&g.sh.sig===sh.sig)g.list.push(sh);else out.push({sh,list:[sh]})}
+ for(const g of out){g.a=g.list[0].n;g.b=g.list[g.list.length-1].n;g.cnt=g.list.length}
+ return out;
+}
+const gName=g=>g.cnt>1?`${g.a}–${g.b}`:`${g.a}`;
+const gId=(g,x)=>g.cnt>1?`${g.a}–${g.b}-${x.pos}`:x.id;
+
+/* ---------- Plan-Geometrie (gemeinsam für Bildschirm und PDF) ---------- */
+const C={paper:'#ffffff',waste:'#e9ecee',hatch:'#d2d8db',sheet:'#6f7c83',wood:['#c8ecc9','#c6dcf7','#f9cccc','#fbefb3','#e0d2f5','#fdd9b8','#bfeee6','#f7cfe6'],woodL:'#7d878d',woodT:'#22292d',idT:'#4f5a60',dim:'#1d2226',main:'#d6402b',edge:'#e6007e'};
+const PV=()=>({f:1,col:1,dim:1,num:1,lab:st.oLab,tr:0});
+const tp=r=>({x:r.y,y:r.x,w:r.h,h:r.w});
+const tview=g=>({...g,sh:{...g.sh,S:{...g.sh.S,l:g.sh.S.b,b:g.sh.S.l},pl:g.sh.pl.map((x,i)=>({...x,...tp(x),rot:!x.rot,_i:i})),rests:(g.sh.rests||[]).map(r=>({...tp(r),ow:r.w,oh:r.h}))}});
+function plan(g,V=PV()){
+ const kerf0=res?res.kerf:0;if(V.tr)g=tview(g);
+ const sh=g.sh,S=sh.S,M=Math.max(S.l,S.b),ts=M*0.019,vf=V.f||1,tf=ts*vf,gap=M*0.012,off=V.dim?gap+tf*1.5:0,out=V.dim?off+tf*1.45:gap,P=[];
+ P.push({t:'r',x:0,y:0,w:S.l,h:S.b,f:'hatch',s:C.sheet,sw:M*0.0012});
+ for(let pi0=0;pi0<sh.pl.length;pi0++){const x=sh.pl[pi0],pi=x._i??pi0;
+  P.push({t:'g',pi});
+  P.push({t:'r',x:x.x,y:x.y,w:x.w,h:x.h,f:V.col?C.wood[x.p.c%C.wood.length]:'#eef1f2',s:C.woodL,sw:M*0.0011});
+  const e=Math.min(M*0.006,x.w*0.08,x.h*0.08),X1=x.x+e,Y1=x.y+e,X2=x.x+x.w-e,Y2=x.y+x.h-e;
+  const top=[X1,Y1,X2,Y1],bot=[X1,Y2,X2,Y2],lef=[X1,Y1,X1,Y2],rig=[X2,Y1,X2,Y2];
+  const map=x.rot?[lef,rig,top,bot]:[top,bot,lef,rig];
+  (x.p.k||[]).forEach((v,j)=>{if(v){const[a,b,c,d]=map[j],th=etThick(v);P.push({t:'l',x1:a,y1:b,x2:c,y2:d,c:etCol(v),sw:M*Math.min(0.0062,0.0026+0.0012*th),dash:[M*0.011,M*0.006]})}});
+  const vert=x.h>x.w*1.4,L=vert?x.h:x.w,T2=vert?x.w:x.h,dims=dimStr(x.p.l,x.p.b);
+  let fs=Math.min(T2*0.24,ts*1.7)*vf;
+  fs=Math.min(fs,L*0.9/(Math.max(V.lab?String(x.p.n).length:0,dims.length)*0.56));
+  const cx=x.x+x.w/2,cy=x.y+x.h/2,u=vert?[-1,0]:[0,-1],rot=vert?90:0,at=d=>[cx+u[0]*d,cy+u[1]*d];
+  if(fs>=M*0.0075){
+   if(V.lab&&T2>fs*2.7){let[a,b]=at(fs*0.15);P.push({t:'t',x:a,y:b,s:fs,str:x.p.n,a:'m',rot,b:1,c:C.woodT});
+    [a,b]=at(-fs*0.95);P.push({t:'t',x:a,y:b,s:fs*0.85,str:dims,a:'m',rot,c:C.woodT})}
+   else{const[a,b]=at(-fs*0.35);P.push({t:'t',x:a,y:b,s:fs,str:dims,a:'m',rot,b:1,c:C.woodT})}
+  }
+  const idS=gId(g,x),is=Math.min(ts*0.72*vf,x.h*0.2,x.w*0.9/(idS.length*0.56));
+  if(V.num&&is>=M*0.0055)P.push({t:'t',x:x.x+e+M*0.006,y:x.y+e+M*0.004+is,s:is,str:idS,a:'s',rot:0,c:C.idT});
+  if(V.sel===pi)P.push({t:'r',x:x.x,y:x.y,w:x.w,h:x.h,f:'rgba(46,125,50,.18)',s:'#2e7d32',sw:M*0.006});
+  P.push({t:'/g'});
+ }
+ for(const r of sh.rests||[]){
+  P.push({t:'r',x:r.x,y:r.y,w:r.w,h:r.h,f:null,s:'#7d8a91',sw:M*0.0012,dash:[M*0.008,M*0.005]});
+  const vert=r.h>r.w*1.4,L=vert?r.h:r.w,T2=vert?r.w:r.h,str=`${T('Rest')} ${dimStr(r.ow??r.w,r.oh??r.h)}`;
+  const fs=Math.min(T2*0.22,ts*1.2*vf,L*0.84/(str.length*0.56));
+  if(fs>=M*0.0075)P.push(vert?{t:'t',x:r.x+r.w/2+fs*0.35,y:r.y+r.h/2,s:fs,str,a:'m',rot:90,c:'#56636a'}:{t:'t',x:r.x+r.w/2,y:r.y+r.h/2+fs*0.35,s:fs,str,a:'m',rot:0,c:'#56636a'});
+ }
+ const brk=a=>{a.sort((p,q)=>p-q);const o=[];for(const v of a)if(!o.length||v-o[o.length-1]>0.5)o.push(v);return o};
+ const xs=brk([0,S.l,...sh.pl.flatMap(x=>[x.x,x.x+x.w])]),ys=brk([0,S.b,...sh.pl.flatMap(x=>[x.y,x.y+x.h])]);
+ const chain=(vals,side,main)=>{
+  const hor=side==='top'||side==='bottom',neg=side==='top'||side==='left',edge=hor?(neg?0:S.b):(neg?0:S.l);
+  const base=neg?-off:edge+off,c=main?C.main:C.dim,sw=M*(main?0.0013:0.0009),tk=ts*0.28;
+  const L=(a,b,c2,d)=>P.push({t:'l',x1:hor?a:b,y1:hor?b:a,x2:hor?c2:d,y2:hor?d:c2,c,sw});
+  L(vals[0]-tk,base,vals[vals.length-1]+tk,base);
+  for(const v of vals){const e1=neg?edge-gap*0.35:edge+gap*0.35,e2=neg?base-tk*1.3:base+tk*1.3;L(v,e1,v,e2);
+   P.push({t:'l',x1:hor?v-tk:base-tk,y1:hor?base+tk:v+tk,x2:hor?v+tk:base+tk,y2:hor?base-tk:v-tk,c,sw:sw*2})}
+  for(let i=1;i<vals.length;i++){const a=vals[i-1],b=vals[i],len=b-a,str=fmt(len),s=main?tf*1.1:tf;
+   if(len<str.length*0.56*s+ts*0.35)continue;
+   const mid=(a+b)/2,lp=neg?base-ts*0.35:base+s*1.05;
+   P.push(hor?{t:'t',x:mid,y:lp,s,str,a:'m',rot:0,b:main?1:0,c}:{t:'t',x:lp,y:mid,s,str,a:'m',rot:90,b:main?1:0,c})}
+ };
+ if(V.dim){chain(xs,'top');chain(ys,'left');chain([0,S.l],'bottom',1);chain([0,S.b],'right',1)}
+ if(V.hl){
+  const ln=n=>{let R=n.R,d=n.d;if(V.tr){R=tp(R);d=d==='x'?'y':'x'}const m=n.c+kerf0/2;return d==='x'?{x1:R.x+m,y1:R.y,x2:R.x+m,y2:R.y+R.h}:{x1:R.x,y1:R.y+m,x2:R.x+R.w,y2:R.y+m}};
+  for(const n of V.hl.done)P.push({t:'l',...ln(n),c:'#56636a',sw:M*0.003});
+  const c=V.hl.cur,R=V.tr?tp(c.R):c.R;
+  P.push({t:'r',...R,f:'rgba(214,64,43,.10)',s:C.main,sw:M*0.003,dash:[M*0.01,M*0.006]});
+  P.push({t:'l',...ln(c),c:C.main,sw:M*0.009});
+ }
+ return{P,bx:-out,by:-out,bw:S.l+2*out,bh:S.b+2*out,M};
+}
+function toSVG(pl,idx,attr=''){
+ const id='h'+idx,M=pl.M,hp=M*0.016;
+ let g=`<svg viewBox="${pl.bx} ${pl.by} ${pl.bw} ${pl.bh}" role="img" aria-label="${esc(T('Schnittplan'))}" font-family="Barlow,Helvetica,sans-serif" ${attr}>
+ <defs><pattern id="${id}" width="${hp}" height="${hp}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${hp}" height="${hp}" fill="${C.waste}"/><rect width="${hp*0.28}" height="${hp}" fill="${C.hatch}"/></pattern></defs>
+ <rect x="${pl.bx}" y="${pl.by}" width="${pl.bw}" height="${pl.bh}" fill="${C.paper}"/>`;
+ for(const p of pl.P){
+  if(p.t==='g'){g+=`<g data-pi="${p.pi}">`;continue}if(p.t==='/g'){g+='</g>';continue}
+  if(p.t==='r')g+=`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.f==='hatch'?`url(#${id})`:p.f||'none'}" stroke="${p.s}" stroke-width="${p.sw}"${p.dash?` stroke-dasharray="${p.dash.join(' ')}"`:''}/>`;
+  else if(p.t==='l')g+=`<line x1="${p.x1}" y1="${p.y1}" x2="${p.x2}" y2="${p.y2}" stroke="${p.c}" stroke-width="${p.sw}"${p.dash?` stroke-dasharray="${p.dash.join(' ')}"`:''}/>`;
+  else g+=`<text x="${p.x}" y="${p.y}" font-size="${p.s}" fill="${p.c}"${p.b?' font-weight="700"':''} text-anchor="${p.a==='m'?'middle':'start'}"${p.rot?` transform="rotate(-90 ${p.x} ${p.y})"`:''}>${esc(p.str)}</text>`;
+ }
+ return g+'</svg>';
+}
+function toPDF(doc,pl,ox,oy,k){
+ const X=x=>ox+(x-pl.bx)*k,Y=y=>oy+(y-pl.by)*k;
+ for(const p of pl.P){
+  if(p.t==='g'||p.t==='/g')continue;
+  if(p.t==='r'){doc.setLineDashPattern(p.dash?p.dash.map(v=>v*k):[],0);doc.setLineWidth(Math.max(p.sw*k,0.12));doc.setDrawColor(p.s);if(p.f)doc.setFillColor(p.f==='hatch'?C.waste:p.f);doc.rect(X(p.x),Y(p.y),p.w*k,p.h*k,p.f?'FD':'S')}
+  else if(p.t==='l'){doc.setLineDashPattern(p.dash?p.dash.map(v=>v*k):[],0);doc.setLineWidth(Math.max(p.sw*k,0.1));doc.setDrawColor(p.c);doc.line(X(p.x1),Y(p.y1),X(p.x2),Y(p.y2))}
+  else{doc.setFont('helvetica',p.b?'bold':'normal');doc.setFontSize(p.s*k/0.3528);doc.setTextColor(p.c);
+   const str=pdfSafe(p.str),w=doc.getTextWidth(str);let x=X(p.x),y=Y(p.y);
+   if(p.a==='m'){if(p.rot)y+=w/2;else x-=w/2}
+   doc.text(str,x,y,p.rot?{angle:90}:undefined)}
+ }
+ doc.setLineDashPattern([],0);doc.setTextColor('#000000');
+}
+
+/* ---------- Ausgabe ---------- */
+function groupParts(pl,g){
+ const m=new Map(),cnt=g?g.cnt:1;
+ for(const x of pl){const k=x.p.n+'|'+x.p.l+'|'+x.p.b+'|'+kTxt(x.p.k);const e=m.get(k)||{n:x.p.n,l:x.p.l,b:x.p.b,fl:x.p.fl,fb:x.p.fb,k:kTxt(x.p.k),q:0,rot:0,ids:[]};e.q+=cnt;e.ids.push(g?gId(g,x):x.id);if(x.rot)e.rot+=cnt;m.set(k,e)}
+ return[...m.values()].sort((a,b)=>b.l*b.b-a.l*a.b);
+}
+const FMTS=()=>[
+ {t:`A4 · 70 × 37 mm · 24 ${T('pro Blatt')} (${T('z. B.')} Zweckform 3474)`,w:70,h:37,c:3,r:8,mx:0,my:0.5},
+ {t:`A4 · 105 × 48 mm · 12 ${T('pro Blatt')} (${T('z. B.')} Zweckform 3424)`,w:105,h:48,c:2,r:6,mx:0,my:4.5},
+ {t:`A4 · 70 × 42,3 mm · 21 ${T('pro Blatt')} (${T('z. B.')} Zweckform 3652)`,w:70,h:42.3,c:3,r:7,mx:0,my:0.4},
+ {t:`${T('Etikettendrucker')} · 100 × 50 mm · ${T('1 pro Seite')}`,w:100,h:50,c:1,r:1,mx:0,my:0,page:[100,50]},
+ {t:`${T('Etikettendrucker')} · 62 × 29 mm · ${T('1 pro Seite')}`,w:62,h:29,c:1,r:1,mx:0,my:0,page:[62,29]}];
+let fmtSel=0;try{fmtSel=Math.min(+localStorage.getItem(KEY+'f')||0,4)}catch(e){}
+const colsLB=()=>cfg.ord==='lb'?['l','b']:['b','l'];
+const pct=v=>v.toLocaleString(loc(),{maximumFractionDigits:1});
+const ICO={lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',unlock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.7-1.5"/>',
+ zi:'<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5M7 10h6M10 7v6"/>',zo:'<circle cx="10" cy="10" r="6.5"/><path d="M15 15l5.5 5.5M7 10h6"/>',
+ pal:'<path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1.2-1-1.6-1-2.6 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="14.5" cy="7" r="1.2"/>',
+ rul:'<rect x="2" y="8" width="20" height="8" rx="1.5"/><path d="M6 8v3M10 8v4M14 8v3M18 8v4"/>',num:'<path d="M10 6h11M10 12h11M10 18h11M4 4.5l1.5-1V9M3.5 15h3l-3 4h3"/>',
+ rot:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/>'};
+const ico=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+const srcSig=()=>{const{job,oLab,...r}=st;return JSON.stringify(r)};
+const setSnap=()=>({kerf:num(st.kerf),trim:num(st.trim),ts:st.ts.join(''),minT:num(st.minT),first:st.first,goal:st.goal,oOne:+!!st.oOne,oMat:+!!st.oMat,oEdge:+!!st.oEdge,oGrain:+!!st.oGrain});
+const isStale=()=>res?srcSig()!==res.src:true;
+function updStale(){const s=isStale(),b=$('stl');if(b)b.hidden=!s;$('run')?.classList.toggle('st',s);const d=$('sdot');if(d)d.hidden=!s}
+function compute(quiet){res=optimize();res.src=srcSig();res.set=setSnap();res.sel=null;derive();gd=null;renderOut();if(!quiet)toast(T('Schnittplan berechnet'))}
+let ovTab=0,gd=null,gdLast=0;
+const m2=a=>(a/1e6).toLocaleString(loc(),{minimumFractionDigits:2,maximumFractionDigits:2})+' m²';
+function setKPI(){
+ const has=res&&res.items.length,sh=has?res.sheets:[];
+ $('kPl').textContent=has?sh.length:'–';$('kWa').textContent=has?pct(res.waste)+' %':'–';
+ $('kTe').textContent=has?sh.reduce((s,x)=>s+x.pl.length,0):'–';$('kKa').textContent=has&&st.oEdge?pct(res.kl):'–';
+ $('kCoW').hidden=!(has&&res.cost>0);$('kCo').textContent=has?res.cost.toLocaleString(loc(),{style:'currency',currency:'EUR'}):'';
+}
+function tbHTML(){
+ const b=(id,ic,lab,pr,dis)=>`<button data-v="${id}" aria-label="${esc(T(lab))}" title="${esc(T(lab))}"${pr!==undefined?` aria-pressed="${pr?'true':'false'}"`:''}${dis?' disabled':''}>${ic}</button>`;
+ return`<div class="tb" role="toolbar" aria-label="${esc(T('Schnittplan'))}">${b('edit',ico(view.edit?'unlock':'lock'),'Bearbeiten',!!view.edit)}<i class="sep"></i>
+ ${b('zr','<b>1:1</b>','Zoom zurücksetzen',undefined,view.z===1)}${b('zi',ico('zi'),'Vergrößern')}${b('zo',ico('zo'),'Verkleinern')}<i class="sep"></i>
+ ${b('fi','<b>A+</b>','Schrift größer')}${b('fo','<b>A−</b>','Schrift kleiner')}<i class="sep"></i>
+ ${b('col',ico('pal'),'Farben',!!view.col)}${b('dim',ico('rul'),'Maße',!!view.dim)}${b('num',ico('num'),'Nummern',!!view.num)}${b('tr',ico('rot'),'Ansicht drehen',!!view.tr)}
+ <button class="stale" id="stl"${isStale()?'':' hidden'}>⟳ ${esc(T('Schnittplan veraltet'))}</button></div>`;
+}
+function renderOut(){
+ const o=$('out');if(!o)return;
+ if(!res){o.innerHTML=tbHTML()+`<div class="card"><h2>${esc(T('Schnittplan'))}</h2><p class="note">${esc(T('Erst auf ▶ tippen, dann wird der Schnittplan berechnet.'))}</p></div>`;setKPI();updStale();return}
+ const{sheets,un,items}=res;
+ const klT=new Map();for(const p of items)p.k.forEach((v,j)=>{if(v)klT.set(v,(klT.get(v)||0)+(j<2?p.fl:p.fb)/1000)});
+ const kl=[...klT.values()].reduce((a,b)=>a+b,0);res.klT=[...klT.entries()].sort((a,b)=>a[0]-b[0]);
+ const sa=sheets.reduce((s,x)=>s+x.S.l*x.S.b,0),pa=sheets.reduce((s,x)=>s+x.pl.reduce((a,y)=>a+y.w*y.h,0),0);
+ const npl=sheets.reduce((s,x)=>s+x.pl.length,0),cost=sheets.reduce((s,x)=>s+x.S.pr,0);
+ const trA=sheets.reduce((s,x)=>{const U=usable(x);return s+x.S.l*x.S.b-U.w*U.h},0);
+ Object.assign(res,{kl,cost,waste:sa?(1-pa/sa)*100:0});
+ setKPI();
+ if(!items.length){o.innerHTML=tbHTML()+`<div class="card"><h2>${esc(T('Noch nichts zu schneiden'))}</h2><p class="note">${esc(T('Trag links deine Teile mit Länge, Breite und Stückzahl ein.'))}</p></div>`;updStale();return}
+ const G=res.G=groups(),[c1,c2]=colsLB(),hd={l:T('Länge'),b:T('Breite')};
+ let h=tbHTML();
+ if(un.length){const m=new Map();un.forEach(p=>{const k=p.c+'|'+p.l+'|'+p.b;const e=m.get(k)||{p,q:0,k};e.q++;m.set(k,e)});
+  h+=`<div class="warn"><b>${esc(T('{n} Teil(e) passen nicht – zu groß oder zu wenig Platten auf Lager:',{n:un.length}))}</b><table class="cl">${[...m.values()].map(e=>`<tr><td>${e.q}× ${esc(e.p.n)}</td><td class="n">${dimStr(e.p.l,e.p.b)}</td><td>${view.edit?`<button data-ins="${esc(e.k)}">${esc(T('Einsetzen'))}</button>`:''}</td></tr>`).join('')}</table>
+  <p class="note">${esc(T('Tipp: Randbeschnitt und Sägeblatt verkleinern die nutzbare Platte. Mehr Platten ins Lager oder „Alles auf eine Platte“ ausschalten.'))}</p></div>`}
+ G.forEach((g,i)=>{const sh=g.sh;
+  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100,sel=res.sel&&res.sel.g===i?res.sel.i:undefined;
+  h+=`<div class="card sheet"><div class="sh"><div class="big">${esc(T('Platte'))} ${gName(g)} ${esc(T('von'))} ${sheets.length} · ${esc(sh.S.n)}${g.cnt>1?`<span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</div><span>${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${esc(T('genutzt'))} · ${sh.cuts} ${esc(T('Schnitte'))} · ${pct(sh.cl/1000)} ${esc(T('m Schnittlänge'))}</span></div>
+  <div class="pw${view.edit?' ed':''}" style="--z:${view.z}">${toSVG(plan(g,{...view,lab:st.oLab,sel}),i,`data-g="${i}"`)}</div>
+  ${sh.bad?`<div class="warn" style="margin:10px 0 0">${esc(T('Nicht mit durchgehenden Schnitten machbar – Teile anders anordnen.'))}</div>`:''}
+  ${view.edit?`<div class="edb"><p class="note">${esc(T('Bearbeiten: Teil ziehen zum Verschieben, antippen zum Auswählen. ▶ rechnet neu und verwirft Änderungen.'))}</p>${sel!==undefined?`<div class="btns"><button data-ea="rot" data-g="${i}">${esc(T('Drehen'))}</button><button data-ea="del" data-g="${i}">${esc(T('Entfernen'))}</button><button data-ea="none">${esc(T('Abwählen'))}</button></div>`:''}</div>`:''}
+  <table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th>${esc(T('Kante'))}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Nr.'))}</th></tr></thead><tbody>
+  ${groupParts(sh.pl,g).map(e=>`<tr><td>${esc(e.n)}${e.rot?` <small>(${e.rot}× ${esc(T('gedreht'))})</small>`:''}${e.fl!==e.l||e.fb!==e.b?` <small>${esc(T('fertig'))} ${dimStr(e.fl,e.fb)}</small>`:''}</td><td class="n">${fmt(e[c1])}</td><td class="n">${fmt(e[c2])}</td><td>${e.k||'–'}</td><td class="n">${e.q}</td><td><small>${e.ids.join(', ')}</small></td></tr>`).join('')}
+  ${sh.rests.map(r=>{const v={l:r.w,b:r.h};return`<tr class="rest"><td>${esc(T('Reststück'))}</td><td class="n">${fmt(v[c1])}</td><td class="n">${fmt(v[c2])}</td><td></td><td class="n">${g.cnt}</td><td></td></tr>`}).join('')}
+  </tbody></table></div>`;
+ });
+ /* Übersicht */
+ const used=new Map();for(const s of sheets){const k=s.S.n+'|'+s.S.l+'|'+s.S.b;if(!used.has(k))used.set(k,{S:s.S,n:0});used.get(k).n++}
+ const nLeaves=sheets.reduce((s,x)=>s+x.leaves.filter(r=>Math.min(r.w,r.h)>=10).length,0),cuts=sheets.reduce((s,x)=>s+x.cuts,0),cl=sheets.reduce((s,x)=>s+x.cl,0);
+ const P=v=>sa?pct(v/sa*100)+' %':'';
+ const gesamt=[['Verwendete Platten',[...used.values()].map(u=>`${dimStr(u.S.l,u.S.b)} <small>×${u.n}${mats().length>1?' · '+esc(u.S.n):''}</small>`).join('<br>')],
+  ['Teilefläche',`${m2(pa)} <small>\\ ${P(pa)}</small>`],['Restfläche',`${m2(sa-pa-trA)} <small>\\ ${P(sa-pa-trA)}</small>`],...(trA>0?[['Randbeschnitt',`${m2(trA)} <small>\\ ${P(trA)}</small>`]]:[]),
+  ['Schnitte',cuts],['Schnittlänge',pct(cl/1000)+' m'],['Teile',npl],['Reststücke',nLeaves],...(kl?[['Kante lfm',res.klT.map(([t,m])=>`${pct(m)} m <small>${esc(etName(t))}</small>`).join('<br>')]]:[]),...(cost?[['Kosten',cost.toLocaleString(loc(),{style:'currency',currency:'EUR'})]]:[])];
+ const S0=res.set,cur=setSnap(),yn=v=>T(v?'an':'aus'),ch=(...k)=>k.some(x=>S0[x]!==cur[x])?'<span class="dot"></span>':'';
+ const einst=[['Schnittfuge (Schnittbreite)',fmt(S0.kerf)+' '+ul(),ch('kerf')],['Randbeschnitt',fmt(S0.trim)+' '+ul(),ch('trim','ts')],['Minimales Besäummaß',fmt(S0.minT)+' '+ul(),ch('minT')],
+  ['Schnittrichtung',T({auto:'Optimal',laengs:'Längs',quer:'Quer'}[S0.first]||'Optimal'),ch('first')],['Optimierungspriorität',T(S0.goal==='cuts'?'Wenigste Schnitte':'Geringster Verschnitt'),ch('goal')],
+  ['Alles auf eine Platte',yn(S0.oOne),ch('oOne')],['Materialien',yn(S0.oMat),ch('oMat')],['Kantenanleimung',yn(S0.oEdge),ch('oEdge')],['Maserungsrichtung',yn(S0.oGrain),ch('oGrain')]];
+ h+=`<div class="card"><h2>${esc(T('Übersicht'))}</h2><div class="tabs" role="tablist"><button role="tab" data-tab="0" aria-selected="${ovTab===0}">${esc(T('Gesamt'))}</button><button role="tab" data-tab="1" aria-selected="${ovTab===1}">${esc(T('Einstellungen'))}<span class="dot" id="sdot"${isStale()?'':' hidden'}></span></button></div>
+ <table class="kv">${ovTab===0?gesamt.map(([k,v])=>`<tr><td>${esc(T(k))}</td><td>${v}</td></tr>`).join(''):einst.map(([k,v,c])=>`<tr><td>${esc(T(k))}${c}</td><td>${esc(v)}</td></tr>`).join('')}</table>
+ ${ovTab===1&&isStale()?`<p class="note">${esc(T('Geändert seit der Berechnung – ▶ tippen.'))}</p>`:''}${res.edited?`<p class="note">${esc(T('Plan bearbeitet'))}</p>`:''}</div>`;
+ /* Schnittfolge */
+ h+=`<div class="card"><h2>${esc(T('Schnittfolge'))}</h2><div class="gz"><span>${esc(T('Geführter Zuschnitt'))}</span><b>${cuts} ${esc(T('Schnitte'))}</b> · ${sheets.length} ${esc(T('Platten'))}</div>
+ <button class="pri wide" id="gstart">▶ ${esc(T('Starten'))}</button>
+ ${G.map(g=>`<h3 class="sq">${esc(T('Platte'))} ${gName(g)}${g.cnt>1?` <span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''}</h3><table class="cl"><thead><tr><th>#</th><th>${esc(T('Teil'))}</th><th>${esc(T('Schnitt'))}</th><th>${esc(T('Ergebnis'))}</th></tr></thead><tbody>
+ ${g.sh.seq.map((n,k)=>`<tr><td>${k+1}</td><td>${dimStr(n.R.w,n.R.h)}</td><td>${n.d}=${fmt(n.c)}</td><td>${esc(resTxt(n))}</td></tr>`).join('')}</tbody></table>`).join('')}</div>`;
+ /* Drucken */
+ const F=FMTS();
+ h+=`<div class="card acts-card"><h2>${esc(T('Drucken & Etiketten'))}</h2>
+ <div class="acts"><button class="pri" id="plan">${esc(T('Schnittplan als PDF'))}</button><button id="lists">${esc(T('Listen als PDF'))}</button>${standalone?`<button id="prt">${esc(T('Drucken'))}</button>`:''}<button id="copy">${esc(T('Schnittliste kopieren'))}</button><button id="csvout">${esc(T('Schnittliste als CSV'))}</button></div>
+ <div class="acts" style="margin-top:10px"><select id="fmt" aria-label="${esc(T('Etikettenformat'))}">${F.map((f,k)=>opt(k,fmtSel,f.t)).join('')}</select>
+ <button class="pri" id="pdf">${esc(T('Etiketten als PDF'))}</button></div>
+ <p class="note" id="pnote">${esc(T('Plan: eine A4-Seite quer pro Platte, mit Maßketten und Teileliste. Etiketten: eins pro Teil ({n} Stück) mit QR-Code.',{n:npl}))}</p>
+ ${res.klT.length?`<div class="legs">${res.klT.map(([t,m])=>`<span class="leg" style="--ec:${esc(etCol(t))}"><i></i>${esc(etName(t))} · ${pct(m)} m</span>`).join('')}</div>`:''}
+ <p class="note">${esc(T('Nummer im Plan = Nummer auf dem Etikett (1-03 = Platte 1, Teil 3)'))}</p></div>`;
+ const nr=sheets.reduce((s,x)=>s+x.rests.length,0);
+ if(nr)h+=`<div class="card"><h2>${nr} ${esc(T(nr>1?'Reststücke':'Reststück'))}</h2><p class="note" style="margin-top:0">${esc(T('Gestrichelt im Plan. Für den nächsten Auftrag ins Lager übernehmen – sie werden dann zuerst geprüft.'))}</p><div class="btns"><button id="r2s">${esc(T('Reste ins Lager übernehmen'))}</button></div></div>`;
+ /* Teileliste + Zuschnittliste */
+ const PL=partList(),CL=cutList();
+ h+=`<div class="card"><h2>${esc(T('Teileliste'))}</h2><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Material'))}</th><th>${esc(T('Maserung'))}</th><th class="n">${esc(T('platziert'))}</th></tr></thead><tbody>
+ ${PL.map(r=>`<tr><td>${esc(r.n)}</td><td class="n">${fmt(r[c1])}</td><td class="n">${fmt(r[c2])}</td><td class="n">${r.q}</td><td>${esc(r.k)||'–'}</td><td>${esc(r.m)}</td><td>${r.g?'↔':'–'}</td><td class="n">${r.ok<r.q?`<b style="color:var(--red)">${r.ok}</b>`:r.ok}</td></tr>`).join('')}</tbody></table></div>
+ <div class="card"><h2>${esc(T('Zuschnittliste'))}</h2><table class="cl stack"><thead><tr><th>${esc(T('Nr.'))}</th><th>${esc(T('Teil'))}</th><th class="n">${esc(T('Zuschnitt'))}</th><th class="n">${esc(T('fertig'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Platte'))}</th></tr></thead><tbody>
+ ${CL.map(r=>`<tr><td><small>${esc(r.id)}</small></td><td>${esc(r.n)}${r.rot?` <small>(${esc(T('gedreht'))})</small>`:''}</td><td class="n">${dimStr(r.l,r.b)}</td><td class="n">${dimStr(r.fl,r.fb)}</td><td>${esc(r.k)||'–'}</td><td>${r.sheet} · ${esc(r.mat)}</td></tr>`).join('')}</tbody></table></div>`;
+ o.innerHTML=h;updStale();
+}
+function partList(){
+ const ok=new Map();res.sheets.forEach(s=>s.pl.forEach(x=>ok.set(x.p.c,(ok.get(x.p.c)||0)+1)));
+ const M=mats();
+ return st.parts.map((p,i)=>({n:p.n||(T('Teil')+' '+(i+1)),l:num(p.l),b:num(p.b),q:Math.max(0,Math.floor(num(p.q))),k:st.oEdge?kTxt(p.k):'',m:M.includes(p.m)?p.m:M[0],g:st.oGrain&&!p.r,ok:ok.get(i)||0})).filter(r=>r.l>0&&r.b>0&&r.q>0);
+}
+function cutList(){const out=[];res.sheets.forEach(sh=>sh.pl.forEach(x=>out.push({id:x.id,n:x.p.n,l:x.p.l,b:x.p.b,fl:x.p.fl,fb:x.p.fb,k:kTxt(x.p.k),sheet:sh.n,mat:sh.S.n,rot:x.rot})));return out}
+/* Geführter Zuschnitt */
+function gdOpen(){const steps=[];res.G.forEach(g=>g.sh.seq.forEach((n,k)=>steps.push({g,k,n})));if(!steps.length)return;
+ gd={steps,i:gd&&gd.steps.length===steps.length?gd.i:0};gdDraw()}
+function gdDraw(){let ov=$('gov');if(!ov){ov=document.createElement('div');ov.id='gov';ov.className='ovl';document.body.appendChild(ov)}
+ const s=gd.steps[gd.i],g=s.g,n=s.n,K=g.sh.seq.length,last=gd.i===gd.steps.length-1;
+ ov.innerHTML=`<div class="dlg wide" role="dialog" aria-modal="true" aria-label="${esc(T('Geführter Zuschnitt'))}"><div class="dh"><h2>${esc(T('Geführter Zuschnitt'))}</h2><button id="gx" aria-label="${esc(T('Schließen'))}">×</button></div>
+ <div class="gb"><div class="gst">${esc(T('Platte'))} ${gName(g)} ${esc(T('von'))} ${res.sheets.length}${g.cnt>1?` <span class="stk">${esc(T('{n}× schneiden',{n:g.cnt}))}</span>`:''} · ${esc(T('Schnitt {k} von {n}',{k:s.k+1,n:K}))}</div>
+ <div class="gcut"><span>${dimStr(n.R.w,n.R.h)}</span><b>${n.d}=${fmt(n.c)}</b><span>→ ${esc(resTxt(n))}</span></div>
+ <div class="pw">${toSVG(plan(g,{...view,lab:st.oLab,hl:{done:g.sh.seq.slice(0,s.k),cur:n}}),'gd')}</div>
+ <div class="gprog"><i style="width:${(gd.i+1)/gd.steps.length*100}%"></i></div><p class="note">${gd.i+1} / ${gd.steps.length}</p></div>
+ <div class="df"><button id="gp"${gd.i?'':' disabled'}>◀ ${esc(T('Zurück'))}</button><button id="gr"${gd.i?'':' disabled'}>⟲</button><button class="pri" id="gn">${last?esc(T('Fertig!')):esc(T('Weiter'))+' ▶'}</button></div></div>`;
+ $('gn').focus();
+}
+const gdClose=()=>{$('gov')?.remove()};
+/* Ziehen im Bearbeiten-Modus */
+let drag=null;
+const svgPt=(inv,x,y)=>new DOMPoint(x,y).matrixTransform(inv);
+document.addEventListener('pointerdown',e=>{
+ if(!view.edit||e.button>0)return;const gEl=e.target.closest&&e.target.closest('g[data-pi]');if(!gEl)return;
+ const svg=gEl.ownerSVGElement;if(!svg||svg.dataset.g===undefined)return;const m=svg.getScreenCTM();if(!m)return;
+ drag={gEl,gi:+svg.dataset.g,pi:+gEl.dataset.pi,sx:e.clientX,sy:e.clientY,inv:m.inverse(),moved:false};
+ try{gEl.setPointerCapture(e.pointerId)}catch(er){}e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{if(!drag)return;
+ if(!drag.moved&&Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>6)drag.moved=true;
+ if(drag.moved){const a=svgPt(drag.inv,drag.sx,drag.sy),b=svgPt(drag.inv,e.clientX,e.clientY);drag.dx=b.x-a.x;drag.dy=b.y-a.y;drag.gEl.setAttribute('transform',`translate(${drag.dx} ${drag.dy})`);drag.gEl.style.opacity=.8}
+});
+document.addEventListener('pointerup',()=>{if(!drag)return;const D=drag;drag=null;
+ if(!D.moved){res.sel=res.sel&&res.sel.g===D.gi&&res.sel.i===D.pi?null:{g:D.gi,i:D.pi};renderOut();return}
+ let dx=D.dx,dy=D.dy;if(view.tr)[dx,dy]=[dy,dx];
+ const g=res.G[D.gi],x=g.sh.pl[D.pi],p=snapMove(g.sh,D.pi,x.x+dx,x.y+dy);
+ if(!p){renderOut();toast(T('Passt da nicht'));return}
+ for(const s of g.list){s.pl[D.pi].x=p[0];s.pl[D.pi].y=p[1]}
+ afterEdit('Teil verschoben');
+});
+document.addEventListener('pointercancel',()=>{if(drag){drag=null;renderOut()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('gov'))gdClose()});
+function editAct(a,gi){
+ if(a==='none'){res.sel=null;renderOut();return}
+ const g=res.G[gi],pi=res.sel.i,sh=g.sh,x=sh.pl[pi];
+ if(a==='del'){for(const s of g.list){const y=s.pl.splice(pi,1)[0];res.un.push(y.p)}afterEdit('Teil entfernt');return}
+ if(a==='rot'){if(!x.p.r){toast(T('Maserung – Drehen nicht erlaubt'));return}
+  let pos=valid(sh,pi,x.x,x.y,x.h,x.w)?[x.x,x.y]:findSpot(sh,pi,x.h,x.w);if(!pos){toast(T('Kein freier Platz'));return}
+  for(const s of g.list){const y=s.pl[pi];[y.w,y.h]=[y.h,y.w];y.rot=y.rot?0:1;y.x=pos[0];y.y=pos[1]}afterEdit('Teil gedreht')}
+}
+function insertUn(key){
+ const i=res.un.findIndex(p=>p.c+'|'+p.l+'|'+p.b===key);if(i<0)return;const p=res.un[i];
+ for(const sh of res.sheets){if(res.set.oMat&&sh.S.n!==p.m)continue;
+  for(const[w,h,rot]of p.r&&p.l!==p.b?[[p.l,p.b,0],[p.b,p.l,1]]:[[p.l,p.b,0]]){const pos=findSpot(sh,-1,w,h);
+   if(pos){sh.pl.push({x:pos[0],y:pos[1],w,h,p,rot});res.un.splice(i,1);afterEdit('Teil eingesetzt');return}}}
+ toast(T('Kein freier Platz'));
+}
+
+/* ---------- Dateien ---------- */
+async function saveData(name,data){
+ const note=t=>{const n=$('pnote');if(n)n.textContent=t;toast(t)};
+ const dl=(window.claude&&claude.use)?await claude.use('downloads').catch(()=>null):null;
+ if(!dl){try{const u=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);note(T('Heruntergeladen')+': '+name)}catch(e){note(T('Download hat nicht geklappt.'))}return}
+ try{await dl.save({filename:name,data});note(T('Gespeichert')+': '+name)}
+ catch(e){note(T(e&&e.code==='declined'?'Speichern abgebrochen.':e&&e.code==='host_unavailable'?'Diese App kann keine Dateien speichern – öffne die Seite im Browser.':'Speichern hat nicht geklappt, bitte nochmal versuchen.'))}
+}
+const saveDoc=(doc,name)=>saveData(name,doc.output('blob'));
+const libsOk=()=>{if(window.jspdf&&window.qrcode)return true;toast(T('PDF-Bausteine laden noch – kurz warten und nochmal tippen.'));return false};
+const fname=(p,ext='pdf')=>p+'_'+(((st.job||'').trim().replace(/[^\wäöüÄÖÜß-]+/g,'_'))||'Zuschnitt')+'.'+ext;
+const pdfSafe=s=>String(s).replace(/[čć]/g,'c').replace(/[ČĆ]/g,'C').replace(/š/g,'s').replace(/Š/g,'S').replace(/ž/g,'z').replace(/Ž/g,'Z').replace(/đ/g,'dj').replace(/Đ/g,'Dj').replace(/[“”„]/g,'"').replace(/–/g,'-');
+function makePlanPDF(){
+ const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'l'}),W=297,H=210,m=12,n=res.sheets.length,d=new Date().toLocaleDateString(loc()),job=pdfSafe((st.job||'').trim());
+ const Tp=(s,v)=>pdfSafe(T(s,v)),[c1,c2]=colsLB(),hd={l:Tp('Länge'),b:Tp('Breite')};
+ let page=0;const foot=()=>{page++;doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor('#6b757a');doc.text(Tp('Seite {n}',{n:page}),W-m,H-6,{align:'right'});
+  doc.text(pdfSafe(`${T('Verschnitt gesamt')} ${pct(res.waste)} % · ${T('Kante gesamt')} ${pct(res.kl)} m`+(res.klT.length>1?' ('+res.klT.map(([t,v])=>etName(t)+' '+pct(v)+' m').join(', ')+')':'')),m,H-6)};
+ groups().forEach((g,i)=>{const sh=g.sh;
+  if(i)doc.addPage();
+  const u=sh.pl.reduce((a,y)=>a+y.w*y.h,0)/(sh.S.l*sh.S.b)*100;
+  const title=pdfSafe(`${T('Schnittplan')} · ${T('Platte')} ${gName(g)} ${T('von')} ${n}`);
+  doc.setTextColor('#1b2125');doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text(title,m,m+5);
+  if(g.cnt>1){const tw=doc.getTextWidth(title),s=Tp('{n}× schneiden',{n:g.cnt});doc.setFontSize(11);const w2=doc.getTextWidth(s)+4;doc.setFillColor(C.main);doc.roundedRect(m+tw+3,m+0.2,w2,6.4,1.2,1.2,'F');doc.setTextColor('#ffffff');doc.text(s,m+tw+5,m+4.8);doc.setTextColor('#1b2125')}
+  doc.setFontSize(11);doc.text(job,W-m,m+5,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor('#4a5459');
+  doc.text(pdfSafe(`${sh.S.n} · ${dimStr(sh.S.l,sh.S.b)} ${ul()} · ${pct(u)} % ${T('genutzt')} · ${sh.cuts} ${T('Schnitte')} · ${T('Sägeblatt')} ${fmt(res.kerf)} ${ul()} · ${T('Besäumen')} ${fmt(res.trim)} ${ul()}${res.et?' · '+T('Kantendicke abgezogen'):''}`),m,m+11);
+  doc.text(d,W-m,m+11,{align:'right'});
+  {const it=[...res.klT.map(([t])=>({t:(ET().length>1?t+' ':'')+pdfSafe(etName(t)),c:etCol(t),w:Math.min(0.9,0.45+0.15*etThick(t)),d:1})),{t:Tp('Gesamt'),c:C.main,w:0.35,d:0}];
+   doc.setFontSize(9);let lx=W-m;for(let q=it.length-1;q>=0;q--){const e=it[q],tw=doc.getTextWidth(e.t);lx-=tw;doc.setTextColor('#4a5459');doc.text(e.t,lx,m+15.6);lx-=10;
+    doc.setDrawColor(e.c);doc.setLineWidth(e.w);doc.setLineDashPattern(e.d?[1.6,1]:[],0);doc.line(lx,m+14.6,lx+8,m+14.6);doc.setLineDashPattern([],0);lx-=5}}
+  const pl=plan(g),aw=W-2*m,ah=122,k=Math.min(aw/pl.bw,ah/pl.bh),y0=m+18;
+  toPDF(doc,pl,m+(aw-pl.bw*k)/2,y0,k);
+  let y=y0+pl.bh*k+7;const cw=aw/3,rh=4.4,cols=[0,15,51,64,77];
+  const rows=sh.pl,head=yy=>{doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor('#5f686e');
+   for(let c=0;c<3;c++){const bx=m+c*cw;[Tp('Nr.'),Tp('Teil'),hd[c1],hd[c2],Tp('Kante')].forEach((t,j)=>doc.text(t,bx+cols[j]+(j===2||j===3?11:0),yy,j===2||j===3?{align:'right'}:undefined))}};
+  let per=Math.floor((H-14-y-rh)/rh)*3,idx=0;
+  if(per<3){foot();doc.addPage();y=m+6;per=Math.floor((H-14-y-rh)/rh)*3}
+  head(y);y+=rh;let ys=y;
+  while(idx<rows.length){
+   if(idx&&idx%per===0){foot();doc.addPage();y=m+6;head(y);y+=rh;ys=y;per=Math.floor((H-14-y)/rh)*3}
+   const r=rows[idx],pos=idx%per,c=Math.floor(pos/(per/3)),rr=pos%(per/3),bx=m+c*cw,yy=ys+rr*rh;
+   doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor('#1b2125');
+   let nm=pdfSafe(r.p.n+(r.rot?' ('+T('gedr.')+')':''));while(nm.length>2&&doc.getTextWidth(nm)>34)nm=nm.slice(0,-2)+'…';
+   const idS=pdfSafe(gId(g,r));doc.setFont('helvetica','bold');doc.setFontSize(idS.length>6?7:8.5);doc.text(idS,bx,yy);doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.text(nm,bx+cols[1],yy);
+   const v={l:r.p.l,b:r.p.b};doc.text(fmt(v[c1]),bx+cols[2]+11,yy,{align:'right'});doc.text(fmt(v[c2]),bx+cols[3]+11,yy,{align:'right'});doc.text(pdfSafe(kShort(r.p.k))||'-',bx+cols[4],yy);
+   idx++;
+  }
+  foot();
+ });
+ saveDoc(doc,fname('Schnittplan'));
+}
+function makeListPDF(){
+ const doc=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'p'}),W=210,H=297,m=12,[c1,c2]=colsLB(),hd={l:T('Länge'),b:T('Breite')};
+ const job=pdfSafe((st.job||'').trim()),d=new Date().toLocaleDateString(loc());let y=m;
+ const title=t=>{doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor('#1b2125');doc.text(pdfSafe(t),m,y+5);doc.setFontSize(10);doc.text(job,W-m,y+5,{align:'right'});doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor('#4a5459');doc.text(d,W-m,y+10,{align:'right'});y+=15};
+ const table=(cols,rows)=>{const head=()=>{doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor('#5f686e');cols.forEach(c=>doc.text(pdfSafe(c.h),c.r?c.x+c.w:c.x,y,c.r?{align:'right'}:undefined));y+=2;doc.setDrawColor('#c8ced1');doc.setLineWidth(0.2);doc.line(m,y,W-m,y);y+=4};
+  head();doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor('#1b2125');
+  rows.forEach((r,i)=>{if(y>H-14){doc.addPage();y=m+4;head();doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor('#1b2125')}
+   if(i%2){doc.setFillColor('#f3f5f5');doc.rect(m,y-3.6,W-2*m,5,'F')}
+   cols.forEach((c,j)=>{let t=pdfSafe(r[j]??'');while(t.length>1&&doc.getTextWidth(t)>c.w)t=t.slice(0,-2)+'…';doc.text(t,c.r?c.x+c.w:c.x,y,c.r?{align:'right'}:undefined)});y+=5})};
+ title(T('Teileliste'));
+ table([{h:T('Teil'),x:m,w:52},{h:hd[c1],x:66,w:18,r:1},{h:hd[c2],x:86,w:18,r:1},{h:T('Stk'),x:106,w:10,r:1},{h:T('Kante'),x:120,w:34},{h:T('Material'),x:156,w:30},{h:T('platziert'),x:186,w:12,r:1}],
+  partList().map(r=>[r.n,fmt(r[c1]),fmt(r[c2]),r.q,r.k||'-',r.m,r.ok]));
+ doc.addPage();y=m;title(T('Zuschnittliste'));
+ table([{h:T('Nr.'),x:m,w:14},{h:T('Teil'),x:28,w:44},{h:T('Zuschnitt'),x:74,w:28},{h:T('fertig'),x:104,w:28},{h:T('Kante'),x:134,w:34},{h:T('Platte'),x:170,w:28}],
+  cutList().map(r=>[r.id,r.n+(r.rot?' ('+T('gedr.')+')':''),dimStr(r.l,r.b),dimStr(r.fl,r.fb),r.k||'-',r.sheet+' '+r.mat]));
+ doc.addPage();y=m;title(T('Schnittfolge'));
+ res.G.forEach(g=>{if(y>H-30){doc.addPage();y=m}doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor('#1b2125');doc.text(pdfSafe(`${T('Platte')} ${gName(g)} · ${g.sh.S.n}${g.cnt>1?' · '+T('{n}× schneiden',{n:g.cnt}):''}`),m,y);y+=6;
+  table([{h:'#',x:m,w:8,r:1},{h:T('Teil'),x:24,w:40},{h:T('Schnitt'),x:68,w:28},{h:T('Ergebnis'),x:100,w:98}],g.sh.seq.map((n,k)=>[k+1,dimStr(n.R.w,n.R.h),n.d+'='+fmt(n.c),resTxt(n)]));y+=4});
+ saveDoc(doc,fname('Listen'));
+}
+function labelList(){
+ const out=[],job=(st.job||'').trim(),d=new Date().toLocaleDateString(loc());
+ res.sheets.forEach(sh=>sh.pl.forEach(x=>out.push({id:x.id,n:x.p.n,l:x.p.l,b:x.p.b,fl:x.p.fl,fb:x.p.fb,mat:sh.S.n,sheet:sh.n,ns:res.sheets.length,grain:!x.p.r,k:kTxt(x.p.k),kk:x.p.k,job,d})));
+ return out;
+}
+const qrText=L=>[`${T('Teil')}: ${L.n}`,`${T('Nr')}: ${L.id}`,`${T('Maß')}: ${dimStr(L.fl,L.fb)} ${ul()}`,L.fl!==L.l||L.fb!==L.b?`${T('Zuschnitt')}: ${dimStr(L.l,L.b)} ${ul()}`:'',`${T('Material')}: ${L.mat}`,`${T('Platte')}: ${L.sheet} ${T('von')} ${L.ns}`,
+ L.grain?T('Maserung längs'):'',`${T('Kante')}: ${L.k||T('keine')}`,L.job?`${T('Auftrag')}: ${L.job}`:'',`${T('Datum')}: ${L.d}`].filter(Boolean).join('\n');
+function drawLabel(doc,x,y,F,L){
+ const p=Math.min(3,F.h*0.08),k=Math.min(F.h/37,F.w/70);
+ const q=qrcode(0,'L');q.addData(qrText(L),'Byte');q.make();
+ const hasK=L.kk&&L.kk.some(v=>v),sk=hasK||L.grain;
+ const n=q.getModuleCount(),qs=sk?Math.min((F.h-2*p)*0.64,F.w*0.3):Math.min(F.h-2*p,F.w*0.42),m=qs/n,qy=sk?y+p:y+p+(F.h-2*p-qs)/2;
+ doc.setFillColor(0,0,0);
+ for(let r=0;r<n;r++){let c=0;while(c<n){if(q.isDark(r,c)){let e=c;while(e<n&&q.isDark(r,e))e++;doc.rect(x+p+c*m,qy+r*m,(e-c)*m+0.01,m+0.01,'F');c=e}else c++}}
+ const tx=x+p+qs+2.5*k,tw=x+F.w-p-tx;let ty=y+p;
+ if(sk){/* Teil-Skizze unter dem QR: oben/unten = L1/L2, links/rechts = B1/B2, Pfeil = Maserung */
+  const bw=qs,bh=y+F.h-p-(qy+qs+1.2),ar=L.fl/L.fb;let sw=bw,sh2=bw/ar;if(sh2>bh){sh2=bh;sw=Math.min(bw,bh*ar)}
+  sw=Math.max(sw,bw*0.3);sh2=Math.max(sh2,bh*0.3);const sx=x+p+(bw-sw)/2,sy=qy+qs+1.2+(bh-sh2)/2;
+  doc.setDrawColor('#000000');doc.setLineWidth(0.15);doc.setFillColor('#f0f0f0');doc.rect(sx,sy,sw,sh2,'FD');
+  const ln=[[sx,sy,sx+sw,sy],[sx,sy+sh2,sx+sw,sy+sh2],[sx,sy,sx,sy+sh2],[sx+sw,sy,sx+sw,sy+sh2]];
+  (L.kk||[]).forEach((v,j)=>{if(!v)return;doc.setDrawColor(etCol(v));doc.setLineWidth(Math.max(0.6,Math.min(1.4,bh*0.12)));const[a,b,c,d]=ln[j];doc.line(a,b,c,d)});
+  if(ET().length>1){doc.setFont('helvetica','bold');doc.setFontSize(Math.max(4,Math.min(6,bh*1.3)));doc.setTextColor('#000000');const fh=doc.getFontSize()*0.3528;
+   (L.kk||[]).forEach((v,j)=>{if(!v)return;const t=String(v),w=doc.getTextWidth(t);const pos=[[sx+sw/2-w/2,sy+fh+0.5],[sx+sw/2-w/2,sy+sh2-0.6],[sx+0.9,sy+sh2/2+fh/2],[sx+sw-0.9-w,sy+sh2/2+fh/2]][j];doc.text(t,pos[0],pos[1])})}
+  if(L.grain){doc.setDrawColor('#555555');doc.setLineWidth(0.2);const cy2=sy+sh2/2,a=sx+sw*0.3,b=sx+sw*0.7;doc.line(a,cy2,b,cy2);doc.line(b,cy2,b-0.9,cy2-0.6);doc.line(b,cy2,b-0.9,cy2+0.6)}
+  doc.setDrawColor('#000000');
+ }
+ doc.setTextColor('#000000');
+ const line=(txt,size,bold)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);
+  let t=pdfSafe(txt);while(t.length>1&&doc.getTextWidth(t)>tw)t=t.slice(0,-2)+'…';
+  if(ty+size*0.3528*1.05>y+F.h-p*0.6)return;ty+=size*0.3528*1.05;doc.text(t,tx,ty);ty+=size*0.3528*0.25};
+ line(L.n,10*k,true);
+ line(`${dimStr(L.fl,L.fb)} ${ul()}`,12*k,true);
+ if(L.fl!==L.l||L.fb!==L.b)line(`${T('Zuschnitt')} ${dimStr(L.l,L.b)}`,7*k);
+ if(L.k)line(T('Kante')+': '+L.k,7*k,true);
+ line(L.mat,7*k);
+ line(`${T('Nr.')} ${L.id}  ·  ${T('Platte')} ${L.sheet}/${L.ns}`,7*k);
+ if(L.grain)line(T('Maserung längs'),7*k);
+ if(L.job)line(L.job,7*k,true);
+ line(L.d,6*k);
+}
+function makeLabelPDF(){
+ qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
+ const F=FMTS()[fmtSel],labs=labelList();if(!labs.length)return;
+ const doc=new jspdf.jsPDF({unit:'mm',format:F.page||'a4',orientation:F.page&&F.page[0]>F.page[1]?'l':'p'}),per=F.c*F.r;
+ labs.forEach((L,i)=>{const pos=i%per;if(i&&!pos)doc.addPage();drawLabel(doc,F.mx+(pos%F.c)*F.w,F.my+Math.floor(pos/F.c)*F.h,F,L)});
+ saveDoc(doc,fname('Etiketten'));
+}
+function cutText(){
+ const{un,kerf,trim}=res;let t=`${T('SCHNITTLISTE')}${st.job?' – '+st.job:''}  (${T('Sägeblatt')} ${fmt(kerf)} ${ul()}, ${T('Besäumen')} ${fmt(trim)} ${ul()})\n`;
+ groups().forEach(g=>{const sh=g.sh;t+=`\n${T('Platte')} ${gName(g)}: ${sh.S.n} ${dimStr(sh.S.l,sh.S.b)}${g.cnt>1?'  ('+T('{n}× schneiden',{n:g.cnt})+')':''}\n`;
+  for(const e of groupParts(sh.pl,g))t+=`  ${e.q}x  ${e.n}  ${dimStr(e.l,e.b)}${e.k?'  '+T('Kante')+' '+e.k:''}${e.rot?'  ('+T('gedreht')+')':''}\n`});
+ t+=`\n${T('Kante gesamt')}: ${pct(res.kl)} m\n`;for(const[k2,v]of res.klT)t+=`  ${etName(k2)}: ${pct(v)} m\n`;
+ if(un.length)t+=`\n${T('PASST NICHT')}: ${un.map(p=>p.n+' '+dimStr(p.l,p.b)).join(', ')}\n`;
+ return t;
+}
+const csvCell=v=>{v=String(v??'');return/[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+function cutCSV(){
+ const rows=[[T('Nr'),T('Teil'),T('Zuschnitt Länge'),T('Zuschnitt Breite'),T('Fertig Länge'),T('Fertig Breite'),T('Kante'),T('Material'),T('Platte'),T('gedreht')]];
+ res.sheets.forEach(sh=>sh.pl.forEach(x=>rows.push([x.id,x.p.n,fmt(x.p.l),fmt(x.p.b),fmt(x.p.fl),fmt(x.p.fb),kTxt(x.p.k),sh.S.n,sh.n,x.rot?T('ja'):T('nein')])));
+ res.sheets.forEach(sh=>sh.rests.forEach(r=>rows.push(['',T('Reststück'),fmt(r.w),fmt(r.h),'','','',sh.S.n,sh.n,''])));
+ return'\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n');
+}
+function parseCSV(txt){
+ const lines=txt.replace(/^\ufeff/,'').split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return[];
+ const d=lines[0].includes(';')?';':lines[0].includes('\t')?'\t':',';
+ const out=[],f=uf();
+ for(const ln of lines){
+  const c=[];let cur='',q=false;for(let i=0;i<ln.length;i++){const ch=ln[i];if(q){if(ch==='"'&&ln[i+1]==='"'){cur+='"';i++}else if(ch==='"')q=false;else cur+=ch}else if(ch==='"')q=true;else if(ch===d){c.push(cur.trim());cur=''}else cur+=ch}c.push(cur.trim());
+  let o=0;if(num(c[0])>0&&!/[a-zäöüčćšžđ]/i.test(c[0]))o=-1;
+  const n=o<0?'':c[0],a1=num(c[1+o])*f,a2=num(c[2+o])*f;if(!(a1>0&&a2>0))continue;
+  const l=cfg.ord==='lb'?a1:a2,b=cfg.ord==='lb'?a2:a1;
+  const qv=num(c[3+o])||1,rv=(c[4+o]||'').toLowerCase(),mv=(c[5+o]||'').trim(),kv=(c[6+o]||'').toUpperCase();
+  out.push({n,l,b,q:Math.max(1,Math.round(qv)),r:/^(j|ja|y|yes|d|da|1|x|true)/.test(rv)?1:0,m:mv||undefined,k:EN.map(e=>{const mm=kv.match(new RegExp(e+'(?:[:=](\\d))?'));return mm?Math.min(Math.max(1,+(mm[1]||1)),Math.max(1,ET().length)):0})});
+ }
+ return out;
+}
+const PK=KEY+'-projekte';
+const localP=()=>{try{return JSON.parse(localStorage.getItem(PK))||{}}catch(e){return{}}};
+const projs=()=>cloud||localP();
+function drawUser(){const w=$('who');if(!w)return;
+ w.innerHTML=user?`<span>☁ ${esc(user.email)}</span><button id="logout">${esc(T('Abmelden'))}</button>`:window.sb?`<a href="login.html">${esc(T('Anmelden'))}</a>`:''}
+async function loadCloud(){
+ const{data,error}=await sb.from('projects').select('name,data').order('name');
+ if(error){toast(T('Cloud nicht erreichbar'));return}
+ cloud={};for(const r of data)cloud[r.name]=r.data;
+ const L=localP(),up=Object.keys(L).filter(n=>!(n in cloud)).map(n=>({name:n,data:L[n]}));
+ if(up.length){const{error:e2}=await sb.from('projects').upsert(up,{onConflict:'user_id,name'});if(!e2){up.forEach(r=>cloud[r.name]=r.data);toast(T('{n} lokale Projekte in die Cloud übernommen',{n:up.length}))}}
+ drawProj();
+}
+function drawProj(){const P=projs(),ks=Object.keys(P).sort((a,b)=>a.localeCompare(b,'de'));
+ $('proj').innerHTML=`<option value="">${esc(ks.length?T('– gespeicherte Projekte ({n}) –',{n:ks.length}):T('– noch keine Projekte gespeichert –'))}</option>`+ks.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join('')}
+function loadState(o){if(!o||!Array.isArray(o.parts)||!Array.isArray(o.stock))return false;snap();st=JSON.parse(JSON.stringify(o));fix();renderAll();save();return true}
+function toast(msg,undo){
+ $('tmsg').textContent=msg;$('undo').style.display=undo?'':'none';$('toast').style.display='flex';
+ clearTimeout(tm);tm=setTimeout(()=>$('toast').style.display='none',4000);
+}
+let deb,tmM;const refresh=()=>{save();clearTimeout(deb);deb=setTimeout(updStale,120)};
+const snap=()=>{last=JSON.stringify(st)};
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener('input',e=>{
+ const t=e.target,k=t.dataset.k,val=t.dataset.u&&t.value!==''?num(t.value)*uf():t.value;
+ if(k){const o=st[k][+t.dataset.i];if(!o)return;const f=t.dataset.f;o[f]=f==='r'?(t.checked?1:0):val;refresh();if((k==='stock'&&f==='n')||k==='etypes'){clearTimeout(tmM);tmM=setTimeout(()=>{$('parts').innerHTML=partsHTML()},k==='etypes'?150:600)}}
+ else if(t.id==='kerf'||t.id==='kerf2'){st.kerf=val;const o2=$(t.id==='kerf'?'kerf2':'kerf');if(o2)o2.value=t.value;refresh()}
+ else if(t.id==='trim'){st.trim=val;refresh()}
+ else if(t.dataset.opt){const k=t.dataset.opt;st[k]=t.checked?1:0;if(k==='oLab'){save();renderOut();return}if(k==='oEdge')$('ecard').hidden=!st.oEdge;if(k!=='oOne')$('parts').innerHTML=partsHTML();refresh()}
+ else if(t.id==='job'){st.job=t.value;save()}
+ else if(t.id==='sub'){st.sub=t.checked?1:0;refresh()}
+ else if(t.dataset.o){st[t.dataset.o]=val;refresh()}
+ else if(t.dataset.c){const c=t.dataset.c;cfg[c]=t.value;saveCfg();if(c==='lang'||c==='unit'||c==='ord'){const x=document.querySelector('.nin')?.scrollLeft||0;renderAll();const n=document.querySelector('.nin');if(n)n.scrollLeft=x;document.querySelector(`[data-c="${c}"]`)?.focus()}else renderOut()}
+ else if(t.dataset.on!==undefined){const p=st.parts[+t.dataset.on];p.off=t.checked?0:1;t.closest('.prt').classList.toggle('off',!!p.off);refresh()}
+ else if(t.id==='bE'||t.id==='bN'||t.id==='bM'){const v=t.value;if(!v)return;snap();st.parts.forEach((p,i)=>{if(t.id==='bE')p.k=v==='all'?[1,1,1,1]:v==='long'?[1,1,0,0]:v==='short'?[0,0,1,1]:[0,0,0,0];else if(t.id==='bM')p.m=v;else p.n=v==='dim'?`${fmt(num(p.l))}×${fmt(num(p.b))}`:v==='num'?String(i+1):''});t.value='';drawInputs();refresh();toast(T('Für alle Teile')+' ✓',1)}
+ else if(t.id==='fmt'){fmtSel=+t.value;try{localStorage.setItem(KEY+'f',fmtSel)}catch(er){}}
+});
+document.addEventListener('change',e=>{
+ if(e.target.id!=='pfile')return;const f=e.target.files[0];e.target.value='';if(!f)return;
+ f.text().then(txt=>{
+  if(/\.json$/i.test(f.name)||txt.trim().startsWith('{')){let o;try{o=JSON.parse(txt)}catch(er){}if(loadState(o))toast(T('Projekt geöffnet')+': '+f.name,1);else toast(T('Datei ist kein Projekt'))}
+  else{const ps=parseCSV(txt);if(!ps.length){toast(T('Keine Teile erkannt'));return}snap();st.parts.push(...ps);drawInputs();refresh();toast(T('{n} Teile übernommen',{n:ps.length}),1)}
+ });
+});
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.id==='run'||t.id==='stl'){compute();return}
+ if(t.dataset.swp!==undefined){const p=st.parts[+t.dataset.swp];[p.l,p.b]=[p.b,p.l];p.k=[p.k[2],p.k[3],p.k[0],p.k[1]];drawInputs();refresh();return}
+ if(t.id==='onAll'||t.id==='offAll'){st.parts.forEach(p=>p.off=t.id==='offAll'?1:0);drawInputs();refresh();return}
+ if(t.dataset.v){const v=t.dataset.v;if(v==='edit'){view.edit=view.edit?0:1;if(res)res.sel=null}else if(v==='zi')view.z=Math.min(4,+(view.z*1.25).toFixed(3));else if(v==='zo')view.z=Math.max(0.5,+(view.z/1.25).toFixed(3));else if(v==='zr')view.z=1;else if(v==='fi')view.f=Math.min(2.4,view.f*1.15);else if(v==='fo')view.f=Math.max(0.5,view.f/1.15);else view[v]=view[v]?0:1;saveView();renderOut();return}
+ if(t.dataset.tab!==undefined){ovTab=+t.dataset.tab;renderOut();return}
+ if(t.dataset.inf!==undefined){const x=t.nextElementSibling;if(x)x.hidden=!x.hidden;return}
+ if(t.dataset.ea){editAct(t.dataset.ea,+t.dataset.g);return}
+ if(t.dataset.ins!==undefined){insertUn(t.dataset.ins);return}
+ if(t.id==='gstart'){gdOpen();return}
+ if(t.id==='gx'){gdClose();return}
+ if(t.id==='gp'||t.id==='gn'||t.id==='gr'){if(t.id==='gr')gd.i=0;else if(t.id==='gp')gd.i=Math.max(0,gd.i-1);else if(gd.i>=gd.steps.length-1){gdClose();gd=null;toast(T('Alle Schnitte erledigt.'));return}else gd.i++;gdDraw();return}
+ if(t.id==='lists'){if(libsOk())makeListPDF();return}
+ if(t.dataset.ts!==undefined){const j=+t.dataset.ts;st.ts[j]=st.ts[j]?0:1;t.setAttribute('aria-pressed',st.ts[j]?'true':'false');refresh()}
+ else if(t.dataset.edge!==undefined){const p=st.parts[+t.dataset.edge],j=+t.dataset.j,n=ET().length||1;p.k[j]=(p.k[j]+1)%(n+1);t.setAttribute('aria-pressed',p.k[j]?'true':'false');
+  t.style.setProperty('--ec',etCol(p.k[j]));t.title=EN[j]+(p.k[j]?': '+etName(p.k[j]):'');t.parentNode.querySelector('small').textContent=p.k.some(v=>v)?T('Kante'):'';refresh()}
+ else if(t.dataset.dele!==undefined){snap();const i=+t.dataset.dele,tt=i+1;st.etypes.splice(i,1);st.parts.forEach(p=>p.k=p.k.map(v=>v===tt?0:v>tt?v-1:v));drawInputs();refresh();toast(T('Zeile gelöscht'),1)}
+ else if(t.id==='addE'){const cols=['#1f6feb','#e11d48','#16a34a','#f59e0b','#7c3aed','#0891b2','#e6007e','#111827'];st.etypes.push({n:'',d:1,c:cols[st.etypes.length%cols.length]});drawInputs();refresh()}
+ else if(t.dataset.del){snap();st[t.dataset.del].splice(+t.dataset.i,1);drawInputs();refresh();toast(T('Zeile gelöscht'),1)}
+ else if(t.dataset.dup!==undefined){const i=+t.dataset.dup;st.parts.splice(i+1,0,JSON.parse(JSON.stringify(st.parts[i])));drawInputs();refresh();toast(T('Teil kopiert'))}
+ else if(t.id==='addP'){const p=st.parts[st.parts.length-1];st.parts.push({n:'',l:'',b:'',q:1,r:p?p.r:1,k:[0,0,0,0],m:p?p.m:undefined});drawInputs();refresh();
+  const ins=$('parts').querySelectorAll('.nm');ins[ins.length-1]?.focus()}
+ else if(t.id==='addS'){st.stock.push({n:'',l:2800,b:2070,q:10,p:''});drawInputs();refresh()}
+ else if(t.id==='clr'){snap();st.parts=[];drawInputs();refresh();toast(T('Liste geleert'),1)}
+ else if(t.id==='demo'){snap();st=demo();renderAll();save();toast(T('Beispiel geladen'),1)}
+ else if(t.id==='undo'&&last){st=JSON.parse(last);last=null;fix();renderAll();save();$('toast').style.display='none'}
+ else if(t.id==='rAll'||t.id==='rNone'){snap();st.parts.forEach(p=>p.r=t.id==='rAll'?1:0);drawInputs();refresh();toast(T(t.id==='rAll'?'Alle Teile dürfen gedreht werden':'Kein Teil wird gedreht'),1)}
+ else if(t.id==='plan'){if(libsOk())makePlanPDF()}
+ else if(t.id==='pdf'){if(libsOk())makeLabelPDF()}
+ else if(t.id==='prt'){try{window.print()}catch(er){}}
+ else if(t.id==='csvout'){saveData(fname('Schnittliste','csv'),cutCSV())}
+ else if(t.id==='copy'){const txt=cutText();
+  const fb=()=>{const a=document.createElement('textarea');a.value=txt;a.style.cssText='width:100%;height:220px;margin-top:10px';t.closest('.card').appendChild(a);a.select();toast(T('Text markiert – jetzt kopieren'))};
+  try{navigator.clipboard.writeText(txt).then(()=>toast(T('Schnittliste kopiert')),fb)}catch(er){fb()}}
+ else if(t.id==='csvadd'||t.id==='csvrep'){const ps=parseCSV($('csv').value);if(!ps.length){toast(T('Keine Teile erkannt'));return}
+  snap();if(t.id==='csvrep')st.parts=[];st.parts.push(...ps);$('csv').value='';drawInputs();refresh();toast(T('{n} Teile übernommen',{n:ps.length}),1)}
+ else if(t.id==='logout'){sb.auth.signOut().then(()=>location.replace('index.html'))}
+ else if(t.id==='psave'&&cloud){const n=(st.job||'').trim()||('Projekt '+new Date().toLocaleString(loc()));const data=JSON.parse(JSON.stringify(st));
+  sb.from('projects').upsert({name:n,data,updated_at:new Date().toISOString()},{onConflict:'user_id,name'}).then(({error})=>{if(error){toast(T('Speichern hat nicht geklappt, bitte nochmal versuchen.'));return}cloud[n]=data;drawProj();$('proj').value=n;toast('☁ '+T('Gespeichert')+': '+n)})}
+ else if(t.id==='pdel'&&cloud){const n=$('proj').value;if(!n){toast(T('Erst ein Projekt auswählen'));return}
+  sb.from('projects').delete().eq('name',n).then(({error})=>{if(error){toast(T('Cloud nicht erreichbar'));return}delete cloud[n];drawProj();toast(T('Gelöscht')+': '+n)})}
+ else if(t.id==='psave'){const n=(st.job||'').trim()||('Projekt '+new Date().toLocaleString(loc()));const P=projs();P[n]=st;
+  try{localStorage.setItem(PK,JSON.stringify(P));drawProj();$('proj').value=n;toast(T('Gespeichert')+': '+n)}catch(er){toast(T('Speichern im Browser nicht möglich'))}}
+ else if(t.id==='pload'){const n=$('proj').value;if(!n){toast(T('Erst ein Projekt auswählen'));return}if(loadState(projs()[n])){$('proj').value=n;toast(T('Geladen')+': '+n,1)}}
+ else if(t.id==='pdel'){const n=$('proj').value;if(!n){toast(T('Erst ein Projekt auswählen'));return}const P=projs();delete P[n];try{localStorage.setItem(PK,JSON.stringify(P))}catch(er){}drawProj();toast(T('Gelöscht')+': '+n)}
+ else if(t.id==='pjson'){saveData(fname('Projekt','json'),JSON.stringify(st,null,1))}
+ else if(t.id==='r2s'){snap();let n=0;res.sheets.forEach(sh=>sh.rests.forEach(r=>{st.stock.unshift({n:sh.S.n,l:Math.round(r.w),b:Math.round(r.h),q:1,p:''});n++}));drawInputs();refresh();toast(T('{n} Reste im Lager – für den neuen Auftrag „Liste leeren“',{n}),1)}
+});
+compute(true);renderAll();
+(async()=>{
+ const show=()=>document.getElementById('authhide')?.remove();
+ if(!window.sb){show();return}
+ let s=null;try{s=(await sb.auth.getSession()).data.session}catch(e){show();return}
+ if(!s){location.replace('login.html');return}
+ user=s.user;show();drawUser();loadCloud();
+ sb.auth.onAuthStateChange((ev,ss)=>{if(ev==='SIGNED_OUT')location.replace('login.html')});
+})();
+}
+</script>
+</body>
+</html>

@@ -174,7 +174,7 @@ textarea{width:100%;min-height:120px;font:14px/1.4 ui-monospace,monospace;paddin
 .opts>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;margin:0}.opts>summary::-webkit-details-marker{display:none}
 .opts>summary h2{margin:0}.opts>summary:after{content:"";width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
 .opts[open]>summary:after{transform:rotate(-135deg);margin-bottom:-4px}
-/* Ausklappbare Karten (Schnittfolge, Teileliste) – beim ersten Blick zu */
+/* Ausklappbare Karten (Schnittfolge, Teileliste, Zuschnittliste) – beim ersten Blick zu */
 .fold>summary{list-style:none;display:flex;align-items:center;gap:10px;margin:0;min-height:40px}.fold>summary::-webkit-details-marker{display:none}
 .fold>summary h2{margin:0}.fold>summary .fsub{margin-inline-start:auto;color:var(--mut);font-size:14px;font-weight:500}
 .fold>summary:after{content:"";flex:none;width:10px;height:10px;border:solid var(--mut);border-width:0 3px 3px 0;transform:rotate(45deg);margin:0 6px 4px}
@@ -897,7 +897,7 @@ function tbHTML(){
  ${b('col',ico('pal'),'Farben',!!view.col)}${b('dim',ico('rul'),'Maße',!!view.dim)}${b('num',ico('num'),'Nummern',!!view.num)}${b('tr',ico('rot'),'Ansicht drehen',!!view.tr)}
  <button class="stale" id="stl"${isStale()?'':' hidden'}>⟳ ${esc(T('Schnittplan veraltet'))}</button><span class="note" id="deepn"${deepW?'':' hidden'}>⏳ ${esc(T('Suche besseren Plan …'))}</span></div>`;
 }
-const fold={sf:false,tl:false};
+const fold={sf:false,tl:false,zl:false};
 function renderOut(){
  const o=$('out');if(!o)return;
  if(!o.dataset.fold){o.dataset.fold=1;o.addEventListener('toggle',ev=>{const k=ev.target.dataset&&ev.target.dataset.fold;if(k)fold[k]=ev.target.open},true)}
@@ -962,8 +962,8 @@ function renderOut(){
  const PL=partList(),CL=cutList();
  h+=`<details class="card fold" data-fold="tl"${fold.tl?' open':''}><summary><h2>${esc(T('Teileliste'))}</h2><span class="fsub">${PL.reduce((n,r)=>n+r.q,0)} ${esc(T('Teile'))}</span></summary><table class="cl stack"><thead><tr><th>${esc(T('Teil'))}</th><th class="n">${esc(hd[c1])}</th><th class="n">${esc(hd[c2])}</th><th class="n">${esc(T('Stk'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Material'))}</th><th>${esc(T('Maserung'))}</th><th class="n">${esc(T('platziert'))}</th></tr></thead><tbody>
  ${PL.map(r=>`<tr><td>${esc(r.n)}</td><td class="n">${fmt(r[c1])}</td><td class="n">${fmt(r[c2])}</td><td class="n">${r.q}</td><td>${esc(r.k)||'–'}</td><td>${esc(r.m)}</td><td>${r.g?'↔':'–'}</td><td class="n">${r.ok<r.q?`<b style="color:var(--red)">${r.ok}</b>`:r.ok}</td></tr>`).join('')}</tbody></table></details>
- <div class="card"><h2>${esc(T('Zuschnittliste'))}</h2><table class="cl stack"><thead><tr><th>${esc(T('Nr.'))}</th><th>${esc(T('Teil'))}</th><th class="n">${esc(T('Zuschnitt'))}</th><th class="n">${esc(T('fertig'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Platte'))}</th></tr></thead><tbody>
- ${CL.map(r=>`<tr><td><small>${esc(r.id)}</small></td><td>${esc(r.n)}${r.rot?` <small>(${esc(T('gedreht'))})</small>`:''}</td><td class="n">${dimStr(r.l,r.b)}</td><td class="n">${dimStr(r.fl,r.fb)}</td><td>${esc(r.k)||'–'}</td><td>${r.sheet} · ${esc(r.mat)}</td></tr>`).join('')}</tbody></table></div>`;
+ <details class="card fold" data-fold="zl"${fold.zl?' open':''}><summary><h2>${esc(T('Zuschnittliste'))}</h2><span class="fsub">${CL.length} ${esc(T('Teile'))}</span></summary><table class="cl stack"><thead><tr><th>${esc(T('Nr.'))}</th><th>${esc(T('Teil'))}</th><th class="n">${esc(T('Zuschnitt'))}</th><th class="n">${esc(T('fertig'))}</th><th>${esc(T('Kante'))}</th><th>${esc(T('Platte'))}</th></tr></thead><tbody>
+ ${CL.map(r=>`<tr><td><small>${esc(r.id)}</small></td><td>${esc(r.n)}${r.rot?` <small>(${esc(T('gedreht'))})</small>`:''}</td><td class="n">${dimStr(r.l,r.b)}</td><td class="n">${dimStr(r.fl,r.fb)}</td><td>${esc(r.k)||'–'}</td><td>${r.sheet} · ${esc(r.mat)}</td></tr>`).join('')}</tbody></table></details>`;
  o.innerHTML=h;updStale();
 }
 function partList(){
